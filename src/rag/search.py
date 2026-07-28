@@ -15,7 +15,8 @@ from typing import Any
 
 from .. import config, db, llm, storage
 from ..config import (BRANCH_TOP_K, CONFIDENCE_THRESHOLD, CROSS_MODAL_BOOST,
-                      FUSION_WINDOW_S, RRF_K, TEXT_CONFIDENCE_THRESHOLD, TOP_K)
+                      FUSION_WINDOW_S, MAX_PER_SOURCE, RRF_K,
+                      TEXT_CONFIDENCE_THRESHOLD, TOP_K)
 from . import vector_store
 from .embeddings import embed_query, embed_text
 
@@ -28,32 +29,56 @@ def _seconds(ms: int) -> str:
     return f"{s // 60:02d}:{s % 60:02d}"
 
 
+def _page_of(hit: dict) -> int | None:
+    """A document hit's 1-based page: `page` on a page image, `page_start` on a
+    text chunk (which may span pages — the first page is where it begins).
+    Video hits have neither, and that None is what keeps them on the time axis."""
+    page = hit.get("page", hit.get("page_start"))
+    return int(page) if page is not None else None
+
+
 def _fuse(visual_hits: list[dict], text_hits: list[dict]) -> list[dict]:
-    """Reciprocal-Rank-Fusion of the two branches into time windows.
+    """Reciprocal-Rank-Fusion of the two branches into moments.
 
     Raw scores are incomparable (CLIP ~0.3 vs bge ~0.7), so we rank each branch
     on its own and score by rank: rrf = 1/(RRF_K + rank). Then we bucket hits
-    within FUSION_WINDOW_S seconds of each other (same video) into one 'moment',
-    sum their rrf, and boost windows where BOTH modalities agree — two
-    independent signals pointing at the same instant is the strongest evidence.
+    that point at the same moment, sum their rrf, and boost buckets where BOTH
+    modalities agree — two independent signals pointing at the same place is
+    the strongest evidence.
+
+    What "the same moment" means depends on the corpus, and that is the only
+    difference between them: for a video it's a FUSION_WINDOW_S time window; for
+    a document a page IS the moment, so page images and text chunks group by
+    (video_id, page). Both branches carry both corpora, so a mixed result set
+    fuses without a router.
     """
     def ranked(hits, modality):
         out = []
         for rank, h in enumerate(hits):
             t = float(h.get("t_start", h.get("ms", 0) / 1000.0))
-            out.append({**h, "modality": modality, "rrf": 1.0 / (RRF_K + rank), "t": t})
+            # The branch label ("frame"/"text") stays the modality, so the
+            # cross-modal boost and the UI's seen/said tags are corpus-agnostic;
+            # the payload's own "page"/"doc_text" label is not needed downstream.
+            out.append({**h, "modality": modality, "rrf": 1.0 / (RRF_K + rank),
+                        "t": t, "page": _page_of(h)})
         return out
+
+    def same_moment(w: dict, h: dict) -> bool:
+        if w["video_id"] != h["video_id"]:
+            return False
+        if h["page"] is not None or w["page"] is not None:
+            return w["page"] == h["page"]
+        return abs(w["t"] - h["t"]) <= FUSION_WINDOW_S
 
     windows: list[dict] = []
     # Hits arrive best-first (rrf desc), so the first hit landing in a window for
     # a given modality is that modality's best hit there.
     for h in sorted(ranked(visual_hits, "frame") + ranked(text_hits, "text"),
                     key=lambda x: x["rrf"], reverse=True):
-        w = next((w for w in windows if w["video_id"] == h["video_id"]
-                  and abs(w["t"] - h["t"]) <= FUSION_WINDOW_S), None)
+        w = next((w for w in windows if same_moment(w, h)), None)
         if w is None:
-            w = {"video_id": h["video_id"], "t": h["t"], "rrf": 0.0,
-                 "modalities": set(), "frame": None, "text": None}
+            w = {"video_id": h["video_id"], "t": h["t"], "page": h["page"],
+                 "rrf": 0.0, "modalities": set(), "frame": None, "text": None}
             windows.append(w)
         w["modalities"].add(h["modality"])
         slot = "frame" if h["modality"] == "frame" else "text"
@@ -71,7 +96,28 @@ def _fuse(visual_hits: list[dict], text_hits: list[dict]) -> list[dict]:
         if {"frame", "text"} <= w["modalities"]:
             w["rrf"] *= CROSS_MODAL_BOOST
     windows.sort(key=lambda w: w["rrf"], reverse=True)
-    return windows
+    # Diversity cap. A prolific source — a long video with many strong windows,
+    # a big paper with many matching pages — can flood the ranking and squeeze
+    # every other source out entirely, so on a mixed-corpus question the reader
+    # never sees the paper behind the video (or vice versa). Each source keeps
+    # its best MAX_PER_SOURCE moments in rank order; the rest are DEMOTED, not
+    # dropped, so a single-source corpus still fills the list.
+    head: list[dict] = []
+    tail: list[dict] = []
+    per_source: dict[str, int] = {}
+    for w in windows:
+        n = per_source.get(w["video_id"], 0)
+        per_source[w["video_id"]] = n + 1
+        (head if n < MAX_PER_SOURCE else tail).append(w)
+    return head + tail
+
+
+def _page_label(source: str | None, page: int) -> str:
+    """A document's locator, in the words its readers use: a paper has pages, a
+    deck has slides. This is the `timestamp` field for a document citation —
+    the same slot, so every consumer (LLM prompt, UI card, fallback answer)
+    keeps working without knowing which corpus it's looking at."""
+    return f"slide {page}" if source == "deck" else f"p. {page}"
 
 
 def _deeplink(video: dict | None, video_id: str, ms: int) -> str:
@@ -131,23 +177,38 @@ def retrieve(question: str, user_id: str, *, top_k: int | None = None,
     for i, w in enumerate(windows, 1):
         vid = w["video_id"]
         meta = videos.get(vid)
+        source = (meta or {}).get("source")
         fr, tx = w["frame"], w["text"]
-        # Anchor on the frame's exact timestamp when there is one (precise visual
-        # seek); otherwise the transcript chunk's start.
-        ms = int(fr["ms"]) if fr else int(w["t"] * 1000)
-        idx = int(fr["idx"]) if fr else None
+        page = w["page"]
+        if page is not None:
+            # Document moment: the page is the locator. Its rendered image lives
+            # in the same thumbnail layout as frames, 0-based (page N -> N-1),
+            # and that image IS the deeplink — there's nothing to seek to.
+            ms, idx = None, page - 1
+            label = _page_label(source, page)
+            thumbnail = _thumb_url(user_id, vid, idx)
+            deeplink = thumbnail
+        else:
+            # Anchor on the frame's exact timestamp when there is one (precise
+            # visual seek); otherwise the transcript chunk's start.
+            ms = int(fr["ms"]) if fr else int(w["t"] * 1000)
+            idx = int(fr["idx"]) if fr else None
+            label = _seconds(ms)
+            thumbnail = _thumb_url(user_id, vid, idx) if idx is not None else None
+            deeplink = _deeplink(meta, vid, ms)
         citations.append({
             "n": i,
             "video_id": vid,
             "title": (meta or {}).get("title") or vid,
             "url": (meta or {}).get("url"),
-            "source": (meta or {}).get("source"),
-            "ms": ms,
-            "timestamp": _seconds(ms),
+            "source": source,
+            "ms": ms,               # None for documents — they have no time axis
+            "timestamp": label,     # "01:23" | "p. 3" | "slide 3"
+            "page": page,
             "idx": idx,
-            "thumbnail": _thumb_url(user_id, vid, idx) if idx is not None else None,
+            "thumbnail": thumbnail,
             "media_url": _media_url(meta, user_id, vid),
-            "deeplink": _deeplink(meta, vid, ms),
+            "deeplink": deeplink,
             "score": round(w["rrf"], 4),
             "transcript": (tx or {}).get("text"),
             "modalities": sorted(w["modalities"]),
@@ -192,8 +253,11 @@ def _build_moments(user_id: str, citations: list[dict[str, Any]]) -> list[dict]:
 
     with ThreadPoolExecutor(max_workers=6) as ex:
         images = list(ex.map(frame_bytes, citations))
+    # `page` (None for video) tells the prompt whether to call this a moment at
+    # a timestamp or a page of a document.
     return [{"image": img, "transcript": c.get("transcript"),
-             "timestamp": c["timestamp"]} for img, c in zip(images, citations)]
+             "timestamp": c["timestamp"], "page": c.get("page")}
+            for img, c in zip(images, citations)]
 
 
 def resolve_llm(user_id: str) -> tuple[llm.LLMConfig | None, str]:

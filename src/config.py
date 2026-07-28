@@ -100,12 +100,24 @@ FRAME_KEY_PREFIX = "frames/"
 PRESIGN_EXPIRY_S = _int("PRESIGN_EXPIRY_S", 900)          # presigned PUT lifetime
 PRESIGN_GET_EXPIRY_S = _int("PRESIGN_GET_EXPIRY_S", 3600)  # thumbnails / playback
 MAX_UPLOAD_MB = _int("MAX_UPLOAD_MB", 2048)                # register rejects bigger objects
-ALLOWED_UPLOAD_TYPES = ("video/",)                         # content-type must start with
+ALLOWED_UPLOAD_TYPES = ("video/", "application/pdf")       # content-type must start with
+
+# --- Documents (PDF papers & slide decks) --------------------------------------
+# A PDF is the second corpus: every page is CLIP-embedded like a frame and its
+# text is chunked like a transcript, so docs live in the SAME two Qdrant
+# collections as videos and fuse with them at query time. The id prefix is the
+# routing key (which flow/deployment ingests it) and the kind — chosen by the
+# user at upload — is stored in the free-text `source` column, so no migration.
+# PDF only: rendering .pptx natively would mean LibreOffice headless in the
+# image (+500MB, seconds of cold-start conversion) for a one-click export.
+DOC_ID_PREFIX = "doc_"
+DOC_KINDS = ("paper", "deck")   # paper = page-spanning text chunks; deck = one chunk per slide
 
 # --- Video ingest lifecycle ---------------------------------------------------
 # pending  = registered, waiting in our fair queue (not yet sent to Prefect)
 # queued   = the dispatcher picked it and scheduled a Prefect run
-# fetching = acquiring the source file; sampling = frames + dedup + thumbnails;
+# fetching = acquiring the source file; sampling = frames + dedup + thumbnails
+#            (for documents: parsing = page render + text chunking);
 # embedding = CLIP + Qdrant upsert; skipped = duplicate (user_id, source_hash).
 VIDEO_STATUSES = ("pending", "queued", "fetching", "sampling", "embedding",
                   "indexed", "skipped", "failed")
@@ -125,6 +137,20 @@ ENABLE_FAIR_DISPATCH = _envbool("ENABLE_FAIR_DISPATCH", True)
 # up FIFO inside Prefect and defeat the fairness.
 DISPATCH_MAX_INFLIGHT = _int("DISPATCH_MAX_INFLIGHT", _int("WORKER_CONCURRENCY", 2))
 DISPATCH_INTERVAL_S = _float("DISPATCH_INTERVAL_S", 3.0)  # how often the dispatcher tops up
+
+# --- Durability reconciler ----------------------------------------------------
+# A SIGKILL'd worker raises no exception, so nothing sets the row to `failed`:
+# it just sits in an inflight status forever, holding a dispatch slot. Prefect
+# Cloud has no DLQ to catch it either. Recovery therefore has to be STATE-driven
+# — Postgres is the source of truth, and ingestion is idempotent (uuid5 point
+# ids), so re-running from `pending` is always safe.
+#
+# RECONCILE_STUCK_S must be comfortably longer than the longest gap between two
+# `updated_at` bumps of a HEALTHY run (set_status per stage, set_progress every
+# 25 thumbnails), or the reconciler will requeue work that is merely slow.
+RECONCILE_INTERVAL_S = _float("RECONCILE_INTERVAL_S", 60.0)   # how often we sweep
+RECONCILE_STUCK_S = _float("RECONCILE_STUCK_S", 600.0)        # inflight + untouched this long = orphaned
+RECONCILE_MAX_ATTEMPTS = _int("RECONCILE_MAX_ATTEMPTS", 3)    # then -> failed (poor-man's DLQ)
 
 # --- Frame sampling (the biggest scaling lever) --------------------------------
 # interval: one frame every FRAME_INTERVAL_SEC (widened to respect MAX_FRAMES).
@@ -274,6 +300,8 @@ QDRANT_HNSW_ON_DISK = _envbool("QDRANT_HNSW_ON_DISK", True)
 # --- Retrieval / faithfulness ------------------------------------------------------
 TOP_K = _int("TOP_K", 6)                 # frames fed to the multimodal LLM (3-8)
 KNN_K = _int("KNN_K", 24)                # candidates fetched before trimming to TOP_K
+MAX_PER_SOURCE = _int("MAX_PER_SOURCE", 3)  # diversity cap: a source's moments in the
+                                            # ranking before it yields to other sources
 # Gate 1: abstain WITHOUT calling the LLM if BOTH branches' best raw score is
 # below their threshold. Fusion scores are RRF (tiny), so the gate uses each
 # branch's own raw cosine. CLIP text->image cosines run low (~0.2-0.35); bge

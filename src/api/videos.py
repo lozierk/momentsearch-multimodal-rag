@@ -8,6 +8,9 @@ Upload flow (gigabytes never touch this process):
                                    Postgres row, schedule a Prefect run, 202
 
 YouTube flow: POST /api/videos {"url": ...} — the worker downloads it.
+Document flow: the same presign→PUT→register upload path with a PDF
+content-type; presign mints a `doc_` id and register carries the kind
+("paper" | "deck"), which becomes the row's `source` and picks the flow.
 
 Every request is tenant-scoped by the X-User-Id header (default "default");
 swap that for real per-user auth later — keys, rows and vectors are already
@@ -28,6 +31,8 @@ from ..config import (
     ADMIN_TOKEN,
     ALLOWED_UPLOAD_TYPES,
     DEFAULT_USER_ID,
+    DOC_ID_PREFIX,
+    DOC_KINDS,
     MAX_UPLOAD_MB,
     UPLOAD_KEY_PREFIX,
 )
@@ -68,11 +73,16 @@ def presign(req: PresignRequest, uid: str = Depends(user_id)):
     if req.size > MAX_UPLOAD_MB * 1024 * 1024:
         raise HTTPException(413, f"File exceeds the {MAX_UPLOAD_MB}MB limit.")
     if not any(req.content_type.startswith(t) for t in ALLOWED_UPLOAD_TYPES):
-        raise HTTPException(415, "Only video uploads are accepted.")
-    ext = Path(req.filename or "video.mp4").suffix.lower() or ".mp4"
+        raise HTTPException(415, "Only video and PDF uploads are accepted.")
+    # A PDF gets the doc_ id prefix — that prefix is what routes it to the
+    # document flow later (src/jobs.py), so the decision is made once, here.
+    is_doc = req.content_type.startswith("application/pdf")
+    fallback = ".pdf" if is_doc else ".mp4"
+    ext = Path(req.filename or f"file{fallback}").suffix.lower() or fallback
     if not _EXT_RE.match(ext):
-        ext = ".mp4"
-    video_id = f"up_{uuid.uuid4().hex[:10]}"
+        ext = fallback
+    prefix = DOC_ID_PREFIX if is_doc else "up_"
+    video_id = f"{prefix}{uuid.uuid4().hex[:10]}"
     key = storage.upload_key(uid, video_id, ext)
     if not storage.presign_capable():
         # local-dev fallback: the API accepts the bytes itself
@@ -111,7 +121,25 @@ class RegisterRequest(BaseModel):
     url: str | None = None        # YouTube
     video_id: str | None = None   # upload (from /presign)
     key: str | None = None        # upload (from /presign)
+    kind: str | None = None       # PDF upload only: "paper" | "deck"
     title: str | None = None
+
+
+def upload_source(video_id: str, kind: str | None) -> str:
+    """The manifest `source` for an uploaded object, validated against its id.
+
+    A document carries its kind ("paper" | "deck") as the source — the parser
+    chunks the two differently and citations label them differently ("p. 3" vs
+    "slide 3"), and only the uploader knows which it is. A video has nothing to
+    choose, so a kind on a video id is a client bug, not a default."""
+    if video_id.startswith(DOC_ID_PREFIX):
+        if kind not in DOC_KINDS:
+            raise HTTPException(400, f"kind is required for a PDF and must be "
+                                     f"one of {list(DOC_KINDS)}.")
+        return kind
+    if kind is not None:
+        raise HTTPException(400, "kind applies to PDF uploads only.")
+    return "upload"
 
 
 @router.post("", status_code=202, dependencies=[Depends(require_auth)])
@@ -128,6 +156,7 @@ def register(req: RegisterRequest, uid: str = Depends(user_id)):
         # Never trust the client's key: it must be the one WE minted for them.
         if not req.key.startswith(f"{UPLOAD_KEY_PREFIX}{uid}/{req.video_id}"):
             raise HTTPException(403, "Key does not belong to this user/upload.")
+        source = upload_source(req.video_id, req.kind)  # video vs paper/deck
         meta = storage.head(req.key)
         if meta is None:
             raise HTTPException(404, "Object not found — did the upload finish?")
@@ -135,7 +164,7 @@ def register(req: RegisterRequest, uid: str = Depends(user_id)):
             storage.delete_key(req.key)
             raise HTTPException(413, f"Object exceeds the {MAX_UPLOAD_MB}MB limit.")
         title = req.title or Path(req.key).stem
-        row = db.upsert_pending({"id": req.video_id, "user_id": uid, "source": "upload",
+        row = db.upsert_pending({"id": req.video_id, "user_id": uid, "source": source,
                                  "url": None, "storage_key": req.key,
                                  "source_hash": None, "title": title})
     else:

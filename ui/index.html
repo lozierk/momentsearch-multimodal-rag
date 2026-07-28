@@ -82,6 +82,7 @@
       <div id="addTabs" class="flex gap-2">
         <span class="tab active" data-tab="yt">YouTube URL</span>
         <span class="tab" data-tab="up">Upload</span>
+        <span class="tab" data-tab="doc">PDF</span>
       </div>
     </div>
     <div id="addControls">
@@ -93,6 +94,14 @@
       <div id="tab-up" class="hidden flex gap-2 flex-wrap items-center">
         <input id="upFile" type="file" accept="video/*" class="flex-1 min-w-[220px] text-sm">
         <button id="upBtn" class="bg-ink hover:bg-black text-white text-sm font-semibold rounded-xl px-5 py-2.5">Upload &amp; ingest</button>
+      </div>
+      <div id="tab-doc" class="hidden flex gap-2 flex-wrap items-center">
+        <input id="docFile" type="file" accept="application/pdf,.pdf" class="flex-1 min-w-[200px] text-sm">
+        <select id="docKind" class="bg-white border border-line rounded-xl px-3 py-2.5 text-sm outline-none focus:border-coral">
+          <option value="paper">Paper (pages)</option>
+          <option value="deck">Slide deck (slides)</option>
+        </select>
+        <button id="docBtn" class="bg-ink hover:bg-black text-white text-sm font-semibold rounded-xl px-5 py-2.5">Upload &amp; ingest</button>
       </div>
       <div id="ingestStatus" class="text-sm text-muted mt-3 min-h-[20px]"></div>
     </div>
@@ -152,10 +161,10 @@ function applyMode(){
   if(MODE==="full"){
     $("#heroBadge").innerHTML='● Bring your own videos';
     $("#heroTitle").innerHTML='Ask your videos <span class="text-coral">anything</span> you can see.';
-    $("#heroSub").textContent='Add a YouTube URL or upload a file. MomentSearch finds the exact moments — and plays each one right beside the answer.';
+    $("#heroSub").textContent='Add a YouTube URL, upload a video, or add a PDF paper or slide deck. MomentSearch finds the exact moments — and shows each one right beside the answer.';
     $("#modeLink").textContent='← Back to the sample';     $("#modeLink").href='/';
-    $("#libTitle").textContent='Your videos';
-    $("#libNote").innerHTML='YouTube videos are searched by <b>both</b> what\'s shown (frames) and what\'s said (transcript). Uploaded files are searched by picture only for now — no transcript yet. Tip: unselect the samples to search only your own uploads.';
+    $("#libTitle").textContent='Your library';
+    $("#libNote").innerHTML='YouTube videos are searched by <b>both</b> what\'s shown (frames) and what\'s said (transcript). Uploaded videos are searched by picture only for now — no transcript yet. PDFs are searched both ways too: every page is indexed as an image <b>and</b> as text, and cited as <b>p. 4</b> / <b>slide 7</b>. Tip: unselect the samples to search only your own material.';
   } else {
     $("#heroBadge").innerHTML='● Sample project · four LLM talks, pre-indexed';
     $("#heroTitle").innerHTML='A Deep Dive into <span class="text-coral">LLMs</span>.';
@@ -195,6 +204,9 @@ async function loadConfig(){
    search only your own uploads). Full mode (/get-started) only. */
 let SELECTED=new Set(), KNOWN=new Set(), SAMPLE_INDEXED=[];
 const SELECTABLE = ()=> MODE==="full";
+/* Documents (PDF papers/decks) carry the doc_ id prefix — they are located by
+   page, not by time, so they never play in a video player. */
+const isDoc = v => String(v.video_id||v.id||"").startsWith("doc_");
 async function loadVideos(){
   const {videos}=await (await fetch("/api/videos")).json();
   const box=$("#videos");
@@ -213,16 +225,20 @@ async function loadVideos(){
   indexedIds.forEach(id=>{ if(!KNOWN.has(id)){ KNOWN.add(id); SELECTED.add(id); }});
   [...KNOWN].forEach(id=>{ if(!indexedIds.has(id)){ KNOWN.delete(id); SELECTED.delete(id); }});
 
-  const srcLabel=v=>v.is_sample?"sample":(v.source==="youtube"?"YouTube":"upload");
+  const srcLabel=v=>v.is_sample?"sample":({youtube:"YouTube",paper:"paper",deck:"deck"}[v.source]||"upload");
   const pct=v=>v.progress?` ${Math.round(v.progress*100)}%`:"";
+  // A document is counted in pages/slides, not frames — its unit is the moment.
+  const countLabel=v=>v.source==="paper"?`${v.frame_count||0} pages`
+    :v.source==="deck"?`${v.frame_count||0} slides`:`${v.frame_count||0}f`;
   // A leading status indicator so each video's state is obvious at a glance.
   function badge(v){
     switch(v.status){
-      case "indexed":   return {icon:"✓", label:`${v.frame_count||0}f · ${srcLabel(v)}`, c:"text-[#1f7a43]"};
+      case "indexed":   return {icon:"✓", label:`${countLabel(v)} · ${srcLabel(v)}`, c:"text-[#1f7a43]"};
       case "pending":   return {icon:"◷", label:"waiting (fair queue)", c:"text-[#8a6d1a]"};
       case "queued":    return {icon:"◷", label:"queued",           c:"text-[#8a6d1a]"};
-      case "fetching":  return {icon:"⏬", label:"fetching video…",  c:"text-[#8a6d1a]"};
-      case "sampling":  return {icon:"⏳", label:"sampling"+pct(v),  c:"text-[#8a6d1a]"};
+      case "fetching":  return {icon:"⏬", label:isDoc(v)?"fetching file…":"fetching video…", c:"text-[#8a6d1a]"};
+      // Same status string for both corpora; for a document it means parsing.
+      case "sampling":  return {icon:"⏳", label:(isDoc(v)?"parsing":"sampling")+pct(v), c:"text-[#8a6d1a]"};
       case "embedding": return {icon:"⏳", label:"embedding"+pct(v), c:"text-[#8a6d1a]"};
       case "failed":    return {icon:"⚠", label:"failed",           c:"text-coral2"};
       case "skipped":   return {icon:"⊘", label:"duplicate",        c:"text-muted"};
@@ -283,10 +299,10 @@ async function loadVideos(){
 }
 
 /* tabs */
+const TABS=["yt","up","doc"];
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active")); t.classList.add("active");
-  $("#tab-yt").classList.toggle("hidden",t.dataset.tab!=="yt");
-  $("#tab-up").classList.toggle("hidden",t.dataset.tab!=="up");
+  TABS.forEach(k=>$("#tab-"+k).classList.toggle("hidden",t.dataset.tab!==k));
 });
 
 /* Ingestion is a QUEUE — register returns 202 instantly and the worker(s)
@@ -321,21 +337,27 @@ async function registerIngest(body, btns){
 $("#ytBtn").onclick=()=>{ const u=$("#ytUrl").value.trim(); if(!u)return;
   $("#ytBtn").disabled=true; $("#ytUrl").value="";   // clear so the field is ready for the next URL
   registerIngest({url:u},[$("#ytBtn")]); };
-$("#upBtn").onclick=async()=>{ const f=$("#upFile").files[0]; if(!f)return;
-  const st=$("#ingestStatus"); $("#upBtn").disabled=true;
+/* presign -> PUT straight to storage -> register. Identical three steps for a
+   video and a PDF; only the content-type (which decides the id prefix, and so
+   which ingest flow runs) and the document `kind` differ. */
+async function uploadAndRegister(fileEl, contentType, extra, btn){
+  const f=fileEl.files[0]; if(!f)return;
+  const st=$("#ingestStatus"); btn.disabled=true;
   try{
     st.textContent="Uploading…";
     const pre=await fetch("/api/videos/presign",{method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({filename:f.name,content_type:f.type||"video/mp4",size:f.size})});
+      body:JSON.stringify({filename:f.name,content_type:contentType,size:f.size})});
     if(!pre.ok){ const e=await pre.json().catch(()=>({})); throw new Error(e.detail||pre.statusText); }
     const p=await pre.json();
     const put=await fetch(p.url,{method:"PUT",headers:p.headers,body:f});
     if(!put.ok) throw new Error("upload failed ("+put.status+")");
-    registerIngest({video_id:p.video_id,key:p.key,title:f.name.replace(/\.[^.]+$/,"")},[$("#upBtn")]);
-    $("#upFile").value="";   // clear so you can pick the next file right away
-  }catch(e){ st.textContent="Error: "+e.message; $("#upBtn").disabled=false; }
-};
+    registerIngest({video_id:p.video_id,key:p.key,title:f.name.replace(/\.[^.]+$/,""),...extra},[btn]);
+    fileEl.value="";   // clear so you can pick the next file right away
+  }catch(e){ st.textContent="Error: "+e.message; btn.disabled=false; }
+}
+$("#upBtn").onclick=()=>uploadAndRegister($("#upFile"), ($("#upFile").files[0]||{}).type||"video/mp4", {}, $("#upBtn"));
+$("#docBtn").onclick=()=>uploadAndRegister($("#docFile"), "application/pdf", {kind:$("#docKind").value}, $("#docBtn"));
 
 /* ---------- ask ---------- */
 const qEl=$("#q");
@@ -367,9 +389,11 @@ $("#go").onclick=async()=>{
 function renderSources(){
   $("#sources").innerHTML=CITES.map(c=>{
     const mods=(c.modalities||[]);
+    // Same two branches, corpus-appropriate words: a page is shown/written,
+    // a video moment is seen/said.
     const tags=mods.map(m=>m==="frame"
-      ? '<span class="text-[9px] px-1 rounded bg-coral/15 text-coral2">seen</span>'
-      : '<span class="text-[9px] px-1 rounded bg-[#cfe8d6] text-[#1f7a43]">said</span>').join(" ");
+      ? `<span class="text-[9px] px-1 rounded bg-coral/15 text-coral2">${isDoc(c)?"shown":"seen"}</span>`
+      : `<span class="text-[9px] px-1 rounded bg-[#cfe8d6] text-[#1f7a43]">${isDoc(c)?"written":"said"}</span>`).join(" ");
     // Text-only moments have no frame; they're always YouTube, so fall back to
     // the video's thumbnail instead of an empty "(no frame)" placeholder.
     const yid = ytId(c);
@@ -405,6 +429,18 @@ function playCitation(n){
   $("#mTitle").textContent=c.title||c.video_id;
   $("#mMeta").textContent = c.transcript ? `“${c.transcript}”` : `Moment at ${c.timestamp}`;
   const box=$("#playerBox"); const yid=ytId(c);
+  // A document page has nothing to play — show the page itself, full size.
+  if(isDoc(c)){
+    $("#mMeta").textContent = `${c.timestamp}${c.transcript?` · “${c.transcript}”`:""}`;
+    box.innerHTML=`<img class="w-full h-full object-contain bg-white" src="${esc(c.thumbnail||"")}" alt="${esc(c.timestamp)}">`;
+    $("#mFrame").style.display=c.thumbnail?"":"none";
+    if(c.thumbnail) $("#mFrame").src=c.thumbnail;
+    $("#mFrameLabel").textContent = `Matched ${c.timestamp}`;
+    $("#mFrameDesc").textContent = "This page matched your question — by what it shows, by its text, or both.";
+    $("#mOut").href=c.deeplink||"#";
+    $("#modal").classList.remove("hidden"); document.body.style.overflow="hidden";
+    return;
+  }
   // Frame preview if we have one; otherwise (text-only YouTube moment) the
   // video's thumbnail, so the modal never shows an empty preview.
   const preview = c.thumbnail || (yid ? `https://img.youtube.com/vi/${yid}/hqdefault.jpg` : null);

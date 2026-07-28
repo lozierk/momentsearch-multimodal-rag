@@ -34,12 +34,21 @@ NVIDIA_BASE_URL = "https://integrate.api.nvidia.com/v1"
 PROVIDERS = ("openai", "nvidia", "anthropic")
 
 SYSTEM = (
-    "You answer a user's question about a video using the numbered moments "
-    "provided as your evidence. Each moment has a timestamp and may include a "
-    "video FRAME (what was shown on screen) and/or a TRANSCRIPT excerpt (what was "
-    "said out loud). Use BOTH kinds of evidence: for a question about what someone "
-    "SAID or talked about, read the transcript text; for a question about what is "
-    "SHOWN, read the frame.\n"
+    "You answer a user's question about a library of videos and documents using "
+    "the numbered moments provided as your evidence. A moment is one of two "
+    "things:\n"
+    "  * a VIDEO moment, labelled with a timestamp (e.g. @ 01:23). It may include "
+    "a video FRAME (what was shown on screen) and/or a TRANSCRIPT excerpt (what "
+    "was said out loud).\n"
+    "  * a DOCUMENT page, labelled with a page or slide reference (e.g. page "
+    "\"p. 4\" or \"slide 7\") from a PDF paper or slide deck. It may include an "
+    "IMAGE of that page (the figures, diagrams and layout as printed) and/or the "
+    "PAGE TEXT written on it.\n"
+    "Use BOTH kinds of evidence: for a question about what someone SAID or wrote, "
+    "read the transcript or page text; for a question about what is SHOWN, read "
+    "the frame or page image. Refer to a document moment by its page or slide "
+    "(\"slide 7 shows…\"), never by a timestamp, and to a video moment by its "
+    "timestamp, never by a page.\n"
     "Rules:\n"
     "1. Read the question carefully and answer exactly what is asked. Start with a "
     "one-line direct answer, then explain in short paragraphs — ONE paragraph per "
@@ -60,8 +69,8 @@ SYSTEM = (
     "4. Don't use outside knowledge or invent details that aren't in the moments.\n"
     "5. Abstain ONLY as a last resort: if — and only if — none of the moments are "
     "relevant to the question at all, reply with a single sentence saying you "
-    "couldn't find it in the video. If even one moment is relevant, ANSWER from "
-    "it; do not refuse just because the match is partial."
+    "couldn't find it. If even one moment is relevant, ANSWER from it; do not "
+    "refuse just because the match is partial."
 )
 
 
@@ -96,10 +105,13 @@ def _intro(question: str, n: int) -> str:
     return (
         f"QUESTION: {question}\n\n"
         f"Answer this question using the {n} moments below (numbered 1 to {n}). "
-        "Each has a timestamp and a video frame and/or a transcript excerpt. If "
-        "the question is about what was said, use the transcript text. Give a "
-        "direct answer grounded in the relevant moment(s), cited as [n]. Only say "
-        "you couldn't find it if none of the moments are relevant."
+        "Each is either a video moment at a timestamp (a frame and/or a "
+        "transcript excerpt) or a page of a document at a page/slide reference "
+        "(the page image and/or its page text). If the question is about what "
+        "was said or written, use the transcript or page text. Give a direct "
+        "answer grounded in the relevant moment(s), cited as [n], naming each "
+        "one by its timestamp or its page/slide. Only say you couldn't find it "
+        "if none of the moments are relevant."
     )
 
 
@@ -119,8 +131,9 @@ def _downscale(jpeg: bytes) -> bytes:
 def answer(question: str, moments: list[dict], cfg: LLMConfig) -> str:
     """Synthesize a cited answer from retrieved moments with `cfg`'s model.
 
-    moments: [{"image": bytes|None, "transcript": str|None, "timestamp": str}]
-    — each may carry a frame, a transcript excerpt, or both."""
+    moments: [{"image": bytes|None, "transcript": str|None, "timestamp": str,
+    "page": int|None}] — each may carry an image, its text, or both; `page` set
+    means it is a document page ("p. 4"/"slide 7"), not a video timestamp."""
     if cfg.provider == "anthropic":
         return _answer_anthropic(cfg, question, moments)
     return _answer_openai(cfg, question, moments)
@@ -146,11 +159,16 @@ def _base_url(cfg: LLMConfig) -> str | None:
 
 
 def _label(i: int, m: dict) -> str:
-    line = f"[{i}] @ {m.get('timestamp', '')}"
+    """One evidence header per moment. A document page says so in words — the
+    model must never read "p. 4" as a timestamp (or cite it as one)."""
+    doc = m.get("page") is not None
+    line = (f"[{i}] document page {m.get('timestamp', '')}" if doc
+            else f"[{i}] @ {m.get('timestamp', '')}")
     if m.get("transcript"):
-        line += f' transcript: "{m["transcript"]}"'
+        field = "page text" if doc else "transcript"
+        line += f' {field}: "{m["transcript"]}"'
     if m.get("image") is None:
-        line += " (transcript only, no frame)"
+        line += " (page text only, no image)" if doc else " (transcript only, no frame)"
     return line
 
 

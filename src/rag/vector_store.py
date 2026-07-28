@@ -1,5 +1,13 @@
 """Qdrant — one shared multi-tenant collection, one point per kept frame.
 
+Two corpora, the SAME two collections — no doc-only collection. A document
+page is CLIP-embedded into the visual collection (payload modality "page",
+locator `page`) beside video frames (modality "frame", locator `ms`), and its
+text chunks go into the text collection (modality "doc_text", locator
+`page_start`/`page_end`) beside transcript chunks (modality "text"). One
+searchable space means a query fuses video and document hits with no router,
+and every filter, index and delete path below stays exactly as it was.
+
 Multi-tenancy: every point carries user_id; the field has a tenant payload
 index and every search / upsert / delete is user_id-filtered. NOT
 collection-per-user (collection explosion); a huge tenant can graduate to a
@@ -12,9 +20,9 @@ Memory profile (the frame-scale levers, all env flags, default ON):
   QDRANT_HNSW_ON_DISK   the HNSW graph lives on disk too
 
 Point IDs are uuid5 of "{video_id}:{frame_idx}" — deterministic, so re-runs
-overwrite instead of duplicating. Payloads are trimmed to filter/display
-fields (user_id, video_id, ms, idx, embed_version); titles and URLs live in
-Postgres and are joined at answer time.
+overwrite instead of duplicating (a document page uses page-1 as that index).
+Payloads are trimmed to filter/display fields (user_id, video_id, ms, idx,
+embed_version); titles and URLs live in Postgres and are joined at answer time.
 """
 from __future__ import annotations
 

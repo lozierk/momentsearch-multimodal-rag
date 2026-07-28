@@ -24,13 +24,15 @@ from pathlib import Path
 
 from prefect import flow, task
 
-from .. import db, storage
-from ..config import CLIP_BATCH, EMBED_VERSION
-from ..rag import vector_store
-from ..rag.embeddings import embed_jpegs
-from . import fetch as fetch_mod
-from .dedup import dedup
-from .frames import Frame, sample
+# Absolute imports on purpose: Prefect loads this file directly from the
+# deployment entrypoint (outside the package), where relative imports break.
+from src import db, storage
+from src.config import CLIP_BATCH, EMBED_VERSION
+from src.ingest import fetch as fetch_mod
+from src.ingest.dedup import dedup
+from src.ingest.frames import Frame, sample
+from src.rag import vector_store
+from src.rag.embeddings import embed_jpegs
 
 _UPLOAD_POOL = 8  # concurrent thumbnail PUTs (I/O-bound)
 
