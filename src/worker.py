@@ -1,11 +1,13 @@
-"""Ingest worker entrypoint — serves the Prefect flow.
+"""Ingest worker entrypoint — serves the Prefect flows.
 
     python -m src.worker
 
-flow.serve() registers the "ms-ingest-video/ingest" deployment in Prefect Cloud
-(idempotent) and long-polls for scheduled runs — outbound HTTPS only, no
-ports. Scale horizontally by running more replicas of this process; each
-executes up to WORKER_CONCURRENCY runs at once.
+Prefect's module-level serve() registers BOTH deployments in Prefect Cloud
+(idempotent) — "ms-ingest-video/ingest" for videos and "ms-ingest-doc/
+ingest-doc" for PDFs — and long-polls for scheduled runs of either: outbound
+HTTPS only, no ports. `limit` is shared across both, so WORKER_CONCURRENCY
+stays the honest capacity number the WFQ dispatcher admits against. Scale
+horizontally by running more replicas of this process.
 
 Sample seeding is NOT done here — it's a one-shot startup gate (seed.py /
 src/seeding.py) that the whole stack waits on, so the app never serves a
@@ -17,7 +19,10 @@ Embedding goes to the warm CLIP service when CLIP_SERVICE_URL is set
 import os
 import time
 
+from prefect import serve
+
 from .db import init_schema
+from .ingest.doc_pipeline import ingest_doc
 from .ingest.pipeline import ingest_video
 
 
@@ -29,14 +34,22 @@ def main():
     # one bulk uploader can't starve everyone else (src/dispatcher.py).
     from . import dispatcher
     dispatcher.start_in_background()
+    # Durability reconciler: a SIGKILL'd worker raises nothing, so rows stuck in
+    # an inflight status are orphaned until state-driven recovery finds them
+    # (src/reconciler.py).
+    from . import reconciler
+    reconciler.start_in_background()
     limit = int(os.getenv("WORKER_CONCURRENCY", "2"))
     # serve() talks to Prefect Cloud on startup; a transient outage (e.g. a 503)
     # used to crash the worker permanently and stop the machine. Self-heal:
     # retry forever so a blip pauses ingest instead of killing the worker.
     while True:
         try:
-            print(f"[worker] serving deployment 'ms-ingest-video/ingest' (concurrency {limit})")
-            ingest_video.serve(name="ingest", limit=limit)
+            print("[worker] serving deployments 'ms-ingest-video/ingest' + "
+                  f"'ms-ingest-doc/ingest-doc' (concurrency {limit})")
+            serve(ingest_video.to_deployment(name="ingest"),
+                  ingest_doc.to_deployment(name="ingest-doc"),
+                  limit=limit)
             break  # clean shutdown
         except KeyboardInterrupt:
             break

@@ -225,6 +225,60 @@ def wfq_claim(limit: int) -> list[dict]:
         ).fetchall()
 
 
+# ── Durability reconciler (see src/reconciler.py for the why) ────────────────
+
+# The two sweeps share one predicate: still in an inflight status, and no column
+# has been touched for longer than the stuck window. Every writer bumps
+# updated_at (set_status, set_progress, bump_attempts, wfq_claim), so a stale
+# updated_at means nobody is working on this row — the process died.
+# `status = ANY(inflight)` is also the guard that keeps us off `pending` rows
+# (the dispatcher owns those) and off terminal rows.
+_STUCK = """
+      status = ANY(%(statuses)s)
+  AND updated_at < now() - make_interval(secs => %(stuck_s)s)
+"""
+
+
+def reconcile_stuck(stuck_s: float, max_attempts: int) -> tuple[list[dict], list[dict]]:
+    """Recover orphaned rows. Returns (requeued, dead_lettered).
+
+    Under the attempts cap -> back to `pending`, where the WFQ dispatcher will
+    re-admit it fairly like any other waiting row. At/over the cap -> `failed`
+    with a reconciler error string: the poor-man's DLQ, since Prefect Cloud
+    gives us no dead-letter topic.
+
+    Both statements are `UPDATE ... WHERE status = ANY(inflight) RETURNING`, the
+    same atomic-claim idiom as wfq_claim: if two workers' reconcilers race, row
+    locks serialise them and the loser's WHERE no longer matches, so each row is
+    recovered exactly once. The predicates are disjoint on `attempts`, so the
+    two sweeps can never fight over the same row.
+    """
+    args = {"statuses": list(INFLIGHT_STATUSES), "stuck_s": float(stuck_s),
+            "max_attempts": int(max_attempts)}
+    with pool().connection() as conn:
+        requeued = conn.execute(
+            f"""
+            UPDATE ms_videos
+               SET status = 'pending', progress = NULL, updated_at = now()
+             WHERE {_STUCK} AND attempts < %(max_attempts)s
+            RETURNING id, user_id, attempts
+            """,
+            args,
+        ).fetchall()
+        dead = conn.execute(
+            f"""
+            UPDATE ms_videos
+               SET status = 'failed',
+                   error = 'reconciler: ' || attempts || ' attempts exhausted',
+                   progress = NULL, updated_at = now()
+             WHERE {_STUCK} AND attempts >= %(max_attempts)s
+            RETURNING id, user_id, attempts
+            """,
+            args,
+        ).fetchall()
+    return requeued, dead
+
+
 # ── Bring-your-own-model (per-tenant LLM endpoint) ───────────────────────────
 
 def get_user_llm(user_id: str) -> dict | None:
