@@ -112,11 +112,18 @@ def _fuse(visual_hits: list[dict], text_hits: list[dict]) -> list[dict]:
     return head + tail
 
 
-def _page_label(source: str | None, page: int) -> str:
+def _page_label(source: str | None, page: int, page_end: int | None = None) -> str:
     """A document's locator, in the words its readers use: a paper has pages, a
     deck has slides. This is the `timestamp` field for a document citation —
     the same slot, so every consumer (LLM prompt, UI card, fallback answer)
-    keeps working without knowing which corpus it's looking at."""
+    keeps working without knowing which corpus it's looking at.
+
+    A text chunk that straddles a page boundary is labelled with the full span
+    ("pp. 9–10") — the citation audit caught quotes living on the page a chunk
+    ENDS on being cited to the page it starts on."""
+    if page_end and page_end != page:
+        return (f"slides {page}–{page_end}" if source == "deck"
+                else f"pp. {page}–{page_end}")
     return f"slide {page}" if source == "deck" else f"p. {page}"
 
 
@@ -185,7 +192,8 @@ def retrieve(question: str, user_id: str, *, top_k: int | None = None,
             # in the same thumbnail layout as frames, 0-based (page N -> N-1),
             # and that image IS the deeplink — there's nothing to seek to.
             ms, idx = None, page - 1
-            label = _page_label(source, page)
+            label = _page_label(source, page,
+                                tx.get("page_end") if tx else None)
             thumbnail = _thumb_url(user_id, vid, idx)
             deeplink = thumbnail
         else:

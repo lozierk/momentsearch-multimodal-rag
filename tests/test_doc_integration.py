@@ -259,3 +259,13 @@ def test_diversity_cap_is_a_noop_for_a_single_source():
     assert len(windows) == 6
     rrfs = [w["rrf"] for w in windows]
     assert rrfs == sorted(rrfs, reverse=True)
+
+
+def test_page_span_chunks_are_cited_with_the_full_range():
+    # The citation audit caught quotes on a chunk's LAST page cited to its
+    # first. A span gets "pp. 9-10"; a single page stays "p. 9".
+    assert rag_search._page_label("paper", 9, 10) == "pp. 9–10"
+    assert rag_search._page_label("deck", 3, 5) == "slides 3–5"
+    assert rag_search._page_label("paper", 9, 9) == "p. 9"
+    assert rag_search._page_label("paper", 9, None) == "p. 9"
+    assert rag_search._page_label("deck", 3) == "slide 3"
