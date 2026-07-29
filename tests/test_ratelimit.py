@@ -1,7 +1,7 @@
 """Tests for the per-IP demo budget on /api/ask.
 
 Same rules as the rest of the suite: unit-level, no network, no Postgres. The
-clock is injected (`now=`) rather than slept through, so the 15-minute and
+clock is injected (`now=`) rather than slept through, so the 45-minute and
 24-hour boundaries are tested in microseconds and the results don't depend on
 how fast the machine is.
 """
@@ -17,9 +17,31 @@ from src.api import search as search_api
 HOUR = 3600.0
 
 
-def budget(max_calls=3, window_s=900, reset_s=86400):
+def budget(max_calls=3, window_s=2700, reset_s=86400):
     return ratelimit.DemoBudget(max_calls=max_calls, window_s=window_s,
                                 reset_s=reset_s)
+
+
+# ── The shipped defaults ──────────────────────────────────────────────────────
+
+def test_shipped_window_is_45_minutes():
+    """Widened from 15m after a live test: a visitor who reads a cited answer and
+    follows a citation before asking again was returning to a closed window."""
+    assert config.DEMO_BUDGET_WINDOW_S == 45 * 60
+    assert config.DEMO_BUDGET_MAX == 10
+    assert config.DEMO_BUDGET_RESET_S == 24 * 3600
+
+
+def test_refusal_message_states_the_real_window():
+    """The 429 text is derived from the configured window, so it can't drift out
+    of sync with it — the bug that told a user '15m' would be caught here."""
+    b = ratelimit.DemoBudget()          # shipped defaults
+    for _ in range(b.max_calls + 1):
+        d = b.check("ip", now=0.0)
+    assert not d.allowed
+    msg = b.message(d)
+    assert "10 answers per 45m" in msg
+    assert "resets in 24h" in msg
 
 
 # ── The window ────────────────────────────────────────────────────────────────
@@ -61,15 +83,15 @@ def test_only_allowed_calls_are_counted():
 def test_window_closing_refuses_even_with_budget_left():
     """Three calls of an allowance of ten, then a long pause: the window is the
     limit, not just the count."""
-    b = budget(max_calls=10, window_s=900)
+    b = budget(max_calls=10, window_s=2700)
     b.check("ip", now=0.0)
-    d = b.check("ip", now=901.0)
+    d = b.check("ip", now=2701.0)
     assert not d.allowed
     assert d.reason == "window_closed"
 
 
 def test_reset_forgives_the_ip_and_opens_a_fresh_window():
-    b = budget(max_calls=3, window_s=900, reset_s=int(24 * HOUR))
+    b = budget(max_calls=3, window_s=2700, reset_s=int(24 * HOUR))
     for t in (0.0, 1.0, 2.0):
         b.check("ip", now=t)
     assert not b.check("ip", now=HOUR).allowed

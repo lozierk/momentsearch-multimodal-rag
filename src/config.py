@@ -71,7 +71,12 @@ LOCK_TENANT = _envbool("LOCK_TENANT", False)
 # fix if this ever needs to be exact (see docs/REPORT_3_4.md).
 DEMO_BUDGET_ENABLED = _envbool("DEMO_BUDGET_ENABLED", False)
 DEMO_BUDGET_MAX = _int("DEMO_BUDGET_MAX", 10)             # asks per window
-DEMO_BUDGET_WINDOW_S = _int("DEMO_BUDGET_WINDOW_S", 900)   # 15 minutes
+# 45 minutes, widened from 15 after a live test: a visitor who asks one question,
+# reads the cited answer, follows a citation and comes back is doing exactly what
+# the demo is for — and at 15 minutes that visitor returned to a closed window and
+# a refusal, having spent one of ten answers. The window has to outlast a genuine
+# reading session, not just a burst.
+DEMO_BUDGET_WINDOW_S = _int("DEMO_BUDGET_WINDOW_S", 2700)
 DEMO_BUDGET_RESET_S = _int("DEMO_BUDGET_RESET_S", 86400)   # 24 hours
 # Client IP: only a proxy we actually sit behind may name the caller. On Fly
 # that is the edge, which OVERWRITES Fly-Client-IP on every inbound request.

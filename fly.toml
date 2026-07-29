@@ -41,7 +41,7 @@ primary_region = 'iad'
   # VM; throughput barely moves because the model call dominates either way.
   CLIP_BATCH = '32'
   # This app is a public demo spending a real Anthropic key, so /api/ask gets a
-  # per-IP budget (src/ratelimit.py): 10 answers per 15-minute window, forgiven
+  # per-IP budget (src/ratelimit.py): 10 answers per 45-minute window, forgiven
   # 24h after the window opened, bypassed by the ADMIN_TOKEN bearer. Off by
   # default so local dev, the eval harness and the 3.3 benchmarks run unthrottled.
   DEMO_BUDGET_ENABLED = 'true'
