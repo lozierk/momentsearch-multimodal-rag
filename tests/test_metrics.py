@@ -209,3 +209,75 @@ def test_meter_records_missing_usage_as_zero(monkeypatch):
     llm_stats = m.metrics.snapshot()["llm"]
     assert llm_stats["calls"] == 1          # the call happened
     assert llm_stats["input_tokens"] == 0   # but reported no tokens
+
+
+# ── Truncation (answers cut off at max_tokens) ────────────────────────────────
+
+def test_truncated_answers_are_counted(met):
+    met.record_llm("claude-opus-5", 100, 2048, truncated=True)
+    met.record_llm("claude-opus-5", 100, 300)
+    llm = met.snapshot()["llm"]
+    assert llm["calls"] == 2
+    assert llm["truncated_answers"] == 1
+
+
+def test_truncation_defaults_to_false(met):
+    """Existing call sites don't pass the flag; they must not be counted."""
+    met.record_llm("claude-opus-5", 100, 300)
+    assert met.snapshot()["llm"]["truncated_answers"] == 0
+
+
+def test_truncated_counter_is_exposed_to_prometheus(monkeypatch):
+    monkeypatch.setattr(m, "metrics", m.Metrics())
+    m.metrics.record_llm("claude-opus-5", 10, 10, truncated=True)
+
+    class FakeDB:
+        @staticmethod
+        def status_counts(user_id):
+            return []
+
+    monkeypatch.setattr(src, "db", FakeDB)
+    assert "momentsearch_llm_truncated_total 1" in m.prometheus_text()
+
+
+def test_anthropic_max_tokens_stop_reason_is_detected(monkeypatch):
+    """The signal the live truncation actually produced: Anthropic returns
+    stop_reason == "max_tokens" when it ran out of room mid-answer."""
+    monkeypatch.setattr(m, "metrics", m.Metrics())
+    from src import llm
+
+    class Usage:
+        input_tokens, output_tokens = 12000, 2048
+
+    class Resp:      # shaped like an anthropic Message
+        usage, stop_reason = Usage(), "max_tokens"
+
+    llm._meter("claude-opus-5", Resp.usage, "input_tokens", "output_tokens",
+               truncated=Resp.stop_reason == "max_tokens")
+    assert m.metrics.snapshot()["llm"]["truncated_answers"] == 1
+
+
+def test_openai_length_finish_reason_is_detected(monkeypatch):
+    """The OpenAI-compatible providers signal the same thing as
+    finish_reason == "length"."""
+    monkeypatch.setattr(m, "metrics", m.Metrics())
+    from src import llm
+
+    class Usage:
+        prompt_tokens, completion_tokens = 900, 2048
+
+    llm._meter("claude-opus-5", Usage(), "prompt_tokens", "completion_tokens",
+               truncated="length" == "length")
+    assert m.metrics.snapshot()["llm"]["truncated_answers"] == 1
+
+
+def test_a_normal_answer_is_not_flagged(monkeypatch):
+    monkeypatch.setattr(m, "metrics", m.Metrics())
+    from src import llm
+
+    class Usage:
+        input_tokens, output_tokens = 12000, 700
+
+    llm._meter("claude-opus-5", Usage(), "input_tokens", "output_tokens",
+               truncated="end_turn" == "max_tokens")
+    assert m.metrics.snapshot()["llm"]["truncated_answers"] == 0

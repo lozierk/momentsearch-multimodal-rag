@@ -229,3 +229,19 @@ def test_route_is_a_no_op_when_the_budget_is_disabled(route, monkeypatch):
     monkeypatch.setattr(config, "DEMO_BUDGET_ENABLED", False)
     for _ in range(10):
         assert call(route)["answer"] == "ok"
+
+
+# ── Answer budget ─────────────────────────────────────────────────────────────
+
+def test_answer_token_ceiling_is_2048():
+    """Raised from 1024 after a live answer stopped mid-sentence: a cited answer
+    over a mixed corpus quotes the pages it cites and covers one point per
+    source, which 1024 was cutting off."""
+    assert config.LLM_MAX_TOKENS == 2048
+
+
+def test_system_prompt_asks_the_model_to_finish():
+    """The ceiling alone only truncates later; the prompt has to ask for an
+    answer that concludes."""
+    from src import llm
+    assert "end on a complete sentence" in llm.SYSTEM

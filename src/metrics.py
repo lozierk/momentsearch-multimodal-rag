@@ -80,6 +80,7 @@ class Metrics:
             self._llm_out = 0
             self._llm_cost = 0.0
             self._llm_unpriced = 0            # calls we could not price
+            self._llm_truncated = 0           # calls that hit max_tokens
             self._llm_models: dict[str, int] = defaultdict(int)
 
     # ── recording ────────────────────────────────────────────────────────────
@@ -91,11 +92,15 @@ class Metrics:
             self._status[f"{status // 100}xx"] += 1
             self._status[str(status)] += 1
 
-    def record_llm(self, model: str, input_tokens: int, output_tokens: int) -> None:
+    def record_llm(self, model: str, input_tokens: int, output_tokens: int,
+                   truncated: bool = False) -> None:
         """One answer-synthesis call. Called from src/llm.py, which is the only
-        place tokens are actually spent."""
+        place tokens are actually spent. `truncated` = the model hit max_tokens
+        and the answer stopped mid-sentence."""
         with self._lock:
             self._llm_calls += 1
+            if truncated:
+                self._llm_truncated += 1
             self._llm_in += input_tokens
             self._llm_out += output_tokens
             self._llm_models[model] += 1
@@ -130,6 +135,7 @@ class Metrics:
                 "output_tokens": self._llm_out,
                 "estimated_cost_usd": round(self._llm_cost, 4),
                 "unpriced_calls": self._llm_unpriced,
+                "truncated_answers": self._llm_truncated,
                 "cost_per_call_usd": (round(self._llm_cost / self._llm_calls, 4)
                                       if self._llm_calls else 0.0),
                 "models": dict(self._llm_models),
@@ -208,6 +214,9 @@ def prometheus_text() -> str:
         "# HELP momentsearch_llm_cost_usd Estimated spend at list prices.",
         "# TYPE momentsearch_llm_cost_usd counter",
         f'momentsearch_llm_cost_usd {llm["estimated_cost_usd"]}',
+        "# HELP momentsearch_llm_truncated_total Answers cut off at max_tokens.",
+        "# TYPE momentsearch_llm_truncated_total counter",
+        f'momentsearch_llm_truncated_total {llm["truncated_answers"]}',
     ]
     corpus = corpus_snapshot()
     out += ["# HELP momentsearch_corpus_items Manifest rows by status.",

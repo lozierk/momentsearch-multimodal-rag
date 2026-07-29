@@ -355,7 +355,12 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").strip().lower()
 LLM_API_KEY = os.getenv("LLM_API_KEY", "").strip()
 LLM_BASE_URL = os.getenv("LLM_BASE_URL", "").strip()
 LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini").strip()
-LLM_MAX_TOKENS = _int("LLM_MAX_TOKENS", 1024)
+# 2048, raised from 1024 after a live answer stopped mid-sentence. A cited
+# answer over a mixed corpus is longer than a chat reply — it quotes the page it
+# cites and covers one point per source — and 1024 was cutting the last one off.
+# This is a hard ceiling the model never sees; the prompt now also asks it to
+# land inside the budget, so the two work together.
+LLM_MAX_TOKENS = _int("LLM_MAX_TOKENS", 2048)
 LLM_IMAGE_MAX_PX = _int("LLM_IMAGE_MAX_PX", 512)  # frames are downscaled again before the LLM
 
 

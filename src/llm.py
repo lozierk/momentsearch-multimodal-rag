@@ -70,7 +70,10 @@ SYSTEM = (
     "5. Abstain ONLY as a last resort: if — and only if — none of the moments are "
     "relevant to the question at all, reply with a single sentence saying you "
     "couldn't find it. If even one moment is relevant, ANSWER from it; do not "
-    "refuse just because the match is partial."
+    "refuse just because the match is partial.\n"
+    "6. Finish. Your answer is cut off at a fixed length, so scope it to land "
+    "comfortably inside that budget and end on a complete sentence — a shorter "
+    "answer that concludes is worth more than a fuller one that stops mid-thought."
 )
 
 
@@ -150,10 +153,15 @@ def ping(cfg: LLMConfig) -> str:
                   [{"image": buf.getvalue(), "transcript": None, "timestamp": "00:00"}], cfg)
 
 
-def _meter(model: str, usage, in_field: str, out_field: str) -> None:
+def _meter(model: str, usage, in_field: str, out_field: str,
+           truncated: bool = False) -> None:
     """Record one call's token usage (src/metrics.py). The two providers name
     the same two numbers differently — Anthropic input/output, OpenAI
     prompt/completion — so the caller passes the field names.
+
+    `truncated` means the model hit max_tokens mid-answer. It is worth counting
+    rather than only fixing: a rising count says the ceiling is too low for the
+    corpus, which is invisible from the answer text alone once you stop looking.
 
     Never raises: a metrics bug must not turn a good answer into a 500, and a
     provider that omits `usage` is a missing datapoint, not a failure."""
@@ -161,7 +169,8 @@ def _meter(model: str, usage, in_field: str, out_field: str) -> None:
         from . import metrics
         metrics.metrics.record_llm(model,
                                    int(getattr(usage, in_field, 0) or 0),
-                                   int(getattr(usage, out_field, 0) or 0))
+                                   int(getattr(usage, out_field, 0) or 0),
+                                   truncated=truncated)
     except Exception:
         pass
 
@@ -205,8 +214,10 @@ def _answer_openai(cfg: LLMConfig, question: str, moments: list[dict]) -> str:
         temperature=0.2,
         max_tokens=cfg.max_tokens,
     )
-    _meter(cfg.model, getattr(resp, "usage", None), "prompt_tokens", "completion_tokens")
-    return (resp.choices[0].message.content or "").strip()
+    choice = resp.choices[0]
+    _meter(cfg.model, getattr(resp, "usage", None), "prompt_tokens", "completion_tokens",
+           truncated=getattr(choice, "finish_reason", None) == "length")
+    return (choice.message.content or "").strip()
 
 
 def _answer_anthropic(cfg: LLMConfig, question: str, moments: list[dict]) -> str:
@@ -226,5 +237,6 @@ def _answer_anthropic(cfg: LLMConfig, question: str, moments: list[dict]) -> str
         system=SYSTEM,
         messages=[{"role": "user", "content": blocks}],
     )
-    _meter(cfg.model, getattr(resp, "usage", None), "input_tokens", "output_tokens")
+    _meter(cfg.model, getattr(resp, "usage", None), "input_tokens", "output_tokens",
+           truncated=getattr(resp, "stop_reason", None) == "max_tokens")
     return "".join(b.text for b in resp.content if b.type == "text").strip()

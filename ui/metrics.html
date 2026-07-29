@@ -148,6 +148,7 @@ function render(d){
     ["Estimated cost", "$" + (llm.estimated_cost_usd || 0).toFixed(4)],
     ["Estimated cost per answer", "$" + (llm.cost_per_call_usd || 0).toFixed(4)],
     ["Unpriced calls", num(llm.unpriced_calls)],
+    ["Answers cut off at max_tokens", num(llm.truncated_answers)],
     ["Models", models],
   ].map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join("");
 
