@@ -10,7 +10,7 @@
 # fly deploy --ha=false
 # fly scale count worker=2        # more ingest throughput, anytime
 
-app = 'momentsearch'
+app = 'momentsearch-lozierk'
 primary_region = 'iad'
 
 [build]
@@ -34,7 +34,12 @@ primary_region = 'iad'
   # Fly private networking: <process>.process.<app>.internal resolves to the
   # clip machine. api + worker send embed batches there (one warm model);
   # clip_service itself ignores this and always runs the model locally.
-  CLIP_SERVICE_URL = 'http://clip.process.momentsearch.internal:8001'
+  CLIP_SERVICE_URL = 'http://clip.process.momentsearch-lozierk.internal:8001'
+  # A PDF hands the embedder pages in one go, so the batch is the peak-memory
+  # knob for the clip machine (128 x 480px renders -> 128 preprocessed tensors
+  # at once, on top of two resident models). 32 keeps the spike well inside the
+  # VM; throughput barely moves because the model call dominates either way.
+  CLIP_BATCH = '32'
 
 # Infra backstop: if a machine's process ever exits (crash, OOM, a dependency
 # outage that slips past the code's own retry loop), always bring it back —
@@ -74,5 +79,10 @@ primary_region = 'iad'
 
 [[vm]]
   size = 'shared-cpu-2x'
-  memory = '2gb'          # the one warm CLIP model (~1.5gb loaded)
+  # 2gb was sized for CLIP alone (~1.5gb loaded). Documents made this service
+  # bimodal — it now also holds the bge text model for /embed/docs — and the
+  # remaining headroom wasn't enough for a page-image batch: the machine was
+  # OOM-killed mid-ingest on the larger papers, which surfaced to the worker as
+  # "CLIP service unreachable". 4gb fits both models plus the batch spike.
+  memory = '4gb'
   processes = ['clip']

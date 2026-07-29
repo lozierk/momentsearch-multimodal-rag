@@ -26,6 +26,8 @@ _USER_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
 def _uid(value: str | None) -> str:
+    if config.LOCK_TENANT:  # public deploy: the header can't pick a tenant
+        return config.DEFAULT_USER_ID
     uid = (value or config.DEFAULT_USER_ID).strip()
     if not _USER_RE.match(uid):
         raise HTTPException(400, "Invalid user id.")

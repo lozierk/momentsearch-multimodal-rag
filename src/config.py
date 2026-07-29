@@ -45,6 +45,14 @@ DATABASE_URL = os.getenv("DATABASE_URL", "")
 # every bucket key, Postgres row, and Qdrant point is already user_id-tagged.
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "")
 DEFAULT_USER_ID = os.getenv("DEFAULT_USER_ID", "default")
+# X-User-Id is a convenience header, NOT authentication — until real per-user
+# auth lands, anyone can name any tenant and read its corpus. That is fine on a
+# laptop and unacceptable on a public deploy that shares one Qdrant/Postgres
+# with a private corpus: the read path (/api/ask) has no bearer check at all.
+# LOCK_TENANT pins every request to DEFAULT_USER_ID and ignores the header, so
+# a public demo tenant and a private one can share the same infrastructure.
+# Default false — local dev and the tests keep their multi-tenant behaviour.
+LOCK_TENANT = _envbool("LOCK_TENANT", False)
 
 # --- Object storage (videos + frame thumbnails) ------------------------------
 # STORAGE_PROVIDER: local | aws | gcp | gcp_native | flyio

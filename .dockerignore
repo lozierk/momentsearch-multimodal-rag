@@ -1,0 +1,35 @@
+# Keep the build context small and credential-free. Without this file the
+# remote builder would receive the 1.2GB uv .venv and — worse — .env.
+# The image only needs requirements.txt, src/ and ui/ (see Dockerfile).
+.env
+.env.*
+!.env.example
+
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.git/
+.github/
+
+# Runtime + local artifacts
+data/
+qdrant_storage/
+benchmark/
+.cache/
+*.onnx
+*.pt
+
+# Not needed at runtime
+tests/
+scripts/
+examples/
+docs/
+*.md
+!README.md
+
+.DS_Store
+.idea/
+.vscode/
+*.log

@@ -54,6 +54,8 @@ def require_auth(authorization: str | None = Header(default=None)) -> None:
 
 
 def user_id(x_user_id: str | None = Header(default=None)) -> str:
+    if config.LOCK_TENANT:  # public deploy: the header can't pick a tenant
+        return DEFAULT_USER_ID
     uid = (x_user_id or DEFAULT_USER_ID).strip()
     if not _USER_RE.match(uid):
         raise HTTPException(400, "Invalid X-User-Id.")
