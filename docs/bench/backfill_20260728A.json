@@ -1,0 +1,221 @@
+{
+  "benchmark": "search_under_backfill",
+  "run_id": "20260728A",
+  "started_utc": "2026-07-28T21:45:07.999593+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "queries": 14,
+  "baseline_rounds": 3,
+  "during_rounds": 1,
+  "top_k": null,
+  "target_ratio": 1.25,
+  "verdict": "PASS",
+  "baseline": {
+    "ask_full": {
+      "n": 42,
+      "min_ms": 4485.0,
+      "p50_ms": 8948.8,
+      "p95_ms": 15178.4,
+      "p99_ms": 15705.6,
+      "max_ms": 15705.6,
+      "mean_ms": 9615.1
+    },
+    "ask_retr": {
+      "n": 42,
+      "min_ms": 371.5,
+      "p50_ms": 710.1,
+      "p95_ms": 882.3,
+      "p99_ms": 1305.6,
+      "max_ms": 1305.6,
+      "mean_ms": 705.4
+    },
+    "retr_zero_llm_samples": 42,
+    "llm_used": 42
+  },
+  "during": {
+    "ask_full": {
+      "n": 14,
+      "min_ms": 6112.4,
+      "p50_ms": 12422.1,
+      "p95_ms": 15882.3,
+      "p99_ms": 15882.3,
+      "max_ms": 15882.3,
+      "mean_ms": 11684.7
+    },
+    "ask_retr": {
+      "n": 14,
+      "min_ms": 642.2,
+      "p50_ms": 761.6,
+      "p95_ms": 2141.1,
+      "p99_ms": 2141.1,
+      "max_ms": 2141.1,
+      "mean_ms": 861.3
+    },
+    "retr_zero_llm_samples": 14,
+    "llm_used": 14
+  },
+  "p95_ratio": {
+    "ask_full": 1.046,
+    "ask_retr": 2.427
+  },
+  "backfill": {
+    "documents": 14,
+    "indexed": 12,
+    "skipped": 2,
+    "failed": [],
+    "still_in_flight": [],
+    "wall_clock_s": 178.5,
+    "pages_indexed": 237,
+    "pages_per_s": 1.328,
+    "accept_ms": {
+      "n": 14,
+      "min_ms": 179.1,
+      "p50_ms": 186.1,
+      "p95_ms": 196.6,
+      "p99_ms": 196.6,
+      "max_ms": 196.6,
+      "mean_ms": 186.1
+    },
+    "timed_out": false,
+    "deleted_skipped": [
+      "doc_89eba96785",
+      "doc_365863a7f4"
+    ],
+    "rows": {
+      "doc_f86832ec60": {
+        "file": "AJMC_01_2018_Waxman2final.pdf",
+        "kind": "paper",
+        "accept_ms": 183.8,
+        "status": "indexed",
+        "frame_count": 9
+      },
+      "doc_89eba96785": {
+        "file": "Attention_is_All_You_Need_1706.03762v7.pdf",
+        "kind": "paper",
+        "accept_ms": 186.1,
+        "status": "skipped",
+        "frame_count": null
+      },
+      "doc_32b809a098": {
+        "file": "Clip_Paper_2103.00020v1.pdf",
+        "kind": "paper",
+        "accept_ms": 187.8,
+        "status": "indexed",
+        "frame_count": 48
+      },
+      "doc_5f91a5ea20": {
+        "file": "Original_RAG_Paper_2005.11401v4.pdf",
+        "kind": "paper",
+        "accept_ms": 179.1,
+        "status": "indexed",
+        "frame_count": 19
+      },
+      "doc_435222fa24": {
+        "file": "RAG_Survey_2312.10997v5.pdf",
+        "kind": "paper",
+        "accept_ms": 184.7,
+        "status": "indexed",
+        "frame_count": 21
+      },
+      "doc_35bfeec5ab": {
+        "file": "business_deck_02",
+        "kind": "deck",
+        "accept_ms": 181.8,
+        "status": "indexed",
+        "frame_count": 26
+      },
+      "doc_ce0c6b419b": {
+        "file": "business_deck_05",
+        "kind": "deck",
+        "accept_ms": 181.9,
+        "status": "indexed",
+        "frame_count": 22
+      },
+      "doc_6f0ed7f40f": {
+        "file": "business_deck_03",
+        "kind": "deck",
+        "accept_ms": 188.7,
+        "status": "indexed",
+        "frame_count": 17
+      },
+      "doc_669727dcf4": {
+        "file": "business_deck_04",
+        "kind": "deck",
+        "accept_ms": 187.1,
+        "status": "indexed",
+        "frame_count": 19
+      },
+      "doc_831b1036f8": {
+        "file": "business_deck_06",
+        "kind": "deck",
+        "accept_ms": 186.7,
+        "status": "indexed",
+        "frame_count": 7
+      },
+      "doc_ae7989ac94": {
+        "file": "business_deck_07",
+        "kind": "deck",
+        "accept_ms": 188.4,
+        "status": "indexed",
+        "frame_count": 15
+      },
+      "doc_365863a7f4": {
+        "file": "business_deck_08",
+        "kind": "deck",
+        "accept_ms": 196.6,
+        "status": "skipped",
+        "frame_count": null
+      },
+      "doc_9b54fbe890": {
+        "file": "business_deck_09",
+        "kind": "deck",
+        "accept_ms": 187.9,
+        "status": "indexed",
+        "frame_count": 13
+      },
+      "doc_ec84970a07": {
+        "file": "business_deck_01",
+        "kind": "deck",
+        "accept_ms": 185.1,
+        "status": "indexed",
+        "frame_count": 21
+      }
+    }
+  },
+  "rounds": [
+    {
+      "round": 1,
+      "t_offset_s": 2.6,
+      "ask_full": {
+        "n": 14,
+        "min_ms": 6112.4,
+        "p50_ms": 12422.1,
+        "p95_ms": 15882.3,
+        "p99_ms": 15882.3,
+        "max_ms": 15882.3,
+        "mean_ms": 11684.7
+      },
+      "ask_retr": {
+        "n": 14,
+        "min_ms": 642.2,
+        "p50_ms": 761.6,
+        "p95_ms": 2141.1,
+        "p99_ms": 2141.1,
+        "max_ms": 2141.1,
+        "mean_ms": 861.3
+      },
+      "remaining": 0,
+      "status_counts": {
+        "indexed": 12,
+        "skipped": 2
+      }
+    }
+  ],
+  "method": {
+    "ask_full": "POST /api/ask with a golden-set question — retrieval + gate + multimodal LLM. The SLO series named in the design doc.",
+    "ask_retr": "POST /api/ask with the SAME question scoped to video_ids=['yt_bench_no_src'], a source id that does not exist. Both query embeddings still run; both Qdrant searches return nothing, so ask() takes its zero-citation early return and never calls the LLM. Retrieval-only PROXY: includes HTTP + CLIP text embed + bge query embed, excludes HNSW traversal over real candidates, RRF fusion and citation assembly. Understates absolute retrieval latency; use the ratio, not the value.",
+    "skip_llm_flag": "Not supported by the API (src/api/search.py AskRequest has no such field) and adding one would mean changing src/, which this harness does not do.",
+    "why_not_abstain_gate": "The planned proxy was a nonsense question tripping Gate 1, but the gate abstains only when best CLIP < 0.2 AND best bge < 0.35, and CLIP text->image cosines over real frames clear 0.2 even for gibberish — four nonsense probes all triggered a real LLM call. Empty scope is deterministic.",
+    "throughput": "pages/s = sum(frame_count of rows reaching `indexed`) / wall clock from first register to last terminal status. Text-chunk counts are not exposed by the API, so chunks/s is not measured.",
+    "skipped": "`skipped` = content dedup matched an already-indexed document (same source_hash). Counted as a successful backfill outcome; it contributes no pages, which drags pages/s down slightly."
+  }
+}

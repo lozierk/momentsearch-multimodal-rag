@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "created": "2026-07-28",
+  "corpus": {
+    "videos": [
+      "yt_LPZh9BOjkQs — 3Blue1Brown, Large Language Models explained briefly (8m)",
+      "yt_wjZofJX0v4M — 3Blue1Brown, Transformers, the tech behind LLMs (27m)",
+      "yt_eMlx5fFNoYc — 3Blue1Brown, Attention in transformers, step-by-step (26m)",
+      "yt_zjkBMFhNj_g — Andrej Karpathy, [1hr Talk] Intro to Large Language Models"
+    ],
+    "docs": "../corpus/papers/*.pdf (kind=paper) and ../corpus/decks/*.pdf (kind=deck). Doc-only and mixed queries assume the full corpus has been backfilled — run scripts/bench_backfill.py (or scripts/upload_doc.py per file) first."
+  },
+  "matching": {
+    "source_id_pattern": "Case-insensitive SUBSTRING match against a citation's video_id OR its title. Videos use their yt_<id>; documents use a distinctive part of the uploaded filename stem, which is what register stores as the title.",
+    "video_expectation": "Any pattern starting with 'yt_' is a video expectation; everything else is a document expectation.",
+    "locator_hint": "Informational only — never scored. It tells the human doing the citation-accuracy pass where the answer actually lives.",
+    "scoring": "recall@10: kind=video|doc hits when >=1 expectation appears in the citations; kind=mixed hits ONLY when at least one VIDEO expectation AND at least one DOCUMENT expectation both appear (deliberately stricter — a mixed query that answers from one corpus has not proven fusion)."
+  },
+  "queries": [
+    {
+      "id": "v1",
+      "kind": "video",
+      "question": "An LLM is described as just two files you could put on a laptop — what are those two files?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_zjkBMFhNj_g",
+          "locator_hint": "~00:30-03:00, the 'two files: parameters + run.c' framing"
+        }
+      ]
+    },
+    {
+      "id": "v2",
+      "kind": "video",
+      "question": "How long would it take a human being to read all of the text a large language model is trained on?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_LPZh9BOjkQs",
+          "locator_hint": "~01:00-03:30, training-data scale in human-reading years"
+        }
+      ]
+    },
+    {
+      "id": "v3",
+      "kind": "video",
+      "question": "Show me the animation where words are drawn as arrows pointing in different directions in a high-dimensional embedding space.",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~04:00-09:00, embedding-space visualisation (visual-branch query)"
+        }
+      ]
+    },
+    {
+      "id": "v4",
+      "kind": "video",
+      "question": "What does turning the temperature up or down do to the probability distribution the model samples the next word from?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~19:00-23:00, softmax with temperature"
+        }
+      ]
+    },
+    {
+      "id": "v5",
+      "kind": "video",
+      "question": "In the animated walkthrough of the attention pattern grid, why are the entries below the diagonal forced to negative infinity before the softmax?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~11:00-15:00, masking the attention grid"
+        }
+      ]
+    },
+    {
+      "id": "d1",
+      "kind": "doc",
+      "question": "What BLEU score did the big Transformer model achieve on WMT 2014 English-to-German, and what did it cost to train?",
+      "expect": [
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 8, Table 2 (results + training cost in FLOPs)"
+        }
+      ]
+    },
+    {
+      "id": "d2",
+      "kind": "doc",
+      "question": "What zero-shot ImageNet accuracy does CLIP reach, and which fully supervised baseline does that match?",
+      "expect": [
+        {
+          "source_id_pattern": "Clip_Paper_2103.00020",
+          "locator_hint": "pp. 1-2, abstract and Figure 1 (matches ResNet-50 zero-shot)"
+        }
+      ]
+    },
+    {
+      "id": "d3",
+      "kind": "doc",
+      "question": "What are the three RAG paradigms — Naive RAG, Advanced RAG and Modular RAG — and how do they differ?",
+      "expect": [
+        {
+          "source_id_pattern": "RAG_Survey_2312.10997",
+          "locator_hint": "pp. 2-5, Fig. 3 (three-paradigm comparison)"
+        }
+      ]
+    },
+    {
+      "id": "d4",
+      "kind": "doc",
+      "question": "Which CMS care-management billing codes does the ClientCo Health platform support?",
+      "expect": [
+        {
+          "source_id_pattern": "business_deck_09",
+          "locator_hint": "slides 1-3, supported CMS billing-code table"
+        }
+      ]
+    },
+    {
+      "id": "d5",
+      "kind": "doc",
+      "question": "Which slide promises an answer time under two seconds, zero hold time, and support for 20+ languages?",
+      "expect": [
+        {
+          "source_id_pattern": "business_deck_03",
+          "locator_hint": "slide 1, cover metrics (<2 sec, zero hold, 24/7, 20+ languages)"
+        }
+      ]
+    },
+    {
+      "id": "m1",
+      "kind": "mixed",
+      "question": "How do query and key vectors combine to produce attention weights over a sequence?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~05:00-16:00, query/key/value walkthrough"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "pp. 3-4, §3.2.1 scaled dot-product attention, Fig. 2"
+        }
+      ]
+    },
+    {
+      "id": "m2",
+      "kind": "mixed",
+      "question": "Why does a transformer run several attention heads in parallel instead of just one?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~20:00-26:00, multi-headed attention"
+        },
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~22:00-27:00, attention heads in the full architecture"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 4-5, §3.2.2 multi-head attention"
+        }
+      ]
+    },
+    {
+      "id": "m3",
+      "kind": "mixed",
+      "question": "How does grounding an answer in retrieved external documents reduce hallucination compared with relying on the model's parameters alone?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_zjkBMFhNj_g",
+          "locator_hint": "~30:00-45:00, tool use / browsing to fetch information"
+        },
+        {
+          "source_id_pattern": "RAG_Survey_2312.10997",
+          "locator_hint": "pp. 1-2, abstract and introduction (hallucination, outdated knowledge)"
+        },
+        {
+          "source_id_pattern": "Original_RAG_Paper_2005.11401",
+          "locator_hint": "pp. 1-2, abstract and introduction (parametric vs non-parametric memory)"
+        }
+      ]
+    },
+    {
+      "id": "m4",
+      "kind": "mixed",
+      "question": "How is the model's final vector turned into a probability distribution over the next token?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~19:00-23:00, unembedding matrix then softmax"
+        },
+        {
+          "source_id_pattern": "yt_LPZh9BOjkQs",
+          "locator_hint": "~00:30-02:30, next-word prediction as a probability distribution"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 5, §3.4 learned linear transform + softmax to next-token probabilities"
+        }
+      ]
+    }
+  ]
+}

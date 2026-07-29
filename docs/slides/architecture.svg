@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 770" width="1240" height="770" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa0aa"/>
+    </marker>
+    <marker id="acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3b2fc9"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="770" fill="#ffffff"/>
+
+  <text x="40" y="44" fill="#15171c" font-size="25" font-family="Georgia, 'Iowan Old Style', 'Times New Roman', serif">Moment Search — one index, two paths, no shared bottleneck</text>
+  <text x="40" y="70" fill="#6b7280" font-size="13">Video, PDF papers and slide-deck PDFs enter the same queue and land in the same Qdrant collections. Search reads Qdrant directly and never touches the queue.</text>
+
+  <!-- ============ WRITE LANE ============ -->
+  <line x1="24" y1="96" x2="1216" y2="96" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="96" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="120" fill="#15171c" font-size="13" font-weight="700">Write path</text>
+  <text x="106" y="120" fill="#6b7280" font-size="13">async, queue-decoupled</text>
+
+  <rect x="44" y="140" width="140" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="114" y="180" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Clients</text>
+  <text x="114" y="201" fill="#6b7280" font-size="11" text-anchor="middle">Browser UI · CLI</text>
+  <text x="114" y="217" fill="#6b7280" font-size="11" text-anchor="middle">video URL · PDF</text>
+
+  <line x1="186" y1="192" x2="226" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="208" y="182" fill="#6b7280" font-size="9" text-anchor="middle">presign</text>
+  <text x="208" y="207" fill="#6b7280" font-size="9" text-anchor="middle">+ PUT</text>
+
+  <rect x="232" y="140" width="210" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="337" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">FastAPI · accept path</text>
+  <text x="337" y="192" fill="#6b7280" font-size="11" text-anchor="middle">POST /api/videos → 202</text>
+  <text x="337" y="209" fill="#6b7280" font-size="11" text-anchor="middle">writes one row, returns</text>
+  <text x="337" y="229" fill="#3b2fc9" font-size="12" font-weight="700" text-anchor="middle">p95 180 ms</text>
+
+  <line x1="444" y1="192" x2="484" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="464" y="182" fill="#6b7280" font-size="9" text-anchor="middle">row =</text>
+  <text x="464" y="207" fill="#6b7280" font-size="9" text-anchor="middle">pending</text>
+
+  <rect x="490" y="140" width="180" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="580" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">WFQ dispatcher</text>
+  <text x="580" y="192" fill="#6b7280" font-size="11" text-anchor="middle">fair, round-robin</text>
+  <text x="580" y="208" fill="#6b7280" font-size="11" text-anchor="middle">across users</text>
+  <text x="580" y="227" fill="#6b7280" font-size="11" text-anchor="middle">max in-flight = 2</text>
+
+  <line x1="672" y1="192" x2="712" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="692" y="182" fill="#6b7280" font-size="9" text-anchor="middle">claim →</text>
+  <text x="692" y="207" fill="#6b7280" font-size="9" text-anchor="middle">queued</text>
+
+  <rect x="718" y="140" width="190" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="813" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Prefect Cloud</text>
+  <text x="813" y="192" fill="#6b7280" font-size="11" text-anchor="middle">ms-ingest (video)</text>
+  <text x="813" y="209" fill="#6b7280" font-size="11" text-anchor="middle">ms-ingest-doc (PDF)</text>
+  <text x="813" y="228" fill="#6b7280" font-size="11" text-anchor="middle">retries ×2, backoff</text>
+
+  <line x1="910" y1="192" x2="950" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="930" y="182" fill="#6b7280" font-size="9" text-anchor="middle">long</text>
+  <text x="930" y="207" fill="#6b7280" font-size="9" text-anchor="middle">poll</text>
+
+  <rect x="956" y="140" width="240" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="1076" y="168" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Ingest worker</text>
+  <text x="1076" y="188" fill="#6b7280" font-size="11" text-anchor="middle">fetch → parse → embed_index</text>
+  <text x="1076" y="205" fill="#6b7280" font-size="11" text-anchor="middle">PyMuPDF: page text + JPEG</text>
+  <text x="1076" y="222" fill="#6b7280" font-size="11" text-anchor="middle">ffmpeg: frames + transcript</text>
+  <text x="1076" y="239" fill="#3b2fc9" font-size="11" text-anchor="middle">+ reconciler thread</text>
+
+  <rect x="956" y="286" width="240" height="66" rx="3" fill="#fafafa" stroke="#e3e4e6" stroke-dasharray="4 3"/>
+  <text x="1076" y="310" fill="#15171c" font-size="12.5" font-weight="700" text-anchor="middle">Embedding services</text>
+  <text x="1076" y="329" fill="#6b7280" font-size="10.5" text-anchor="middle">CLIP ViT-B/32 (512-D) · bge (384-D)</text>
+  <text x="1076" y="344" fill="#6b7280" font-size="10.5" text-anchor="middle">warm model behind HTTP</text>
+  <line x1="1076" y1="246" x2="1076" y2="282" stroke="#9aa0aa" stroke-width="1.3" marker-end="url(#ar)" marker-start="url(#ar)"/>
+
+  <!-- ============ STATE LANE ============ -->
+  <line x1="24" y1="380" x2="1216" y2="380" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="380" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="404" fill="#15171c" font-size="13" font-weight="700">State</text>
+  <text x="76" y="404" fill="#6b7280" font-size="13">Postgres is the source of truth, not the queue</text>
+
+  <rect x="44" y="420" width="430" height="106" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="259" y="450" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Postgres manifest (Neon)</text>
+  <text x="259" y="471" fill="#6b7280" font-size="11" text-anchor="middle">status · attempts · updated_at (the lease)</text>
+  <text x="259" y="489" fill="#6b7280" font-size="11" text-anchor="middle">pending → queued → fetching → sampling → embedding → indexed</text>
+  <text x="259" y="510" fill="#6b7280" font-size="11" text-anchor="middle">same lifecycle for video and documents</text>
+
+  <rect x="520" y="420" width="676" height="106" rx="3" fill="#ffffff" stroke="#3b2fc9" stroke-width="1.5"/>
+  <text x="858" y="448" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Qdrant — one unified index, two collections, zero new collections</text>
+  <rect x="540" y="460" width="312" height="52" rx="3" fill="#fafafa" stroke="#e3e4e6"/>
+  <text x="696" y="480" fill="#15171c" font-size="12" font-weight="700" text-anchor="middle">moments — CLIP 512-D</text>
+  <text x="696" y="499" fill="#6b7280" font-size="10.5" text-anchor="middle">video frames + rendered pages/slides</text>
+  <rect x="866" y="460" width="312" height="52" rx="3" fill="#fafafa" stroke="#e3e4e6"/>
+  <text x="1022" y="480" fill="#15171c" font-size="12" font-weight="700" text-anchor="middle">moments_text — bge 384-D</text>
+  <text x="1022" y="499" fill="#6b7280" font-size="10.5" text-anchor="middle">transcript cues + page/slide chunks</text>
+
+  <path d="M1150 356 L1150 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="1163" y="390" fill="#6b7280" font-size="10">upsert uuid5 points (idempotent)</text>
+
+  <path d="M300 248 L300 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="310" y="300" fill="#6b7280" font-size="10">INSERT status=pending</text>
+
+  <path d="M990 248 L990 268 L520 268 L520 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="600" y="262" fill="#6b7280" font-size="10">every stage bumps status + updated_at</text>
+
+  <path d="M420 414 L420 330 L580 330 L580 248" fill="none" stroke="#3b2fc9" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#acc)"/>
+  <text x="432" y="322" fill="#3b2fc9" font-size="10">reconciler: in-flight + stale &gt; 60 s → pending (max 3 attempts, then failed)</text>
+
+  <!-- ============ READ LANE ============ -->
+  <line x1="24" y1="576" x2="1216" y2="576" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="576" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="600" fill="#15171c" font-size="13" font-weight="700">Read path</text>
+  <text x="106" y="600" fill="#6b7280" font-size="13">talks only to Qdrant, never to the queue</text>
+
+  <rect x="44" y="618" width="150" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="119" y="660" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Question</text>
+  <text x="119" y="681" fill="#6b7280" font-size="11" text-anchor="middle">natural language</text>
+  <text x="119" y="697" fill="#6b7280" font-size="11" text-anchor="middle">one search box</text>
+
+  <line x1="196" y1="670" x2="228" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="234" y="618" width="190" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="329" y="653" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">FastAPI · /api/ask</text>
+  <text x="329" y="674" fill="#6b7280" font-size="11" text-anchor="middle">embed query twice:</text>
+  <text x="329" y="691" fill="#6b7280" font-size="11" text-anchor="middle">CLIP text + bge</text>
+
+  <line x1="426" y1="670" x2="458" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="464" y="618" width="200" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="564" y="653" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Dual vector search</text>
+  <text x="564" y="674" fill="#6b7280" font-size="11" text-anchor="middle">both collections, always</text>
+  <text x="564" y="691" fill="#6b7280" font-size="11" text-anchor="middle">user_id-filtered, top 20 each</text>
+
+  <line x1="666" y1="670" x2="698" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="704" y="618" width="210" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="809" y="648" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Fuse &amp; rank</text>
+  <text x="809" y="669" fill="#6b7280" font-size="11" text-anchor="middle">RRF · 1.5× cross-modal boost</text>
+  <text x="809" y="686" fill="#6b7280" font-size="11" text-anchor="middle">group video by window,</text>
+  <text x="809" y="702" fill="#6b7280" font-size="11" text-anchor="middle">docs by (doc_id, page)</text>
+
+  <line x1="916" y1="670" x2="948" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="954" y="618" width="242" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="1075" y="645" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Grounded answer</text>
+  <text x="1075" y="666" fill="#6b7280" font-size="11" text-anchor="middle">abstain gate → multimodal LLM</text>
+  <text x="1075" y="681" fill="#6b7280" font-size="10.5" text-anchor="middle">Claude Opus 5 · swappable</text>
+  <text x="1075" y="698" fill="#6b7280" font-size="11" text-anchor="middle">citations validated by regex</text>
+  <text x="1075" y="714" fill="#3b2fc9" font-size="11" text-anchor="middle">mm:ss · p. N · slide N</text>
+
+  <path d="M564 612 L564 532" fill="none" stroke="#3b2fc9" stroke-width="1.5" marker-end="url(#acc)" marker-start="url(#acc)"/>
+  <text x="578" y="566" fill="#3b2fc9" font-size="10.5">reads the index directly — no queue, no worker in the request path</text>
+</svg>

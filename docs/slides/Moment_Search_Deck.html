@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Moment Search — A Scalable Multimodal RAG Pipeline</title>
+<style>
+  :root{
+    --paper:#ffffff;
+    --ink:#15171c;
+    --ink2:#3d4450;
+    --mute:#6b7280;
+    --faint:#8b929c;
+    --line:#e5e6e8;
+    --line2:#c9cbd0;
+    --accent:#3b2fc9;
+    --teal:#3b2fc9;
+    --amber:#3b2fc9;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:#f2f2f0;
+    color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #canvas{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--paper)}
+  .slide{
+    position:absolute;inset:0;
+    padding:54px 68px 48px 68px;
+    display:none;
+    flex-direction:column;
+  }
+  .slide.on{display:flex}
+  .kicker{
+    display:flex;align-items:center;gap:14px;
+    font-size:13px;color:var(--ink2);margin-bottom:18px;
+  }
+  .kicker::before{content:"";width:28px;height:2px;background:var(--accent);flex:none}
+  .kicker.amber{color:var(--ink2)}
+  h1.head{
+    font-family:var(--serif);
+    font-size:39px;line-height:1.2;font-weight:400;letter-spacing:-.2px;
+    max-width:1090px;color:var(--ink);
+  }
+  h1.head .hl{color:var(--accent)}
+  .sub{margin-top:16px;font-size:16.5px;line-height:1.55;color:var(--mute);max-width:1010px}
+  .body{margin-top:24px;padding-top:24px;border-top:1px solid var(--line);flex:1;min-height:0;display:flex;flex-direction:column;gap:20px}
+  .rule{height:1px;background:var(--line);margin-top:22px}
+
+  ul.pts{list-style:none;display:flex;flex-direction:column;gap:14px}
+  ul.pts li{
+    font-size:19px;line-height:1.45;padding-left:22px;position:relative;color:var(--ink);
+  }
+  ul.pts li::before{content:"";position:absolute;left:0;top:10px;width:7px;height:7px;background:var(--accent)}
+  ul.pts li span{color:var(--mute)}
+
+  .cols{display:flex;gap:38px;flex:1;min-height:0}
+  .col{flex:1;display:flex;flex-direction:column;gap:11px;border-top:2px solid var(--line2);padding-top:16px}
+  .col h3{font-family:var(--serif);font-size:19px;font-weight:400;line-height:1.25;color:var(--ink)}
+  .col .lede{font-size:13.5px;color:var(--mute);line-height:1.5}
+  .col ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:2px}
+  .col ul li{font-size:14px;line-height:1.45;color:var(--ink2);padding-left:16px;position:relative}
+  .col ul li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--line2)}
+  .col ul li b{color:var(--ink)}
+  .col.teal{border-top-color:var(--accent)}
+  .col.amber{border-top-color:var(--line2)}
+
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:34px;flex:1;min-height:0}
+  .card{display:flex;flex-direction:column;gap:9px;border-top:2px solid var(--accent);padding-top:15px}
+  .card .tag{font-size:11.5px;color:var(--ink);font-weight:700;letter-spacing:.2px}
+  .card h4{font-family:var(--serif);font-size:17px;font-weight:400;line-height:1.3}
+  .card p{font-size:13px;line-height:1.5;color:var(--mute)}
+
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 30px}
+  .tile{border-top:2px solid var(--line2);padding-top:13px}
+  .tile .lbl{font-size:12px;color:var(--mute);min-height:32px;line-height:1.35}
+  .tile .val{font-family:var(--serif);font-size:35px;font-weight:400;letter-spacing:-.5px;margin-top:8px;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+  .tile .val small{font-size:16px;font-weight:400;letter-spacing:0}
+  .tile .meta{margin-top:10px;font-size:11.5px;color:var(--faint)}
+  .tile.pass{border-top-color:var(--accent)}
+  .tile.pass .val{color:var(--accent)}
+  .tile.open{border-top-color:var(--line2)}
+  .tile.open .val{color:var(--ink2);font-size:23px;line-height:1.15;letter-spacing:-.2px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;vertical-align:1px;margin-left:8px}
+  .badge.p{color:var(--accent)}
+  .badge.o{color:var(--faint)}
+
+  .callout{
+    border-left:2px solid var(--line2);
+    padding:3px 0 3px 20px;font-size:14.5px;line-height:1.55;color:var(--ink2);
+  }
+  .callout.teal{border-left-color:var(--accent)}
+  .callout b{color:var(--ink)}
+
+  .flow{display:flex;align-items:stretch;gap:0}
+  .step{flex:1;display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line2);padding-top:14px}
+  .step .n{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:.2px}
+  .step h5{font-family:var(--serif);font-size:15.5px;font-weight:400}
+  .step p{font-size:12.5px;line-height:1.5;color:var(--mute)}
+  .arrow{display:flex;align-items:center;justify-content:center;width:30px;color:var(--line2);font-size:16px;flex:none}
+
+  table.data{width:100%;border-collapse:collapse;font-size:14px}
+  table.data th{
+    text-align:left;font-size:12px;color:var(--mute);
+    font-weight:700;padding:0 16px 9px 0;border-bottom:1.5px solid var(--ink);
+  }
+  table.data td{padding:11px 16px 11px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.4;color:var(--ink2)}
+  table.data td b{color:var(--ink)}
+  table.data td.num{font-family:var(--serif);font-size:16px;font-variant-numeric:tabular-nums;color:var(--ink)}
+  table.data .t{color:var(--accent)}
+  table.data .a{color:var(--ink)}
+  table.data .m{color:var(--mute);font-size:12.5px}
+
+  .foot{margin-top:auto;padding-top:14px;font-size:11.5px;color:var(--faint);border-top:1px solid var(--line)}
+
+  /* title slide */
+  .title-wrap{flex:1;display:flex;flex-direction:column;justify-content:center}
+  .title-wrap h1{font-family:var(--serif);font-size:57px;line-height:1.1;font-weight:400;letter-spacing:-1px;max-width:1010px;color:var(--ink)}
+  .title-wrap h1 em{font-style:italic;color:var(--accent)}
+  .title-wrap .tag{font-size:19px;color:var(--mute);margin-top:22px;max-width:830px;line-height:1.5}
+  .byline{margin-top:34px;font-size:15px;color:var(--ink)}
+  .byline span{color:var(--mute)}
+  .strip{display:flex;gap:0;margin-top:36px;padding-top:24px;border-top:1px solid var(--ink)}
+  .strip div{flex:1;padding-left:28px;border-left:1px solid var(--line)}
+  .strip div:first-child{padding-left:0;border-left:0}
+  .strip div .v{font-family:var(--serif);font-size:29px;font-weight:400;color:var(--accent);letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+  .strip div .k{font-size:12px;color:var(--mute);margin-top:7px}
+
+  .diagram{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+  .diagram svg{height:100%;width:auto;max-width:100%}
+
+  /* chrome */
+  #bar{position:fixed;left:0;bottom:0;height:2px;background:var(--accent);width:0;transition:width .18s ease;z-index:5}
+  #count{position:fixed;right:20px;bottom:14px;font-size:12px;color:var(--faint);letter-spacing:.5px;z-index:5;font-variant-numeric:tabular-nums}
+  #hint{position:fixed;left:20px;bottom:14px;font-size:11px;color:#b8bcc3;letter-spacing:.4px;z-index:5}
+  #notes{
+    position:fixed;left:0;right:0;bottom:0;max-height:42vh;overflow:auto;
+    background:#fbfbfa;border-top:1px solid var(--line2);padding:20px 26px 26px;
+    font-size:14px;line-height:1.6;color:var(--ink2);display:none;z-index:6;
+  }
+  #notes.on{display:block}
+  #notes h6{font-size:12px;color:var(--accent);margin-bottom:8px;font-weight:700}
+</style>
+</head>
+<body>
+<div id="stage"><div id="canvas">
+
+<!-- 1 ───────────────────────────────── TITLE -->
+<section class="slide on">
+  <div class="title-wrap">
+    <div class="kicker">Assignment 3 · Forward Deployed Engineering Bootcamp</div>
+    <h1>Moment Search:<br/>A Scalable <em>Multimodal</em> RAG Pipeline</h1>
+    <div class="tag">Video, research papers and slide decks answering the same question, from one index — benchmarked under load, killed mid-ingest, and measured where it hurts.</div>
+    <div class="byline"><b>Kurt Lozier</b> <span>· July 29, 2026 · corpus: 4 videos · 5 papers · 9 slide decks</span></div>
+    <div class="strip">
+      <div><div class="v">180 ms</div><div class="k">accept p95, n=200</div></div>
+      <div><div class="v">12/14 (0.86)</div><div class="k">recall@10, 14 queries</div></div>
+      <div><div class="v">40/43 (0.93)</div><div class="k">citation accuracy</div></div>
+      <div><div class="v">14 / 14</div><div class="k">recovered from kill&nbsp;-9</div></div>
+    </div>
+  </div>
+  <div class="notes">Opening frame: this is not a demo that happens to work — it is a system with a scoreboard, including two numbers that do not flatter it. Everything quoted traces to a JSON file in docs/bench/.</div>
+</section>
+
+<!-- 2 ───────────────────────────────── THE ASK -->
+<section class="slide">
+  <div class="kicker">The problem &amp; the ask</div>
+  <h1 class="head">A video-search demo has to become a mixed-corpus system that <span class="hl">survives a real backfill</span></h1>
+  <div class="sub">Papers and decks hold the answers video does not. Splitting them into a second system splits the answer — so they enter the same queue and land in the same index, and we prove that under load nothing slows down and nothing is lost.</div>
+  <div class="body">
+    <div class="grid4">
+      <div class="card">
+        <div class="tag">3.1</div>
+        <h4>Multi-source ingestion</h4>
+        <p>Parse, chunk, enrich and embed PDFs and decks into the one Qdrant index video already uses. Mixed sources become one searchable space.</p>
+      </div>
+      <div class="card">
+        <div class="tag">3.2</div>
+        <h4>Async work queues</h4>
+        <p>A document flow on the existing Prefect queue, matching video's status lifecycle and retries. Accepting work is decoupled from doing it.</p>
+      </div>
+      <div class="card">
+        <div class="tag">3.3</div>
+        <h4>Scale &amp; decoupling proof</h4>
+        <p>Benchmark accept latency, throughput and recall. Keep search fast during a backfill. Kill a worker mid-ingest and prove nothing is lost.</p>
+      </div>
+      <div class="card">
+        <div class="tag">3.4</div>
+        <h4>Think like an FDE</h4>
+        <p>Managed vs self-hosted queues, citations that always resolve, workers that recover from a signal, and an honest path from demo to production.</p>
+      </div>
+    </div>
+    <div class="callout teal">The bar we set ourselves, because the brief set none: <b>accept p95 &lt; 250 ms · search ≤ 1.25× under backfill · recall@10 ≥ 0.85 · citation accuracy ≥ 0.90 · zero loss on <span style="font-family:monospace">kill -9</span></b>.</div>
+  </div>
+  <div class="notes">Defining your own SLOs when the customer hasn't is the FDE move here. The four parts are the agenda for the rest of the deck.</div>
+</section>
+
+<!-- 3 ───────────────────────────────── ARCHITECTURE -->
+<section class="slide">
+  <div class="kicker">Architecture at a glance</div>
+  <h1 class="head" style="font-size:30px">One index, two paths — <span class="hl">search reads Qdrant while the queue is still working</span></h1>
+  <div class="body" style="margin-top:14px">
+    <div class="diagram">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 84 1240 678" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa0aa"/></marker>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3b2fc9"/></marker>
+    <marker id="arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa0aa"/></marker>
+  </defs>
+  <rect x="0" y="0" width="1240" height="770" fill="#ffffff"/>
+  <line x1="24" y1="96" x2="1216" y2="96" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="96" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="120" fill="#15171c" font-size="13" font-weight="700">Write path</text>
+  <text x="106" y="120" fill="#6b7280" font-size="13">async, queue-decoupled</text>
+
+  <rect x="44" y="140" width="140" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="114" y="180" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Clients</text>
+  <text x="114" y="201" fill="#6b7280" font-size="11" text-anchor="middle">Browser UI · CLI</text>
+  <text x="114" y="217" fill="#6b7280" font-size="11" text-anchor="middle">video URL · PDF</text>
+
+  <line x1="186" y1="192" x2="226" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="208" y="182" fill="#6b7280" font-size="9" text-anchor="middle">presign</text>
+  <text x="208" y="207" fill="#6b7280" font-size="9" text-anchor="middle">+ PUT</text>
+
+  <rect x="232" y="140" width="210" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="337" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">FastAPI · accept path</text>
+  <text x="337" y="192" fill="#6b7280" font-size="11" text-anchor="middle">POST /api/videos → 202</text>
+  <text x="337" y="209" fill="#6b7280" font-size="11" text-anchor="middle">writes one row, returns</text>
+  <text x="337" y="229" fill="#3b2fc9" font-size="12" font-weight="700" text-anchor="middle">p95 180 ms</text>
+
+  <line x1="444" y1="192" x2="484" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="464" y="182" fill="#6b7280" font-size="9" text-anchor="middle">row =</text>
+  <text x="464" y="207" fill="#6b7280" font-size="9" text-anchor="middle">pending</text>
+
+  <rect x="490" y="140" width="180" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="580" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">WFQ dispatcher</text>
+  <text x="580" y="192" fill="#6b7280" font-size="11" text-anchor="middle">fair, round-robin</text>
+  <text x="580" y="208" fill="#6b7280" font-size="11" text-anchor="middle">across users</text>
+  <text x="580" y="227" fill="#6b7280" font-size="11" text-anchor="middle">max in-flight = 2</text>
+
+  <line x1="672" y1="192" x2="712" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="692" y="182" fill="#6b7280" font-size="9" text-anchor="middle">claim →</text>
+  <text x="692" y="207" fill="#6b7280" font-size="9" text-anchor="middle">queued</text>
+
+  <rect x="718" y="140" width="190" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="813" y="172" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Prefect Cloud</text>
+  <text x="813" y="192" fill="#6b7280" font-size="11" text-anchor="middle">ms-ingest (video)</text>
+  <text x="813" y="209" fill="#6b7280" font-size="11" text-anchor="middle">ms-ingest-doc (PDF)</text>
+  <text x="813" y="228" fill="#6b7280" font-size="11" text-anchor="middle">retries ×2, backoff</text>
+
+  <line x1="910" y1="192" x2="950" y2="192" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="930" y="182" fill="#6b7280" font-size="9" text-anchor="middle">long</text>
+  <text x="930" y="207" fill="#6b7280" font-size="9" text-anchor="middle">poll</text>
+
+  <rect x="956" y="140" width="240" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="1076" y="168" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Ingest worker</text>
+  <text x="1076" y="188" fill="#6b7280" font-size="11" text-anchor="middle">fetch → parse → embed_index</text>
+  <text x="1076" y="205" fill="#6b7280" font-size="11" text-anchor="middle">PyMuPDF: page text + JPEG</text>
+  <text x="1076" y="222" fill="#6b7280" font-size="11" text-anchor="middle">ffmpeg: frames + transcript</text>
+  <text x="1076" y="239" fill="#3b2fc9" font-size="11" text-anchor="middle">+ reconciler thread</text>
+
+  <rect x="956" y="286" width="240" height="66" rx="3" fill="#fafafa" stroke="#e3e4e6" stroke-dasharray="4 3"/>
+  <text x="1076" y="310" fill="#15171c" font-size="12.5" font-weight="700" text-anchor="middle">Embedding services</text>
+  <text x="1076" y="329" fill="#6b7280" font-size="10.5" text-anchor="middle">CLIP ViT-B/32 (512-D) · bge (384-D)</text>
+  <text x="1076" y="344" fill="#6b7280" font-size="10.5" text-anchor="middle">warm model behind HTTP</text>
+  <line x1="1076" y1="246" x2="1076" y2="282" stroke="#9aa0aa" stroke-width="1.3" marker-end="url(#arm)" marker-start="url(#arm)"/>
+
+  <line x1="24" y1="380" x2="1216" y2="380" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="380" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="404" fill="#15171c" font-size="13" font-weight="700">State</text>
+  <text x="76" y="404" fill="#6b7280" font-size="13">Postgres is the source of truth, not the queue</text>
+
+  <rect x="44" y="420" width="430" height="106" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="259" y="450" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Postgres manifest (Neon)</text>
+  <text x="259" y="471" fill="#6b7280" font-size="11" text-anchor="middle">status · attempts · updated_at (the lease)</text>
+  <text x="259" y="489" fill="#6b7280" font-size="11" text-anchor="middle">pending → queued → fetching → sampling → embedding → indexed</text>
+  <text x="259" y="510" fill="#6b7280" font-size="11" text-anchor="middle">same lifecycle for video and documents</text>
+
+  <rect x="520" y="420" width="676" height="106" rx="3" fill="#ffffff" stroke="#3b2fc9" stroke-width="1.5"/>
+  <text x="858" y="448" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Qdrant — one unified index, two collections, zero new collections</text>
+  <rect x="540" y="460" width="312" height="52" rx="3" fill="#fafafa" stroke="#e3e4e6"/>
+  <text x="696" y="480" fill="#15171c" font-size="12" font-weight="700" text-anchor="middle">moments — CLIP 512-D</text>
+  <text x="696" y="499" fill="#6b7280" font-size="10.5" text-anchor="middle">video frames + rendered pages/slides</text>
+  <rect x="866" y="460" width="312" height="52" rx="3" fill="#fafafa" stroke="#e3e4e6"/>
+  <text x="1022" y="480" fill="#15171c" font-size="12" font-weight="700" text-anchor="middle">moments_text — bge 384-D</text>
+  <text x="1022" y="499" fill="#6b7280" font-size="10.5" text-anchor="middle">transcript cues + page/slide chunks</text>
+
+  <path d="M1150 356 L1150 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="1163" y="390" fill="#6b7280" font-size="10">upsert uuid5 points (idempotent)</text>
+
+  <path d="M300 248 L300 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="310" y="300" fill="#6b7280" font-size="10">INSERT status=pending</text>
+
+  <path d="M990 248 L990 268 L520 268 L520 414" fill="none" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="600" y="262" fill="#6b7280" font-size="10">every stage bumps status + updated_at</text>
+
+  <path d="M420 414 L420 330 L580 330 L580 248" fill="none" stroke="#3b2fc9" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#arw)"/>
+  <text x="432" y="322" fill="#3b2fc9" font-size="10">reconciler: in-flight + stale &gt; 60 s → pending (max 3 attempts, then failed)</text>
+
+  <line x1="24" y1="576" x2="1216" y2="576" stroke="#15171c" stroke-width="1.4"/>
+  <rect x="24" y="576" width="46" height="3" fill="#3b2fc9"/>
+  <text x="24" y="600" fill="#15171c" font-size="13" font-weight="700">Read path</text>
+  <text x="106" y="600" fill="#6b7280" font-size="13">talks only to Qdrant, never to the queue</text>
+
+  <rect x="44" y="618" width="150" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="119" y="660" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Question</text>
+  <text x="119" y="681" fill="#6b7280" font-size="11" text-anchor="middle">natural language</text>
+  <text x="119" y="697" fill="#6b7280" font-size="11" text-anchor="middle">one search box</text>
+
+  <line x1="196" y1="670" x2="228" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="234" y="618" width="190" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="329" y="653" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">FastAPI · /api/ask</text>
+  <text x="329" y="674" fill="#6b7280" font-size="11" text-anchor="middle">embed query twice:</text>
+  <text x="329" y="691" fill="#6b7280" font-size="11" text-anchor="middle">CLIP text + bge</text>
+
+  <line x1="426" y1="670" x2="458" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="464" y="618" width="200" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="564" y="653" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Dual vector search</text>
+  <text x="564" y="674" fill="#6b7280" font-size="11" text-anchor="middle">both collections, always</text>
+  <text x="564" y="691" fill="#6b7280" font-size="11" text-anchor="middle">user_id-filtered, top 20 each</text>
+
+  <line x1="666" y1="670" x2="698" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="704" y="618" width="210" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="809" y="648" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Fuse &amp; rank</text>
+  <text x="809" y="669" fill="#6b7280" font-size="11" text-anchor="middle">RRF · 1.5× cross-modal boost</text>
+  <text x="809" y="686" fill="#6b7280" font-size="11" text-anchor="middle">group video by window,</text>
+  <text x="809" y="702" fill="#6b7280" font-size="11" text-anchor="middle">docs by (doc_id, page)</text>
+
+  <line x1="916" y1="670" x2="948" y2="670" stroke="#9aa0aa" stroke-width="1.4" marker-end="url(#ar)"/>
+
+  <rect x="954" y="618" width="242" height="104" rx="3" fill="#ffffff" stroke="#d2d4d8"/>
+  <text x="1075" y="645" fill="#15171c" font-size="14.5" font-weight="700" text-anchor="middle">Grounded answer</text>
+  <text x="1075" y="666" fill="#6b7280" font-size="11" text-anchor="middle">abstain gate → multimodal LLM</text>
+  <text x="1075" y="681" fill="#6b7280" font-size="10.5" text-anchor="middle">Claude Opus 5 · swappable</text>
+  <text x="1075" y="698" fill="#6b7280" font-size="11" text-anchor="middle">citations validated by regex</text>
+  <text x="1075" y="714" fill="#3b2fc9" font-size="11" text-anchor="middle">mm:ss · p. N · slide N</text>
+
+  <path d="M564 612 L564 532" fill="none" stroke="#3b2fc9" stroke-width="1.5" marker-end="url(#arw)" marker-start="url(#arw)"/>
+  <text x="578" y="566" fill="#3b2fc9" font-size="10.5">reads the index directly — no queue, no worker in the request path</text>
+</svg>
+    </div>
+  </div>
+  <div class="notes">Three claims to make here: (1) documents reuse the video accept path, so there is no second system; (2) the queue is fronted by Postgres, which is what makes recovery possible; (3) a question never waits on a worker — it hits Qdrant.</div>
+</section>
+
+<!-- 4 ───────────────────────────────── DESIGN DECISION 1 -->
+<section class="slide">
+  <div class="kicker">Key design decision · 1 of 2</div>
+  <h1 class="head">A slide is a picture — so we render every page through CLIP and make decks <span class="hl">visually searchable</span></h1>
+  <div class="sub">The obvious build indexes document text and stops. That treats a deck as a bad paper. Rendering each page into the same 512-D CLIP space video frames already occupy costs nothing extra at query time and buys a whole retrieval channel.</div>
+  <div class="body">
+    <div class="cols">
+      <div class="col teal">
+        <h3>One searchable space, zero new collections</h3>
+        <div class="lede">Documents reuse the collections video already had.</div>
+        <ul>
+          <li>Page and slide JPEGs → <b>moments</b> (CLIP 512-D)</li>
+          <li>Page and slide text chunks → <b>moments_text</b> (bge 384-D)</li>
+          <li>Query embedding is unchanged — same two branches, always both</li>
+          <li>Multi-tenant <span style="font-family:monospace">user_id</span> filter still holds</li>
+        </ul>
+      </div>
+      <div class="col teal">
+        <h3>For a document, the page <i>is</i> the moment</h3>
+        <div class="lede">Fusion needed one substitution, not a rewrite.</div>
+        <ul>
+          <li>Video hits group by time window; document hits by <span style="font-family:monospace">(doc_id, page)</span></li>
+          <li>A page matching visually <i>and</i> textually earns the same <b>1.5× cross-modal boost</b> a video moment does</li>
+          <li>Point ids are <span style="font-family:monospace">uuid5(id:n)</span> — re-ingest overwrites, duplicates impossible by construction</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">In run <b>20260728B</b> all <b>140 citations across 14 answers carried a locator</b>: 83 timestamps, 42 <span style="font-family:monospace">p. N</span>, 15 <span style="font-family:monospace">slide N</span>. The LLM prompt, the UI card and the fallback answer never learned which corpus they were reading.</div>
+  </div>
+  <div class="foot">Source: docs/REPORT_3_4.md §1, §3 · docs/Solution_Design_20260728.md §3.1 · docs/bench/citation_check_20260728B.md</div>
+  <div class="notes">The differentiator versus the reference solution, which indexed deck text only and never made pages visually searchable. Cost of the decision: zero new infrastructure — it is the same collection, the same query embedding, the same boost rule.</div>
+</section>
+
+<!-- 5 ───────────────────────────────── DESIGN DECISION 2 -->
+<section class="slide">
+  <div class="kicker amber">Key design decision · 2 of 2</div>
+  <h1 class="head">We refused native <span style="font-family:monospace;font-size:34px">.pptx</span> on purpose — and <span class="hl">declare the bill we didn't pay</span></h1>
+  <div class="sub">Rendering PowerPoint faithfully means LibreOffice headless inside the worker image. Every deck tool exports PDF in one click. The user cost is one menu item; the engineering cost is four separate problems.</div>
+  <div class="body">
+    <div class="cols">
+      <div class="col amber">
+        <h3>What .pptx support would have cost</h3>
+        <ul>
+          <li><b>~500 MB+ image growth</b> on a build that today needs one wheel — PyMuPDF already does text <i>and</i> rendering</li>
+          <li><b>Cold-start conversion of seconds per file</b>, landing inside the window the throughput benchmark measures — 1.33 pages/s would have described LibreOffice's startup, not our pipeline</li>
+          <li><b>Silent fidelity loss</b> — missing fonts, SmartArt, embedded charts degrade without an error to show in the status field</li>
+          <li><b>A new OOM class</b> on a 2 GB worker already holding CLIP and bge, inside the component whose durability we are trying to prove</li>
+        </ul>
+      </div>
+      <div class="col teal">
+        <h3>What the decision actually cost users</h3>
+        <ul>
+          <li><b>Nothing measurable.</b> 9 of the 14 corpus documents are decks; 7 were exported from <span style="font-family:monospace">.pptx</span> — the filenames still say so</li>
+          <li>All 7 ingested with <b>zero code beyond the PDF path</b></li>
+        </ul>
+        <div class="lede" style="margin-top:6px;color:var(--amber);font-weight:700;letter-spacing:.3px">Fast-follow — sketched, not built</div>
+        <ul>
+          <li>LibreOffice as a <b>sidecar</b> with its own image and memory limit, exposing <span style="font-family:monospace">convert(pptx) → pdf</span>, called before parsing</li>
+          <li>Keeps the worker image small, isolates the OOM, makes conversion latency separately measurable</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">A benchmark you cannot interpret is worse than one you never ran. <b>Naming the cut is scoping; building it today would have cost us the number.</b></div>
+  </div>
+  <div class="foot">Source: docs/REPORT_3_4.md §6 · docs/Solution_Design_20260728.md decision 2 (approved 2026-07-28)</div>
+  <div class="notes">This is the scoping slide. The point is not that .pptx is impossible — it is that its cost lands on the exact benchmark the assignment grades, and we can say so with a number.</div>
+</section>
+
+<!-- 6 ───────────────────────────────── 3.1 -->
+<section class="slide">
+  <div class="kicker">3.1 · Multi-source ingestion</div>
+  <h1 class="head">Documents enter through the video endpoint and land in the video index — <span class="hl">no parallel system</span></h1>
+  <div class="sub">One new branch on <span style="font-family:monospace">POST /api/videos</span> keyed on content type, one new parser module, and a new id prefix. Everything downstream — thumbnails, citations, status chips, the fair dispatcher — was already generic enough to reuse.</div>
+  <div class="body">
+    <div class="flow">
+      <div class="step"><div class="n">01 · PARSE</div><h5>PyMuPDF</h5><p>One dependency covers both jobs: page-aware text extraction and page → JPEG rendering. No system packages beyond the wheel.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">02 · CHUNK</div><h5>Locator-aware</h5><p>Papers: ~400-token page-aware chunks, 15% overlap, span <span style="font-family:monospace">{page_start, page_end}</span>. Decks: one chunk per slide.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">03 · ENRICH</div><h5>Payload &amp; images</h5><p>Every page rendered to JPEG on the existing frame key layout. Payload carries <span style="font-family:monospace">modality</span>, <span style="font-family:monospace">kind</span> and the locator.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">04 · EMBED</div><h5>Two spaces, locally</h5><p>Pages through CLIP ViT-B/32 (512-D), chunks through bge (384-D). No LLM captioning step — both embedders run on CPU.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">05 · INDEX</div><h5>Idempotent upsert</h5><p>Into the same two Qdrant collections as video, under <span style="font-family:monospace">uuid5</span> point ids. Re-ingest overwrites in place.</p></div>
+    </div>
+    <div class="callout teal">Proven at corpus scale: <b>237 pages indexed across 12 documents in one 178.5 s backfill</b>, plus 2 documents correctly recognised as already-indexed and marked <span style="font-family:monospace">skipped</span> by content dedup — a correct outcome, counted as success.</div>
+  </div>
+  <div class="foot">Source: docs/bench/backfill_20260728A.json · docs/REPORT_3_4.md §1</div>
+  <div class="notes">Emphasise reuse: the new code is a parser and a routing branch. The measure of a good extension is how little of the existing system had to change.</div>
+</section>
+
+<!-- 7 ───────────────────────────────── 3.2 -->
+<section class="slide">
+  <div class="kicker">3.2 · Async work queues</div>
+  <h1 class="head">A second Prefect deployment reused video's lifecycle verbatim — <span class="hl">the UI needed zero changes</span></h1>
+  <div class="sub">Parity was the requirement, so we spent it as a feature: the same status strings mean the status chips, the fair dispatcher and the progress bar work for documents without knowing documents exist.</div>
+  <div class="body">
+    <div class="cols">
+      <div class="col teal">
+        <h3>The flow</h3>
+        <ul>
+          <li><span style="font-family:monospace">ms-ingest-doc</span>: fetch → parse → embed_index, served alongside the video deployment in one worker process</li>
+          <li>Identical lifecycle: <span style="font-family:monospace">pending → queued → fetching → sampling → embedding → indexed</span></li>
+          <li>Retries mirror video's per-task pattern: fetch ×2 with backoff, embed ×2</li>
+          <li>The WFQ dispatcher is source-agnostic — enqueue just picks a deployment by id prefix</li>
+        </ul>
+      </div>
+      <div class="col amber">
+        <h3>Where the queue can't help</h3>
+        <ul>
+          <li><b>No drainable DLQ.</b> Prefect's dead-letter equivalent is a badge in a dashboard</li>
+          <li><b>A <span style="font-family:monospace">kill -9</span> raises no exception</b> — the run is marked <i>Crashed</i> and nothing reschedules it</li>
+          <li><b>Poll latency</b> — a 3 s dispatch tick plus Prefect's long-poll is dead air inside the wall clock (it never touches accept latency)</li>
+        </ul>
+        <div class="lede" style="color:var(--amber);font-weight:700;margin-top:4px">So the queue is not the source of truth</div>
+        <ul>
+          <li>Every row carries <span style="font-family:monospace">status</span>, <span style="font-family:monospace">attempts</span>, <span style="font-family:monospace">updated_at</span>; a reconciler thread returns stale in-flight rows to <span style="font-family:monospace">pending</span>, or to <span style="font-family:monospace">failed</span> past 3 attempts</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout teal">Decoupling in one number: the accept call returns <b>202 in 180 ms p95</b> — and <b>197 ms p95 even while 14 documents were being ingested</b>. The uploader never waits on the worker.</div>
+  </div>
+  <div class="foot">Source: docs/bench/accept_200.json · docs/bench/backfill_20260728A.json · docs/REPORT_3_4.md §2, §4</div>
+  <div class="notes">The reconciler branch past max attempts is a poor-man's DLQ and we label it as one. Both reconciler statements are single atomic UPDATE ... RETURNING over disjoint attempts predicates, so racing reconcilers can't recover a row twice.</div>
+</section>
+
+<!-- 8 ───────────────────────────────── SCOREBOARD -->
+<section class="slide">
+  <div class="kicker">3.3 · Results</div>
+  <h1 class="head">Every target met — and the two numbers that <span class="hl">don't flatter us are on the slide</span></h1>
+  <div class="body">
+    <div class="tiles">
+      <div class="tile pass"><div class="lbl">Accept p95 · POST /api/videos<br/>target &lt; 250 ms</div><div class="val">180<small> ms</small></div><div class="meta">n=200 · p50 173 ms<span class="badge p">PASS</span></div></div>
+      <div class="tile pass"><div class="lbl">Search p95 during backfill<br/>target ≤ 1.25× baseline</div><div class="val">1.05<small>×</small></div><div class="meta">LLM path · see next slide<span class="badge p">PASS</span></div></div>
+      <div class="tile pass"><div class="lbl">Recall@10 · 14 queries<br/>target ≥ 0.85</div><div class="val">12/14 (0.86)</div><div class="meta">video 1.00 · doc 1.00<span class="badge p">PASS</span></div></div>
+      <div class="tile pass"><div class="lbl">Citation accuracy<br/>target ≥ 0.90</div><div class="val">40/43 (0.93)</div><div class="meta">40 ✓ / 3 ✗ claim-bearing<span class="badge p">PASS</span></div></div>
+      <div class="tile pass"><div class="lbl">Durability · SIGKILL mid-ingest<br/>target: no loss, no dupes</div><div class="val">14 / 14</div><div class="meta">0 lost · 0 failed · 218.9 s<span class="badge p">PASS</span></div></div>
+      <div class="tile pass"><div class="lbl">Citation locator coverage<br/>target 100%</div><div class="val">140 / 140</div><div class="meta">83 mm:ss · 42 p. N · 15 slide N<span class="badge p">PASS</span></div></div>
+      <div class="tile open"><div class="lbl">Ingest throughput<br/>report; stretch &gt; 4.0/s</div><div class="val">1.33 pages/s</div><div class="meta">237 pages / 178.5 s · one worker<span class="badge o">REPORTED</span></div></div>
+      <div class="tile open"><div class="lbl">Cost per document<br/>report</div><div class="val">not measured</div><div class="meta">designed, never instrumented<span class="badge o">OPEN</span></div></div>
+    </div>
+    <div class="callout teal" style="margin-top:4px">Verified by <b>74 unit tests</b> and four benchmark scripts that talk to the running app over HTTP — nothing imports the app's internals, so every number here is end-to-end.</div>
+  </div>
+  <div class="foot">
+    <div>Answer generation: Claude Opus 5 (<span style="font-family:monospace">.env</span>-configured, swappable). Citation accuracy, answer latency and the <span style="font-family:monospace">ask_full</span> ratio are model-dependent; recall, accept latency, throughput and the kill test involve no LLM.</div>
+    <div style="margin-top:5px">Values rounded; count-based scores shown as fractions; exact figures in <span style="font-family:monospace">docs/bench/</span>.</div>
+    <div style="margin-top:5px">Sources: accept_200.json · backfill_20260728A.json · eval_20260728B.json · kill_worker_20260728_220849.json · citation_check_20260728B.md</div>
+  </div>
+  <div class="notes">Do not skip the two amber tiles. Throughput is one machine's number, and cost per document is genuinely unmeasured — both are explained in the closing slides.</div>
+</section>
+
+<!-- 9 ───────────────────────────────── DECOUPLING DEEP DIVE -->
+<section class="slide">
+  <div class="kicker">Deep dive · decoupling proof</div>
+  <h1 class="head">Search survived the backfill — but the honest ratio is the one <span class="hl">without the LLM in it</span></h1>
+  <div class="sub" style="margin-top:12px;font-size:15.5px">The SLO series passed at 1.05×. It passed partly because ~15 s of model latency swamps tens of milliseconds of contention. So we measured a second series with the LLM removed, and reported both.</div>
+  <div class="body" style="padding-top:20px;gap:14px">
+    <table class="data">
+      <tr><th style="width:24%">Series</th><th style="width:16%">Baseline p95</th><th style="width:16%">During backfill p95</th><th style="width:12%">Ratio</th><th>What it tells you</th></tr>
+      <tr>
+        <td><b>ask_full</b> <span class="m">— real question: retrieval + gate + multimodal LLM</span></td>
+        <td class="num">15,178 ms</td>
+        <td class="num">15,882 ms</td>
+        <td class="num t">1.05×</td>
+        <td class="m">What a user actually waits. Passes the ≤ 1.25× target — but the ratio is nearly insensitive by construction, and we say so.</td>
+      </tr>
+      <tr>
+        <td><b>ask_retr</b> <span class="m">— same question, empty scope: both query embeddings and both Qdrant searches still run, zero tokens</span></td>
+        <td class="num">882 ms</td>
+        <td class="num">2,141 ms</td>
+        <td class="num a">2.43×</td>
+        <td class="m">The retrieval path under contention. n=14, one during-backfill round. A proxy: it excludes HNSW traversal, fusion and citation assembly — use the ratio, not the value.</td>
+      </tr>
+      <tr>
+        <td><b>Accept path</b> <span class="m">— POST /api/videos during the same backfill</span></td>
+        <td class="num">180 ms</td>
+        <td class="num">197 ms</td>
+        <td class="num t">flat</td>
+        <td class="m">Registration is untouched by ingest load — the decoupling claim at its strongest. Not a like-for-like ratio: the during-backfill figure is the 14 real document registrations, not the n=200 standalone run.</td>
+      </tr>
+    </table>
+    <div class="callout"><b>The reading:</b> the read path is decoupled in <i>architecture</i> — it never enters the queue — but on one laptop a query's CLIP embedding contends with a backfill's on the same CPU. That is a capacity finding, not a design failure, and it has a named fix: move CLIP off the query box.</div>
+  </div>
+  <div class="foot">Source: docs/bench/backfill_20260728A.json (baseline n=42 over 3 rounds; during n=14 over 1 round) · caveat documented in the file's own method block</div>
+  <div class="notes">If a grader only remembers one slide, make it this one: we found the number that undercut our own claim, published it, and explained what it means. The 2.43× is a single during-round of 14 samples — small n, stated.</div>
+</section>
+
+<!-- 10 ───────────────────────────────── DURABILITY -->
+<section class="slide">
+  <div class="kicker">Deep dive · durability</div>
+  <h1 class="head"><span style="font-family:monospace;font-size:34px">kill -9</span> mid-embedding cost nothing, because recovery is <span class="hl">state-driven, not exception-driven</span></h1>
+  <div class="sub">A crashed worker does not raise, does not run a <span style="font-family:monospace">finally</span>, never sets a status. Idempotency alone does not save you — the reference solution scored 0 of 4 on its first resilience run with perfectly correct idempotent writes, because nothing re-ran the work.</div>
+  <div class="body">
+    <div class="flow">
+      <div class="step"><div class="n">SETUP</div><h5>14 PDFs registered</h5><p>Queue draining normally, 2 documents in flight.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">KILL</div><h5>SIGKILL the worker</h5><p>Both in-flight rows sitting at <span style="font-family:monospace">status: embedding</span>. Held down 20 s.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">SWEEP</div><h5>Reconciler finds them</h5><p><span style="font-family:monospace">updated_at</span> is the lease: in-flight and untouched &gt; 60 s = orphaned. Interval 10 s, max 3 attempts.</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">RESULT</div><h5>14/14 indexed</h5><p>0 lost · 0 failed · 0 non-terminal · 218.9 s elapsed.</p></div>
+    </div>
+    <div class="cols" style="flex:0 0 auto">
+      <div class="col teal">
+        <h3>The proof is in <span style="font-family:monospace">attempts</span></h3>
+        <ul>
+          <li>The <b>2 rows in flight at the kill: <span style="font-family:monospace">attempts: 2</span></b> — they re-ran, once each</li>
+          <li>The other <b>12 rows: <span style="font-family:monospace">attempts: 1</span></b> — still <span style="font-family:monospace">pending</span>, never claimed, never redone</li>
+          <li>Exactly the work that was lost was repeated. Nothing else was.</li>
+        </ul>
+      </div>
+      <div class="col teal">
+        <h3>Three things make it work</h3>
+        <ul>
+          <li><b>Idempotent writes</b> — <span style="font-family:monospace">uuid5</span> point ids, so re-ingest overwrites; duplicates impossible by construction, not by a dedup pass</li>
+          <li><b>Liveness without a heartbeat service</b> — every state-changing call bumps <span style="font-family:monospace">updated_at</span></li>
+          <li><b>Something that re-triggers</b> — the reconciler is the only component that turns a dead row back into runnable work</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot">Source: docs/bench/kill_worker_20260728_220849.json · docs/REPORT_3_4.md §4</div>
+  <div class="notes">The line to land: "SIGKILL is not an exception." Anything built on try/finally recovers nothing here. Postgres as source of truth is what makes the recovery possible, and that is a direct consequence of choosing a queue with no drainable DLQ.</div>
+</section>
+
+<!-- 11 ───────────────────────────────── EVAL-DRIVEN FIXES -->
+<section class="slide">
+  <div class="kicker">Deep dive · eval-driven fixes</div>
+  <h1 class="head">The eval and the citation audit each found a <span class="hl">real bug the unit tests could not</span></h1>
+  <div class="sub">Both were caught the night before submission, both were fixed with tests, and both moved a headline number.</div>
+  <div class="body">
+    <div class="cols">
+      <div class="col amber">
+        <h3>Bug 1 — one prolific source flooded the ranking</h3>
+        <div class="lede">First full eval: recall <b>11/14 (0.79) — FAIL</b>. Video-only 5/5, doc-only 5/5, <b>mixed-corpus 1/4</b>. Excellent at single-corpus questions; bad at the one thing the system exists for.</div>
+        <ul>
+          <li>On one mixed query, 9 of 10 citations came from 4 papers — 5 from a single paper. On another, 10 of 10 were video.</li>
+          <li>Fusion worked; the top-K did not.</li>
+          <li><b>Fix: <span style="font-family:monospace">MAX_PER_SOURCE = 3</span></b>, nine lines after sorting. Each source keeps its best three; the rest are <b>demoted, not dropped</b>.</li>
+          <li><b>Recall 11/14 → 12/14 (0.79 → 0.86) — PASS</b>; mixed 1/4 → 2/4; video and doc unchanged at 1.00.</li>
+        </ul>
+      </div>
+      <div class="col amber">
+        <h3>Bug 2 — a citation pointing one page short</h3>
+        <div class="lede">Every locator was scored against the sentence attached to it. A merely topical citation scores against you.</div>
+        <ul>
+          <li>Both wrong-locator findings had one root cause: <b>a chunk straddling a page boundary was cited to the page it starts on</b>, so a quote from its tail pointed one page early.</li>
+          <li>The chunk always knew its span. The label now reads <span style="font-family:monospace">pp. 9–10</span> (commit <span style="font-family:monospace">96445a5</span>).</li>
+          <li><b>Citation accuracy: 40/43 (0.93)</b> — 40 ✓ / 3 ✗ of the claim-bearing citations.</li>
+          <li style="color:var(--mute)">AI-assisted first pass, human spot-check pending — flagged in the file itself.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">Two misses remain, <b>analysed rather than argued away</b>: the cap bounds one source but does not balance corpora, and a short true chunk with low lexical overlap loses to a vivid frame. Neither fix is one line.</div>
+  </div>
+  <div class="foot">Source: docs/bench/eval_20260728A.json → eval_20260728B.json · docs/bench/citation_check_20260728B.md · docs/REPORT_3_4.md §5</div>
+  <div class="notes">Recall went 0.79 → 0.86 because an eval existed. State the remaining two misses out loud — the analysis is more convincing than a clean 14/14 would be.</div>
+</section>
+
+<!-- 12 ───────────────────────────────── 3.4 FDE THINKING -->
+<section class="slide">
+  <div class="kicker">3.4 · Think like a Forward Deployed Engineer</div>
+  <h1 class="head">Prefect won on <span class="hl">ops burden, not capability</span> — so we paid for it deliberately and said exactly where</h1>
+  <div class="body">
+    <div class="grid4" style="flex:0 0 auto">
+      <div class="card">
+        <div class="tag">MANAGED vs SELF-HOSTED</div>
+        <h4>Every rejection was a cost argument</h4>
+        <p>Redis: not built for multi-step workflows. Custom queue: engineering overhead. Temporal: costly and complex to operate. None said Prefect retries better. It won because a team with no platform engineer can run it — and we accepted the poll latency and the missing DLQ that come with that.</p>
+      </div>
+      <div class="card">
+        <div class="tag">GROUNDED CITATIONS</div>
+        <h4>Locator or nothing, in three layers</h4>
+        <p>An abstain gate on raw cosine before any LLM call (zero tokens on an unanswerable question); a regex that strips out-of-range <span style="font-family:monospace">[n]</span> references from the answer text rather than asking the model to behave; and citation accuracy scored as a metric, not asserted.</p>
+      </div>
+      <div class="card">
+        <div class="tag">RESILIENCE</div>
+        <h4>Postgres is the source of truth</h4>
+        <p>The queue holds work; the database holds state. <span style="font-family:monospace">status</span>, <span style="font-family:monospace">attempts</span> and <span style="font-family:monospace">updated_at</span> make orphan detection a one-line predicate, and the reconciler's exhausted branch is a poor-man's DLQ — labelled as one, not dressed up.</p>
+      </div>
+      <div class="card">
+        <div class="tag">DEMO → PRODUCTION</div>
+        <h4>Four changes, one lens</h4>
+        <p>N workers autoscaled on queue depth (test first for a model lock that serialises them); GPU CLIP off the query box, which fixes the 2.43× contention and throughput at once; shard and replicate Qdrant, keeping the tenant filter; tune the stuck window to the longest healthy gap.</p>
+      </div>
+    </div>
+    <div class="callout">The two OPENs, stated plainly. <b>Cost per document is not measured.</b> Ingest API spend is genuinely $0 — no LLM captioning step, both embedders local on CPU — so the real cost is machine-seconds we never recorded. <b>Throughput is one worker's number.</b> Closing both needs per-run token accounting, a worker-seconds counter, and a price table — and then every trade-off above collapses into dollars per document ingested and dollars per question answered. That is the number a client actually signs. Model A/B (Kimi, GLM) is then a config swap plus an eval re-run.</div>
+  </div>
+  <div class="foot">Source: docs/REPORT_3_4.md §2, §3, §4, §7</div>
+  <div class="notes">The framing: we did not just adopt the recommended queue, we read why it was recommended, noticed every reason was economic, and then built the compensating control for the capability gap.</div>
+</section>
+
+<!-- 13 ───────────────────────────────── CLOSE -->
+<section class="slide">
+  <div class="kicker">What ships</div>
+  <h1 class="head">A system whose numbers you can re-run — <span class="hl">including the ones that aren't flattering</span></h1>
+  <div class="body">
+    <div class="cols">
+      <div class="col teal">
+        <h3>Deliverables</h3>
+        <ul>
+          <li><b>Deployed app on Fly.io</b> — live at https://momentsearch-lozierk.fly.dev (papers-only public corpus); api, worker and clip process groups, one release command</li>
+          <li><b>Repo</b> with the document parser, the second Prefect flow, the reconciler and <b>74 tests</b> (the starter repo had none)</li>
+          <li><b>Benchmark harness</b> — <span style="font-family:monospace">bench_accept.py</span>, <span style="font-family:monospace">bench_backfill.py</span>, <span style="font-family:monospace">kill_worker_test.sh</span>, <span style="font-family:monospace">run_eval.py</span></li>
+          <li><b>Golden set of 14 queries</b> — 5 video-only, 5 document-only, 4 mixed-corpus scored strictly: a mixed query counts only if a video <i>and</i> a document expectation both appear</li>
+          <li><b>Written FDE analysis</b> with every figure traced to a JSON in <span style="font-family:monospace">docs/bench/</span></li>
+        </ul>
+      </div>
+      <div class="col amber">
+        <h3>What we'd do next, in order</h3>
+        <ul>
+          <li><b>Instrument cost per document</b> — token accounting per run, worker-seconds per document, a price table. Two numbers replace every latency argument.</li>
+          <li><b>Move CLIP to its own box</b> and re-measure the 2.43× retrieval ratio with the query path off the ingest CPU.</li>
+          <li><b>Scale to N workers</b> and check for a model lock before believing any throughput multiple.</li>
+          <li><b>Per-corpus quota in fusion</b> — the fix the two remaining mixed-query misses point at.</li>
+          <li><b>Human spot-check</b> of the 40/43 (0.93) citation pass, starting with the 3 ✗ rows.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout teal">The claim is not that it is fast. The claim is that <b>every number here was produced by a script anyone can run again</b> — and where the number was inconvenient, it is on the slide anyway.</div>
+  </div>
+  <div class="foot">Kurt Lozier · Assignment 3, Moment Search · Forward Deployed Engineering Bootcamp · July 29, 2026</div>
+  <div class="notes">Close on reproducibility and honesty rather than on the headline metric. The two OPENs are the credibility, not the weakness.</div>
+</section>
+
+</div></div>
+
+<div id="bar"></div>
+<div id="count">1 / 13</div>
+<div id="hint">← → navigate · N notes · F fullscreen</div>
+<div id="notes"><h6>Speaker notes</h6><div id="notesBody"></div></div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var bar = document.getElementById('bar');
+  var count = document.getElementById('count');
+  var notes = document.getElementById('notes');
+  var notesBody = document.getElementById('notesBody');
+  var canvas = document.getElementById('canvas');
+
+  function fit(){
+    var s = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    canvas.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit); fit();
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function(s, k){ s.classList.toggle('on', k === i); });
+    count.textContent = (i + 1) + ' / ' + slides.length;
+    bar.style.width = ((i + 1) / slides.length * 100) + '%';
+    var nd = slides[i].querySelector('.notes');
+    notesBody.textContent = nd ? nd.textContent : '(no notes)';
+  }
+  function next(){ show(i + 1); }
+  function prev(){ show(i - 1); }
+
+  document.addEventListener('keydown', function(e){
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === ' ' || k === 'PageDown'){ e.preventDefault(); next(); }
+    else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp'){ e.preventDefault(); prev(); }
+    else if (k === 'Home'){ show(0); }
+    else if (k === 'End'){ show(slides.length - 1); }
+    else if (k === 'n' || k === 'N'){ notes.classList.toggle('on'); }
+    else if (k === 'f' || k === 'F'){
+      if (!document.fullscreenElement){ document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    }
+  });
+
+  document.addEventListener('click', function(e){
+    if (notes.contains(e.target)) return;
+    if (e.clientX < window.innerWidth * 0.22) prev(); else next();
+  });
+
+  var x0 = null;
+  document.addEventListener('touchstart', function(e){ x0 = e.changedTouches[0].clientX; });
+  document.addEventListener('touchend', function(e){
+    if (x0 === null) return;
+    var dx = e.changedTouches[0].clientX - x0;
+    if (Math.abs(dx) > 45){ dx < 0 ? next() : prev(); }
+    x0 = null;
+  });
+
+  // .notes divs are content for the notes pane only
+  var st = document.createElement('style');
+  st.textContent = '.notes{display:none}';
+  document.head.appendChild(st);
+
+  show(0);
+})();
+</script>
+</body>
+</html>

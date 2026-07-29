@@ -1,0 +1,163 @@
+{
+  "test": "3.3 durability — SIGKILL worker mid-ingest",
+  "started_utc": "2026-07-28T22:08:49.024598+00:00",
+  "config": {
+    "reconcile_stuck_s": 60.0,
+    "reconcile_interval_s": 10.0,
+    "down_s": 20.0,
+    "timeout_s": 900.0,
+    "files": 14,
+    "base": "http://127.0.0.1:8000"
+  },
+  "inflight_at_kill": [
+    "doc_eb02cb16e7",
+    "doc_6acf75038f"
+  ],
+  "elapsed_s": 218.9,
+  "passed": true,
+  "failed": [],
+  "lost": [],
+  "non_terminal": [],
+  "documents": [
+    {
+      "id": "doc_eb02cb16e7",
+      "file": "business_deck_02",
+      "kind": "deck",
+      "accept_ms": 192,
+      "status": "indexed",
+      "attempts": 2,
+      "error": null,
+      "status_at_kill": "embedding"
+    },
+    {
+      "id": "doc_6acf75038f",
+      "file": "business_deck_05",
+      "kind": "deck",
+      "accept_ms": 181,
+      "status": "indexed",
+      "attempts": 2,
+      "error": null,
+      "status_at_kill": "embedding"
+    },
+    {
+      "id": "doc_5f2bcc1082",
+      "file": "business_deck_03",
+      "kind": "deck",
+      "accept_ms": 179,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_81ae94fa11",
+      "file": "business_deck_04",
+      "kind": "deck",
+      "accept_ms": 178,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_9a47c01313",
+      "file": "business_deck_06",
+      "kind": "deck",
+      "accept_ms": 174,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_777bfe1691",
+      "file": "business_deck_07",
+      "kind": "deck",
+      "accept_ms": 190,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_f2a38b83b9",
+      "file": "business_deck_08",
+      "kind": "deck",
+      "accept_ms": 179,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_910cceb0ac",
+      "file": "business_deck_09",
+      "kind": "deck",
+      "accept_ms": 180,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_f84f868cc9",
+      "file": "business_deck_01",
+      "kind": "deck",
+      "accept_ms": 181,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_d1491c94b7",
+      "file": "AJMC_01_2018_Waxman2final.pdf",
+      "kind": "paper",
+      "accept_ms": 189,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_ac2768cbcb",
+      "file": "Attention_is_All_You_Need_1706.03762v7.pdf",
+      "kind": "paper",
+      "accept_ms": 228,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_af9dbb100c",
+      "file": "Clip_Paper_2103.00020v1.pdf",
+      "kind": "paper",
+      "accept_ms": 242,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_58c36d361e",
+      "file": "Original_RAG_Paper_2005.11401v4.pdf",
+      "kind": "paper",
+      "accept_ms": 181,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    },
+    {
+      "id": "doc_fca4c67cc2",
+      "file": "RAG_Survey_2312.10997v5.pdf",
+      "kind": "paper",
+      "accept_ms": 186,
+      "status": "indexed",
+      "attempts": 1,
+      "error": null,
+      "status_at_kill": "pending"
+    }
+  ]
+}

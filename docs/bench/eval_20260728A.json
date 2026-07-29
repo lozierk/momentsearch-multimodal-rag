@@ -1,0 +1,3265 @@
+{
+  "benchmark": "recall_at_k",
+  "run_id": "20260728A",
+  "started_utc": "2026-07-28T21:58:44.670863+00:00",
+  "base_url": "http://127.0.0.1:8000",
+  "top_k": 10,
+  "golden_set": "eval/golden_set.json",
+  "target_recall": 0.85,
+  "verdict": "FAIL",
+  "aggregate": {
+    "asked": 14,
+    "hit": 11,
+    "recall": 0.786,
+    "by_kind": {
+      "video": {
+        "asked": 5,
+        "hit": 5,
+        "recall": 1.0
+      },
+      "doc": {
+        "asked": 5,
+        "hit": 5,
+        "recall": 1.0
+      },
+      "mixed": {
+        "asked": 4,
+        "hit": 1,
+        "recall": 0.25
+      }
+    }
+  },
+  "ask_latency_ms": {
+    "p50": 12925.5,
+    "p95": 16175.9
+  },
+  "sources_not_indexed": [],
+  "scoring_rules": {
+    "video_doc": ">=1 expected source in citations",
+    "mixed": "at least one video AND one document expectation (stricter)",
+    "match": "case-insensitive substring of citation.video_id or citation.title"
+  },
+  "results": [
+    {
+      "id": "v1",
+      "kind": "video",
+      "question": "An LLM is described as just two files you could put on a laptop — what are those two files?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_zjkBMFhNj_g",
+          "locator_hint": "~00:30-03:00, the 'two files: parameters + run.c' framing"
+        }
+      ],
+      "latency_ms": 10106.2,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "The two files are a **parameters (weights) file** and a small **run.c code file** that runs the model.\n\nThe speaker introduces this at [9]: \"a large language model is just two files right um there will be two files in this hypothetical directory so for example working with a specific example of the Llama 270b model.\" The slide shown at [1] makes the contents explicit — a directory named `llama-2-70b` containing a `parameters` file of **140GB** and a `run.c` file of **~500 lines of C code**, sitting next to a MacBook.\n\nHe then explains what you do with them at [1]: \"you can take these two files you compile your C code you get a binary that you can point at the parameters and you can talk to this language model,\" e.g. asking it to \"write a poem about the company scale Ai.\"\n\nHe stresses the minimal setup at [7]: the \"model just requires two files just requires a MacBook,\" while noting he was slightly cheating in the demo since it was running a 7 billion parameter model rather than the 70B, which \"would be running about 10 times slower.\"",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 179384,
+          "timestamp": "02:59",
+          "page": null,
+          "idx": 1,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000001.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=179",
+          "score": 0.0433,
+          "transcript": "else you can take these two files you compile your C code you get a binary that you can point at the parameters and you can talk to this language model so for example you can send it text like for example write a poem about the company scale Ai and this language model will start generating text and in this case it will follow the directions and",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 15916,
+          "timestamp": "00:15",
+          "page": null,
+          "idx": 2,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000002.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=15",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 2629480,
+          "timestamp": "43:49",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=2629",
+          "score": 0.0167,
+          "transcript": "through browsing you have an equivalent of uh random access memory or Ram uh which in this case for an llm would be the context window of the maximum number of words that you can have to predict the next word and sequence I didn't go into the full details here but this context window is your finite precious resource of your working memory of your",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 777332,
+          "timestamp": "12:57",
+          "page": null,
+          "idx": 7,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=777",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 2665920,
+          "timestamp": "44:25",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=2665",
+          "score": 0.0164,
+          "transcript": "there's equivalence of in the random access memory in the context window there's equivalent of user space and kernel space and a lot of other equivalents to today's operating systems that I didn't fully cover but fundamentally the other reason that I really like this analogy of llms kind of becoming a bit of an operating system ecosystem is that there are also some",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 717537,
+          "timestamp": "11:57",
+          "page": null,
+          "idx": 6,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000006.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=717",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 207120,
+          "timestamp": "03:27",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=207",
+          "score": 0.0161,
+          "transcript": "model just requires two files just requires a MacBook I'm slightly cheating here because this was not actually in terms of the speed of this uh video here this was not running a 70 billion parameter model it was only running a 7 billion parameter Model A 70b would be running about 10 times slower but I wanted to give you an idea of uh sort of just the text generation and what that",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 246691,
+          "timestamp": "04:06",
+          "page": null,
+          "idx": 28,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000028.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=246",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 19439,
+          "timestamp": "00:19",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=19",
+          "score": 0.0159,
+          "transcript": "language models director Scott okay so let's begin first of all what is a large language model really well a large language model is just two files right um there will be two files in this hypothetical directory so for example working with a specific example of the Llama 270b model this is a large",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 159156,
+          "timestamp": "02:39",
+          "page": null,
+          "idx": 18,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000018.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=159",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "yt_zjkBMFhNj_g"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "yt_LPZh9BOjkQs (00:15)",
+        "yt_LPZh9BOjkQs (02:39)",
+        "yt_LPZh9BOjkQs (04:06)",
+        "yt_zjkBMFhNj_g (00:19)",
+        "yt_zjkBMFhNj_g (02:59)",
+        "yt_zjkBMFhNj_g (03:27)",
+        "yt_zjkBMFhNj_g (11:57)",
+        "yt_zjkBMFhNj_g (12:57)",
+        "yt_zjkBMFhNj_g (43:49)",
+        "yt_zjkBMFhNj_g (44:25)"
+      ]
+    },
+    {
+      "id": "v2",
+      "kind": "video",
+      "question": "How long would it take a human being to read all of the text a large language model is trained on?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_LPZh9BOjkQs",
+          "locator_hint": "~01:00-03:30, training-data scale in human-reading years"
+        }
+      ],
+      "latency_ms": 7647.3,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Over 2,600 years** — that's how long a person reading nonstop would need to get through GPT-3's training text [1].\n\nAs stated at 01:43: \"For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, it would take over 2600 years.\" The same moment adds that \"Larger models since then train on much, much more,\" so for today's models the figure would be considerably higher [1].\n\nFor a sense of scale on the computation rather than the reading, a separate illustration asks you to imagine performing \"one billion additions and multiplications every single second\" [8], and then answers that doing all the operations involved in training the largest language models would take \"well over 100 million years\" — far more than a year or even 10,000 years [9].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 103451,
+          "timestamp": "01:43",
+          "page": null,
+          "idx": 11,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000011.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=103",
+          "score": 0.0488,
+          "transcript": "For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, it would take over 2600 years. Larger models since then train on much, much more. You can think of training a little bit like tuning the dials on a big machine. The way that a language model behaves is entirely determined by these",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 2212405,
+          "timestamp": "36:52",
+          "page": null,
+          "idx": 26,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000026.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=2212",
+          "score": 0.0451,
+          "transcript": "consume words they just go chunk chunk chunk chunk chunk chunk chunk and then how they sample words in a sequence and every one of these chunks takes roughly the same amount of time so uh this is basically large language working in a system one setting so a lot of people I think are inspired by what it could be",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 127324,
+          "timestamp": "02:07",
+          "page": null,
+          "idx": 14,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000014.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=127",
+          "score": 0.0445,
+          "transcript": "Instead, they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many example pieces of text. One of these training examples could be just a handful of words, or it could be thousands, but in either case, the way this works is to pass in all but the last word from that example into the model and compare the prediction that it makes with the true last word from the example.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 1",
+          "page": 1,
+          "idx": 0,
+          "thumbnail": "/api/frame/doc_32b809a098/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000000.jpg?u=default",
+          "score": 0.0439,
+          "transcript": "million training examples it was trained on. We release our code and pre-trained model weights at https://github.com/OpenAI/CLIP. 1. Introduction and Motivating Work Pre-training methods which learn directly from raw text have revolutionized NLP over the last few years (Dai & Le, 2015; Peters et al., 2018; Howard & Ruder, 2018; Rad- ford et al., 2018; Devlin et al., 2018; Raffel et al., 2019). *Equal contribution 1OpenAI, San Francisco, CA 94110, USA. Correspondence to: <{alec, jongwook}@openai.com>. Task-agnostic objectives such as autoregressive and masked language modeling have scaled across many orders of mag- nitude in compute, model capacity, and data, steadily im- proving capabilities. The development of “text-to-text” as a standardized input-output interface (McCann et al., 2018; Radford et al., 2019; Raffel et al., 2019) has enabled task- agnostic architectures to zero-shot transfer to downstream datasets removing the need for specialized output heads or dataset speciﬁc customization. Flagship systems like GPT-3 (Brown et al., 2020) are now competitive across many tasks with bespoke models while requiring little to no dataset speciﬁc training data. These results suggest that the aggregate supervision acces- sible to modern pre-training methods within web-scale col- lections of text surpasses that of high-quality crowd-labeled NLP datasets. However, in other ﬁelds such as computer vision it is still standard practice to pre-train models on crowd-labeled datasets such as ImageNet (Deng et al., 2009). Could scalable pre-training methods which learn directly from web text result in a similar breakthrough in computer vision? Prior work is encouraging. Over 20 years ago Mori et al. (1999) explored improving content based image retrieval by training a model to pre- dict the nouns and adjectives in text documents paired with images. Quattoni et al. (2007) demonstrated it was possi- ble to learn more data efﬁcient image representations via manifold learning in the weight space of",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 39789,
+          "timestamp": "00:39",
+          "page": null,
+          "idx": 5,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000005.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=39",
+          "score": 0.0413,
+          "transcript": "seeing what it would predict to start the AI's answer, and then repeating this over and over with a growing script completing the dialogue. When you interact with a chatbot, this is exactly what's happening. A large language model is a sophisticated mathematical function that predicts what word comes next for any piece of text. Instead of predicting one word with certainty, though,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 1",
+          "page": 1,
+          "idx": 0,
+          "thumbnail": "/api/frame/doc_435222fa24/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000000.jpg?u=default",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 0,
+          "timestamp": "00:00",
+          "page": null,
+          "idx": 0,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=0",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 183458,
+          "timestamp": "03:03",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=183",
+          "score": 0.0164,
+          "transcript": "but it also starts to make more reasonable predictions on text that it's never seen before. Given the huge number of parameters and the enormous amount of training data, the scale of computation involved in training a large language model is mind-boggling. To illustrate, imagine that you could perform one billion additions and multiplications every single second.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 206060,
+          "timestamp": "03:26",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=206",
+          "score": 0.0161,
+          "transcript": "How long do you think it would take for you to do all of the operations involved in training the largest language models? Do you think it would take a year? Maybe something like 10,000 years? The answer is actually much more than that. It's well over 100 million years. This is only part of the story, though.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 7",
+          "page": 7,
+          "idx": 6,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000006.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000006.jpg?u=default",
+          "score": 0.0159,
+          "transcript": "million sentence pairs. Sentences were encoded using byte-pair encoding [3], which has a shared source- target vocabulary of about 37000 tokens. For English-French, we used the significantly larger WMT 2014 English-French dataset consisting of 36M sentences and split tokens into a 32000 word-piece vocabulary [38]. Sentence pairs were batched together by approximate sequence length. Each training batch contained a set of sentence pairs containing approximately 25000 source tokens and 25000 target tokens. 5.2 Hardware and Schedule We trained our models on one machine with 8 NVIDIA P100 GPUs. For our base models using the hyperparameters described throughout the paper, each training step took about 0.4 seconds. We trained the base models for a total of 100,000 steps or 12 hours. For our big models,(described on the bottom line of table 3), step time was 1.0 seconds. The big models were trained for 300,000 steps (3.5 days). 5.3 Optimizer We used the Adam optimizer [20] with β1 = 0.9, β2 = 0.98 and ϵ = 10−9. We varied the learning rate over the course of training, according to the formula: lrate = d−0.5 model · min(step_num−0.5, step_num · warmup_steps−1.5) (3) This corresponds to increasing the learning rate linearly for the first warmup_steps training steps, and decreasing it thereafter proportionally to the inverse square root of the step number. We used warmup_steps = 4000. 5.4 Regularization We employ three types of regularization during training: 7 Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and English-to-French newstest2014 tests at a fraction of the training cost. Model BLEU Training Cost (FLOPs) EN-DE EN-FR EN-DE EN-FR ByteNet [18] 23.75 Deep-Att + PosUnk [39] 39.2 1.0 · 1020 GNMT + RL [38] 24.6 39.92 2.3 · 1019 1.4 · 1020 ConvS2S [9] 25.16 40.46 9.6 · 1018 1.5 ·",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "yt_LPZh9BOjkQs"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_1c8e196fec (p. 7)",
+        "doc_32b809a098 (p. 1)",
+        "doc_435222fa24 (p. 1)",
+        "yt_LPZh9BOjkQs (00:39)",
+        "yt_LPZh9BOjkQs (01:43)",
+        "yt_LPZh9BOjkQs (02:07)",
+        "yt_LPZh9BOjkQs (03:03)",
+        "yt_LPZh9BOjkQs (03:26)",
+        "yt_zjkBMFhNj_g (00:00)",
+        "yt_zjkBMFhNj_g (36:52)"
+      ]
+    },
+    {
+      "id": "v3",
+      "kind": "video",
+      "question": "Show me the animation where words are drawn as arrows pointing in different directions in a high-dimensional embedding space.",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~04:00-09:00, embedding-space visualisation (visual-branch query)"
+        }
+      ],
+      "latency_ms": 14787.1,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "The clearest example is the frame at 00:52, where a list of words (\"All data in deep learning must be represented as vectors\") is transformed under the label \"Embedding\" into a set of arrows radiating in many different directions from the origin, each labelled with its word [4]. The narration over it explains the idea being animated: \"The first step in a transformer is to associate each token with a high-dimensional vector, what we call its embedding... directions in this high-dimensional space of all possible embeddings can correspond with semantic meaning\" [4].\n\nThe setup for why arrows are used at all is at 13:36, which contrasts a 3D vector (arrow with x, y, z components) against a word vector for \"aardvark\": \"We often call this embedding a word, which invites you to think of these vectors very geometrically as points in some high dimensional space... In GPT-3 they have 12,288 dimensions, and as you'll see, it matters to work in a space that has a lot of distinct directions\" [2]. At 14:04 the \"Embedding space, 12,288-dimensional\" cloud is drawn with a handful of blue arrows on a 3D \"slice,\" and the narration explains the trick used for the animations: \"I'm going to do an analogous thing by choosing a three-dimensional slice through this very high dimensional space, and projecting the word vectors down onto that and displaying the results\" [1].\n\nTwo further animations use the same arrow convention for specific words: at 14:58 the vectors E(king), E(queen), E(man) and E(woman) are drawn as coloured arrows pointing in different directions to illustrate that \"directions in the space can carry semantic meaning,\" via the difference between the vectors for woman and man [3]; and at 14:31 grey arrows for E(gate), E(dome), E(building), E(towers) etc. surround a highlighted E(tower) arrow, showing embeddings closest to it [10].\n\nThe same style also appears later at 23:58, where words from the Frost poem (\"one,\" \"of two roads,\" \"symbolizing choice,\" \"contrasting the original with the familiar\") are drawn as labelled arrows in a 3D grid while the narration talks about embeddings encoding \"higher level and more abstract ideas... Things like sentiment and tone and whether it's a poem\" [5].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 844027,
+          "timestamp": "14:04",
+          "page": null,
+          "idx": 31,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000031.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=844",
+          "score": 0.0496,
+          "transcript": "In the same way that you could take a two-dimensional slice through a 3D space and project all the points onto that slice, for the sake of animating word embeddings that a simple model is giving me, I'm going to do an analogous thing by choosing a three-dimensional slice through this very high dimensional space, and projecting the word vectors down onto that and displaying the results. The big idea here is that as a model tweaks and tunes its weights to determine",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 816800,
+          "timestamp": "13:36",
+          "page": null,
+          "idx": 30,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000030.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=816",
+          "score": 0.0488,
+          "transcript": "We often call this embedding a word, which invites you to think of these vectors very geometrically as points in some high dimensional space. Visualizing a list of three numbers as coordinates for points in 3D space would be no problem, but word embeddings tend to be much much higher dimensional. In GPT-3 they have 12,288 dimensions, and as you'll see, it matters to work in a space that has a lot of distinct directions.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 898480,
+          "timestamp": "14:58",
+          "page": null,
+          "idx": 33,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000033.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=898",
+          "score": 0.0488,
+          "transcript": "And if you want to pull up some Python and play along at home, this is the specific model that I'm using to make the animations. It's not a transformer, but it's enough to illustrate the idea that directions in the space can carry semantic meaning. A very classic example of this is how if you take the difference between the vectors for woman and man, something you would visualize as a little vector in the space connecting the tip of one to the tip of the other,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 52305,
+          "timestamp": "00:52",
+          "page": null,
+          "idx": 2,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000002.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=52",
+          "score": 0.0435,
+          "transcript": "let's simplify by pretending that tokens are always just words. The first step in a transformer is to associate each token with a high-dimensional vector, what we call its embedding. The most important idea I want you to have in mind is how directions in this high-dimensional space of all possible embeddings can correspond with semantic meaning. In the last chapter we saw an example for how direction can correspond to gender,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1438395,
+          "timestamp": "23:58",
+          "page": null,
+          "idx": 55,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000055.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1438",
+          "score": 0.0392,
+          "transcript": "meaning from all the other embeddings, which themselves are getting more and more nuanced, the hope is that there's the capacity to encode higher level and more abstract ideas about a given input beyond just descriptors and grammatical structure. Things like sentiment and tone and whether it's a poem and what underlying scientific truths are relevant to the piece and things like that.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 796020,
+          "timestamp": "13:16",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=796",
+          "score": 0.0161,
+          "transcript": "Now you need to actually update the embeddings, allowing words to pass information to whichever other words they're relevant to. For example, you want the embedding of Fluffy to somehow cause a change to Creature that moves it to a different part of this 12,000-dimensional embedding space that more specifically encodes a Fluffy creature. What I'm going to do here is first show you the most straightforward",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 366137,
+          "timestamp": "06:06",
+          "page": null,
+          "idx": 14,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000014.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=366",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 151198,
+          "timestamp": "02:31",
+          "page": null,
+          "idx": 17,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000017.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=151",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 71716,
+          "timestamp": "01:11",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=71",
+          "score": 0.0156,
+          "transcript": "in the sense that adding a certain step in this space can take you from the embedding of a masculine noun to the embedding of the corresponding feminine noun. That's just one example you could imagine how many other directions in this high-dimensional space could correspond to numerous other aspects of a word's meaning. The aim of a transformer is to progressively adjust these embeddings",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 871253,
+          "timestamp": "14:31",
+          "page": null,
+          "idx": 32,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000032.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=871",
+          "score": 0.0154,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "yt_wjZofJX0v4M"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "yt_LPZh9BOjkQs (02:31)",
+        "yt_eMlx5fFNoYc (00:52)",
+        "yt_eMlx5fFNoYc (01:11)",
+        "yt_eMlx5fFNoYc (06:06)",
+        "yt_eMlx5fFNoYc (13:16)",
+        "yt_eMlx5fFNoYc (23:58)",
+        "yt_wjZofJX0v4M (13:36)",
+        "yt_wjZofJX0v4M (14:04)",
+        "yt_wjZofJX0v4M (14:31)",
+        "yt_wjZofJX0v4M (14:58)"
+      ]
+    },
+    {
+      "id": "v4",
+      "kind": "video",
+      "question": "What does turning the temperature up or down do to the probability distribution the model samples the next word from?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~19:00-23:00, softmax with temperature"
+        }
+      ],
+      "latency_ms": 12489.4,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Direct answer:** Temperature is a constant T divided into the exponents of the softmax — a larger T flattens the distribution toward uniform (giving more weight to the lower values), while a smaller T sharpens it so the biggest values dominate, with T = 0 putting all the weight on the maximum [1].\n\nThe mechanism is described at 24:03: the softmax is used \"with a constant T thrown into the denominator of those exponents. We call it the temperature, since it vaguely resembles the role of temperature in certain thermodynamics equations, and the effect is that when T is larger, you give more weight to the lower values, meaning the distribution is a little bit more uniform, and if T is smaller, then the bigger values will dominate more\" [1]. The continuation at 24:30 completes the sharpening extreme: \"aggressively, where in the extreme, setting T equal to zero means all of the weight goes to maximum value\" [2]. You can see this flattening in the frames — at T = 4.05 the top entry only carries 0.49 of the probability [1], and at T = 7.00 the same logits give an even flatter spread with the maximum down to 0.33 and the smaller entries lifted to 0.04–0.14 [5]. Contrast this with plain softmax (no temperature), where a value meaningfully bigger than the rest dominates, e.g. 0.58 for the largest logit, so \"if you were sampling from it you'd almost certainly just be picking the maximizing\" element [3, 7].\n\nPractically, this changes the text that gets generated. At temperature zero \"it always goes with the most predictable word,\" which with the seed \"once upon a time there was a\" produced \"a trite derivative of Goldilocks,\" whereas \"a higher temperature gives it a chance to choose less likely words, but it comes with a risk\" — the T = 5 story started more originally, about a young web artist from South Korea, but \"quickly degenerates into nonsense\"; the API in fact caps temperature at 2 [2, 8]. This is the same trade-off flagged earlier at 01:13: \"the output tends to look a lot more natural if you allow it to select less likely words along the way at random,\" which is why a deterministic model gives a different answer each run [6].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1443013,
+          "timestamp": "24:03",
+          "page": null,
+          "idx": 53,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000053.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1443",
+          "score": 0.048,
+          "transcript": "function, with a constant T thrown into the denominator of those exponents. We call it the temperature, since it vaguely resembles the role of temperature in certain thermodynamics equations, and the effect is that when T is larger, you give more weight to the lower values, meaning the distribution is a little bit more uniform, and if T is smaller, then the bigger values will dominate more",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1470240,
+          "timestamp": "24:30",
+          "page": null,
+          "idx": 54,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000054.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1470",
+          "score": 0.0469,
+          "transcript": "aggressively, where in the extreme, setting T equal to zero means all of the weight goes to maximum value. For example, I'll have GPT-3 generate a story with the seed text, \"once upon a time there was A\", but I'll use different temperatures in each case. Temperature zero means that it always goes with the most predictable word,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1415787,
+          "timestamp": "23:35",
+          "page": null,
+          "idx": 52,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000052.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1415",
+          "score": 0.044,
+          "transcript": "and then you can take the sum of all those positive values and divide each term by that sum, which normalizes it into a list that adds up to 1. You'll notice that if one of the numbers in the input is meaningfully bigger than the rest, then in the output the corresponding term dominates the distribution, so if you were sampling from it you'd almost certainly just be picking the maximizing",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1061840,
+          "timestamp": "17:41",
+          "page": null,
+          "idx": 39,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000039.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1061",
+          "score": 0.039,
+          "transcript": "If you play around with this, you'll notice that the plural ones do indeed seem to consistently give higher values than the singular ones, indicating that they align more with this direction. It's also fun how if you take this dot product with the embeddings of the words one, two, three, and so on, they give increasing values, so it's as if we can quantitatively measure how plural the model finds a given word.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1524693,
+          "timestamp": "25:24",
+          "page": null,
+          "idx": 55,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000055.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1524",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 73080,
+          "timestamp": "01:13",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=73",
+          "score": 0.0167,
+          "transcript": "In doing this, the output tends to look a lot more natural if you allow it to select less likely words along the way at random. So what this means is even though the model itself is deterministic, a given prompt typically gives a different answer each time it's run. Models learn how to make these predictions by processing an enormous amount of text, typically pulled from the internet.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1361333,
+          "timestamp": "22:41",
+          "page": null,
+          "idx": 50,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000050.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1361",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1488283,
+          "timestamp": "24:48",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1488",
+          "score": 0.0164,
+          "transcript": "and what you get ends up being a trite derivative of Goldilocks. A higher temperature gives it a chance to choose less likely words, but it comes with a risk. In this case, the story starts out more originally, about a young web artist from South Korea, but it quickly degenerates into nonsense. Technically speaking, the API doesn't actually let you pick a temperature bigger than 2.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 138440,
+          "timestamp": "02:18",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=138",
+          "score": 0.0161,
+          "transcript": "Instead, they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many example pieces of text. One of these training examples could be just a handful of words, or it could be thousands, but in either case, the way this works is to pass in all but the last word from that example into the model and compare the prediction that it makes with the true last word from the example.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 627663,
+          "timestamp": "10:27",
+          "page": null,
+          "idx": 24,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000024.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=627",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "yt_wjZofJX0v4M"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "yt_LPZh9BOjkQs (01:13)",
+        "yt_LPZh9BOjkQs (02:18)",
+        "yt_eMlx5fFNoYc (10:27)",
+        "yt_wjZofJX0v4M (17:41)",
+        "yt_wjZofJX0v4M (22:41)",
+        "yt_wjZofJX0v4M (23:35)",
+        "yt_wjZofJX0v4M (24:03)",
+        "yt_wjZofJX0v4M (24:30)",
+        "yt_wjZofJX0v4M (24:48)",
+        "yt_wjZofJX0v4M (25:24)"
+      ]
+    },
+    {
+      "id": "v5",
+      "kind": "video",
+      "question": "In the animated walkthrough of the attention pattern grid, why are the entries below the diagonal forced to negative infinity before the softmax?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~11:00-15:00, masking the attention grid"
+        }
+      ],
+      "latency_ms": 8551.7,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Because setting them to −∞ makes softmax turn them into exactly zero while keeping each column normalized — the trick used to stop later tokens from influencing earlier ones (masking).**\n\nAt 12:12 the narration explains that you can't just zero out those entries directly: \"but if you did that the columns wouldn't add up to one anymore, they wouldn't be normalized. So instead, a common way to do this is that before applying softmax, you set all of those entries to be negative infinity. If you do that, then after applying softmax, all of those get turned into zero, but the columns stay normalized. This process is called masking.\" The accompanying frame shows the unnormalized grid with −∞ filling everything below the diagonal, and the post-softmax grid with 0.00 in exactly those positions while the remaining entries in each column sum to one [1].\n\nAt 12:38 the purpose of the mask is stated: \"even though this is more relevant during the training phase than it would be, say, running it as a chatbot or something like that, you do always apply this masking to prevent later tokens from influencing earlier ones\" — i.e. the below-diagonal entries correspond to earlier words attending to later words, which must contribute nothing [2].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 732274,
+          "timestamp": "12:12",
+          "page": null,
+          "idx": 28,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000028.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=732",
+          "score": 0.0496,
+          "transcript": "but if you did that the columns wouldn't add up to one anymore, they wouldn't be normalized. So instead, a common way to do this is that before applying softmax, you set all of those entries to be negative infinity. If you do that, then after applying softmax, all of those get turned into zero, but the columns stay normalized. This process is called masking. There are versions of attention where you don't apply it, but in our GPT example,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 758426,
+          "timestamp": "12:38",
+          "page": null,
+          "idx": 29,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000029.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=758",
+          "score": 0.0465,
+          "transcript": "even though this is more relevant during the training phase than it would be, say, running it as a chatbot or something like that, you do always apply this masking to prevent later tokens from influencing earlier ones. Another fact that's worth reflecting on about this attention pattern is how its size is equal to the square of the context size. So this is why context size can be a really huge bottleneck for large language models,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 653816,
+          "timestamp": "10:53",
+          "page": null,
+          "idx": 25,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000025.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=653",
+          "score": 0.0456,
+          "transcript": "A small technical detail that I didn't mention is that for numerical stability, it happens to be helpful to divide all of these values by the square root of the dimension in that key query space. Then this softmax that's wrapped around the full expression is meant to be understood to apply column by column. As to that v term, we'll talk about it in just a second.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 627663,
+          "timestamp": "10:27",
+          "page": null,
+          "idx": 24,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000024.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=627",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 600060,
+          "timestamp": "10:00",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=600",
+          "score": 0.0164,
+          "transcript": "In our picture, after you apply softmax to all of the columns, we'll fill in the grid with these normalized values. At this point you're safe to think about each column as giving weights according to how relevant the word on the left is to the corresponding value at the top. We call this grid an attention pattern. Now if you look at the original transformer paper,",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 930172,
+          "timestamp": "15:30",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=930",
+          "score": 0.0161,
+          "transcript": "you apply the same weighted sum across all of the columns in this picture, producing a sequence of changes, adding all of those changes to the corresponding embeddings, produces a full sequence of more refined embeddings popping out of the attention block. Zooming out, this whole process is what you would describe as a single head of attention. As I've described things so far, this process is parameterized by three distinct",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 151198,
+          "timestamp": "02:31",
+          "page": null,
+          "idx": 17,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000017.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=151",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 301693,
+          "timestamp": "05:01",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=301",
+          "score": 0.0159,
+          "transcript": "going to be to understand how to read the underlying matrices. I'm glossing over some details about some normalization steps that happen in between, but this is after all a high-level preview. After that, the process essentially repeats, you go back and forth between attention blocks and multi-layer perceptron blocks, until at the very end the hope is that all of the essential meaning",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1229174,
+          "timestamp": "20:29",
+          "page": null,
+          "idx": 47,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000047.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1229",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000003.jpg?u=default",
+          "score": 0.0154,
+          "transcript": "optimized matrix multiplication code. While for small values of dk the two mechanisms perform similarly, additive attention outperforms dot product attention without scaling for larger values of dk [3]. We suspect that for large values of dk, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients 4. To counteract this effect, we scale the dot products by 1 √dk . 3.2.2 Multi-Head Attention Instead of performing a single attention function with dmodel-dimensional keys, values and queries, we found it beneficial to linearly project the queries, keys and values h times with different, learned linear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding dv-dimensional 4To illustrate why the dot products get large, assume that the components of q and k are independent random variables with mean 0 and variance 1. Then their dot product, q · k = Pdk i=1 qiki, has mean 0 and variance dk. 4 output values. These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2. Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this. MultiHead(Q, K, V ) = Concat(head1, ..., headh)W O where headi = Attention(QW Q i , KW K i , V W V i ) Where the projections are parameter matrices W Q i ∈Rdmodel×dk, W K i ∈Rdmodel×dk, W V i ∈Rdmodel×dv and W O ∈Rhdv×dmodel. In this work we employ h = 8 parallel attention layers, or heads. For each of these we use dk = dv = dmodel/h = 64. Due to the reduced dimension of",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "yt_eMlx5fFNoYc"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_1c8e196fec (p. 4)",
+        "yt_LPZh9BOjkQs (02:31)",
+        "yt_eMlx5fFNoYc (10:00)",
+        "yt_eMlx5fFNoYc (10:27)",
+        "yt_eMlx5fFNoYc (10:53)",
+        "yt_eMlx5fFNoYc (12:12)",
+        "yt_eMlx5fFNoYc (12:38)",
+        "yt_eMlx5fFNoYc (15:30)",
+        "yt_eMlx5fFNoYc (20:29)",
+        "yt_wjZofJX0v4M (05:01)"
+      ]
+    },
+    {
+      "id": "d1",
+      "kind": "doc",
+      "question": "What BLEU score did the big Transformer model achieve on WMT 2014 English-to-German, and what did it cost to train?",
+      "expect": [
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 8, Table 2 (results + training cost in FLOPs)"
+        }
+      ],
+      "latency_ms": 11377.1,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**28.4 BLEU on WMT 2014 English-to-German, trained in 3.5 days on 8 P100 GPUs (≈2.3 · 10¹⁹ FLOPs).**\n\nPage 8 states that \"On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4,\" and adds that \"Training took 3.5 days on 8 P100 GPUs.\" The Table 2 row on that page lists Transformer (big) at 28.4 EN-DE with a training cost of 2.3 · 10¹⁹ FLOPs — compared with, e.g., GNMT + RL Ensemble at 26.30 BLEU for 1.8 · 10²⁰ FLOPs [3].\n\nPage 7 gives the schedule behind that cost: the models were trained \"on one machine with 8 NVIDIA P100 GPUs,\" and for the big models \"step time was 1.0 seconds. The big models were trained for 300,000 steps (3.5 days)\" [6].\n\nFor context, the same table shows the base model reached 27.3 EN-DE at only 3.3 · 10¹⁸ FLOPs, i.e. surpassing all previously published models and ensembles \"at a fraction of the training cost\" [3], and the paper's conclusion reiterates that on both WMT 2014 English-to-German and English-to-French \"we achieve a new state of the art,\" with the EN-DE model outperforming even all previously reported ensembles [1].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 10",
+          "page": 10,
+          "idx": 9,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000009.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000009.jpg?u=default",
+          "score": 0.0432,
+          "transcript": "Section 23 of WSJ) Parser Training WSJ 23 F1 Vinyals & Kaiser el al. (2014) [37] WSJ only, discriminative 88.3 Petrov et al. (2006) [29] WSJ only, discriminative 90.4 Zhu et al. (2013) [40] WSJ only, discriminative 90.4 Dyer et al. (2016) [8] WSJ only, discriminative 91.7 Transformer (4 layers) WSJ only, discriminative 91.3 Zhu et al. (2013) [40] semi-supervised 91.3 Huang & Harper (2009) [14] semi-supervised 91.3 McClosky et al. (2006) [26] semi-supervised 92.1 Vinyals & Kaiser el al. (2014) [37] semi-supervised 92.1 Transformer (4 layers) semi-supervised 92.7 Luong et al. (2015) [23] multi-task 93.0 Dyer et al. (2016) [8] generative 93.3 increased the maximum output length to input length + 300. We used a beam size of 21 and α = 0.3 for both WSJ only and the semi-supervised setting. Our results in Table 4 show that despite the lack of task-specific tuning our model performs sur- prisingly well, yielding better results than all previously reported models with the exception of the Recurrent Neural Network Grammar [8]. In contrast to RNN sequence-to-sequence models [37], the Transformer outperforms the Berkeley- Parser [29] even when training only on the WSJ training set of 40K sentences. 7 Conclusion In this work, we presented the Transformer, the first sequence transduction model based entirely on attention, replacing the recurrent layers most commonly used in encoder-decoder architectures with multi-headed self-attention. For translation tasks, the Transformer can be trained significantly faster than architectures based on recurrent or convolutional layers. On both WMT 2014 English-to-German and WMT 2014 English-to-French translation tasks, we achieve a new state of the art. In the former task our best model outperforms even all previously reported ensembles. We are excited about the future of attention-based models and plan to apply them to other tasks. We plan to extend the Transformer to",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 278522,
+          "timestamp": "04:38",
+          "page": null,
+          "idx": 32,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000032.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=278",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000007.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "of the training cost. Model BLEU Training Cost (FLOPs) EN-DE EN-FR EN-DE EN-FR ByteNet [18] 23.75 Deep-Att + PosUnk [39] 39.2 1.0 · 1020 GNMT + RL [38] 24.6 39.92 2.3 · 1019 1.4 · 1020 ConvS2S [9] 25.16 40.46 9.6 · 1018 1.5 · 1020 MoE [32] 26.03 40.56 2.0 · 1019 1.2 · 1020 Deep-Att + PosUnk Ensemble [39] 40.4 8.0 · 1020 GNMT + RL Ensemble [38] 26.30 41.16 1.8 · 1020 1.1 · 1021 ConvS2S Ensemble [9] 26.36 41.29 7.7 · 1019 1.2 · 1021 Transformer (base model) 27.3 38.1 3.3 · 1018 Transformer (big) 28.4 41.8 2.3 · 1019 Residual Dropout We apply dropout [33] to the output of each sub-layer, before it is added to the sub-layer input and normalized. In addition, we apply dropout to the sums of the embeddings and the positional encodings in both the encoder and decoder stacks. For the base model, we use a rate of Pdrop = 0.1. Label Smoothing During training, we employed label smoothing of value ϵls = 0.1 [36]. This hurts perplexity, as the model learns to be more unsure, but improves accuracy and BLEU score. 6 Results 6.1 Machine Translation On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4. The configuration of this model is listed in the bottom line of Table 3. Training took 3.5 days on 8 P100 GPUs. Even our base model surpasses all previously published models and ensembles, at a fraction of the training cost of any of the competitive models. On the WMT 2014 English-to-French translation task, our big model achieves a BLEU score of 41.0, outperforming all of the previously",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_546c0e0cb5",
+          "title": "business_deck_08",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_546c0e0cb5/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_546c0e0cb5/000003.jpg?u=default",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "doc_f86832ec60",
+          "title": "AJMC_01_2018_Waxman2final",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 3",
+          "page": 3,
+          "idx": 2,
+          "thumbnail": "/api/frame/doc_f86832ec60/000002.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_f86832ec60/000002.jpg?u=default",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 7",
+          "page": 7,
+          "idx": 6,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000006.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000006.jpg?u=default",
+          "score": 0.0161,
+          "transcript": "million sentence pairs. Sentences were encoded using byte-pair encoding [3], which has a shared source- target vocabulary of about 37000 tokens. For English-French, we used the significantly larger WMT 2014 English-French dataset consisting of 36M sentences and split tokens into a 32000 word-piece vocabulary [38]. Sentence pairs were batched together by approximate sequence length. Each training batch contained a set of sentence pairs containing approximately 25000 source tokens and 25000 target tokens. 5.2 Hardware and Schedule We trained our models on one machine with 8 NVIDIA P100 GPUs. For our base models using the hyperparameters described throughout the paper, each training step took about 0.4 seconds. We trained the base models for a total of 100,000 steps or 12 hours. For our big models,(described on the bottom line of table 3), step time was 1.0 seconds. The big models were trained for 300,000 steps (3.5 days). 5.3 Optimizer We used the Adam optimizer [20] with β1 = 0.9, β2 = 0.98 and ϵ = 10−9. We varied the learning rate over the course of training, according to the formula: lrate = d−0.5 model · min(step_num−0.5, step_num · warmup_steps−1.5) (3) This corresponds to increasing the learning rate linearly for the first warmup_steps training steps, and decreasing it thereafter proportionally to the inverse square root of the step number. We used warmup_steps = 4000. 5.4 Regularization We employ three types of regularization during training: 7 Table 2: The Transformer achieves better BLEU scores than previous state-of-the-art models on the English-to-German and English-to-French newstest2014 tests at a fraction of the training cost. Model BLEU Training Cost (FLOPs) EN-DE EN-FR EN-DE EN-FR ByteNet [18] 23.75 Deep-Att + PosUnk [39] 39.2 1.0 · 1020 GNMT + RL [38] 24.6 39.92 2.3 · 1019 1.4 · 1020 ConvS2S [9] 25.16 40.46 9.6 · 1018 1.5 ·",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 27227,
+          "timestamp": "00:27",
+          "page": null,
+          "idx": 1,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000001.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=27",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1072258,
+          "timestamp": "17:52",
+          "page": null,
+          "idx": 41,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000041.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1072",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "doc_831b1036f8",
+          "title": "business_deck_06",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 6",
+          "page": 6,
+          "idx": 5,
+          "thumbnail": "/api/frame/doc_831b1036f8/000005.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_831b1036f8/000005.jpg?u=default",
+          "score": 0.0154,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 94100,
+          "timestamp": "01:34",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=94",
+          "score": 0.0154,
+          "transcript": "For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, it would take over 2600 years. Larger models since then train on much, much more. You can think of training a little bit like tuning the dials on a big machine. The way that a language model behaves is entirely determined by these",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "Attention_is_All_You_Need"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_1c8e196fec (p. 10)",
+        "doc_1c8e196fec (p. 7)",
+        "doc_1c8e196fec (p. 8)",
+        "doc_546c0e0cb5 (slide 4)",
+        "doc_831b1036f8 (slide 6)",
+        "doc_f86832ec60 (p. 3)",
+        "yt_LPZh9BOjkQs (01:34)",
+        "yt_LPZh9BOjkQs (04:38)",
+        "yt_eMlx5fFNoYc (17:52)",
+        "yt_wjZofJX0v4M (00:27)"
+      ]
+    },
+    {
+      "id": "d2",
+      "kind": "doc",
+      "question": "What zero-shot ImageNet accuracy does CLIP reach, and which fully supervised baseline does that match?",
+      "expect": [
+        {
+          "source_id_pattern": "Clip_Paper_2103.00020",
+          "locator_hint": "pp. 1-2, abstract and Figure 1 (matches ResNet-50 zero-shot)"
+        }
+      ],
+      "latency_ms": 16175.8,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Zero-shot CLIP reaches 76.2% top-1 on ImageNet, matching a fully supervised ResNet-101 trained on ImageNet** [2].\n\nThis comparison comes from Figure 13 on page 15, whose caption states that the performance of the best zero-shot CLIP model, ViT-L/14@336px, \"is compared with a model that has the same performance on the ImageNet validation set, ResNet-101\" — the accompanying table shows both at 76.2 on ImageNet, with CLIP holding up far better on the distribution-shift datasets (ImageNetV2, ImageNet-R, ObjectNet, ImageNet Sketch, ImageNet-A) [2].\n\nA related, but different, efficiency comparison appears on page 10: on ImageNet specifically, \"zero-shot CLIP matches the performance of a 16-shot linear classifier trained on the same feature space,\" while across datasets the average zero-shot classifier is worth roughly 20.8 labeled examples per class (median 5.4, up to an estimated 184) [4]. Page 8 makes the analogous cross-dataset point that zero-shot CLIP matches a 4-shot linear classifier on average and nearly matches a 16-shot one [9].\n\nPage 14 adds that supervised adaptation on top of CLIP's features raises ImageNet accuracy by 9.2% to 85.",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 42",
+          "page": 42,
+          "idx": 41,
+          "thumbnail": "/api/frame/doc_32b809a098/000041.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000041.jpg?u=default",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 15",
+          "page": 15,
+          "idx": 14,
+          "thumbnail": "/api/frame/doc_32b809a098/000014.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000014.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "ImageNet class names and pooling predictions when necessary. While zero-shot CLIP improves effective robustness, Figure 14 shows that the beneﬁt is almost entirely gone in a fully supervised setting. To better understand this difference, we investigate how effective robustness changes on the contin- uum from zero-shot to fully supervised. In Figure 15 we visualize the performance of 0-shot, 1-shot, 2-shot, 4-shot ..., 128-shot, and fully supervised logistic regression classi- ﬁers on the best CLIP model’s features. We see that while few-shot models also show higher effective robustness than existing models, this beneﬁt fades as in-distribution per- formance increases with more training data and is mostly, though not entirely, gone for the fully supervised model. Additionally, zero-shot CLIP is notably more robust than a few-shot model with equivalent ImageNet performance. Learning Transferable Visual Models From Natural Language Supervision 16 70 75 80 85 90 95 Average on class subsampled ImageNet (top-1, %) 25 30 35 40 45 50 55 60 65 70 75 80 Average on 7 natural distribution shift datasets (top-1, %) Adapt to class shift Adapt to ImageNet Ideal robust model (y = x) Adaptive Zero-Shot CLIP ImageNet Zero-Shot CLIP Logistic Regression CLIP Standard ImageNet training Robustness intervention Trained with more data 10 5 0 5 10 15 20 25 30 Change from zero-shot ImageNet classifier accuracy (%) ImageNet-R -4.7 ObjectNet -3.8 ImageNet Sketch -2.8 ImageNet-A -1.9 ImageNet Vid -0.5 +0.6 Youtube-BB +5.8 ImageNetV2 +9.2 ImageNet Adapt to ImageNet 10 5 0 5 10 15 20 25 30 Change from zero-shot ImageNet classifier accuracy (%) 0 ImageNet 0 ImageNetV2 0 ImageNet-A 0 ImageNet-R 0 ImageNet Sketch +2.3 ObjectNet +8.3 ImageNet Vid +26.9 Youtube-BB Adapt to class shift Figure 14. While supervised adaptation to ImageNet increases ImageNet accuracy by 9.2%, it slightly reduces average robustness. (Left) Customizing zero-shot CLIP to",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 571760,
+          "timestamp": "09:31",
+          "page": null,
+          "idx": 21,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000021.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=571",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 10",
+          "page": 10,
+          "idx": 9,
+          "thumbnail": "/api/frame/doc_32b809a098/000009.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000009.jpg?u=default",
+          "score": 0.0164,
+          "transcript": "based on log-linear interpolation of 1, 2, 4, 8, 16-shot and fully supervised results. Performance varies widely from still underperforming a one-shot classiﬁer on two datasets to matching an estimated 184 labeled examples per class. have widely varying efﬁciency per dataset from less than 1 labeled example per class to 184. Two datasets, Flowers102 and EuroSAT underperform one-shot models. Half of the datasets require less than 5 examples per class with a median of 5.4. However, the mean estimated data efﬁciency is 20.8 examples per class. This is due to the 20% of datasets where supervised classiﬁers require many labeled examples per class in order to match performance. On ImageNet, zero-shot CLIP matches the performance of a 16-shot linear classiﬁer trained on the same feature space. If we assume that evaluation datasets are large enough that the parameters of linear classiﬁers trained on them are well estimated, then, because CLIP’s zero-shot classiﬁer is also a linear classiﬁer, the performance of the fully supervised classiﬁers roughly sets an upper bound for what zero-shot transfer can achieve. In Figure 8 we compare CLIP’s zero- shot performance with fully supervised linear classiﬁers across datasets. The dashed, y = x line represents an “op- timal” zero-shot classiﬁer that matches the performance of its fully supervised equivalent. For most datasets, the per- formance of zero-shot classiﬁers still underperform fully su- pervised classiﬁers by 10% to 25%, suggesting that there is still plenty of headroom for improving CLIP’s task-learning and zero-shot transfer capabilities. There is a positive correlation of 0.82 (p-value < 10−6) between zero-shot performance and fully supervised perfor- 20 30 40 50 60 70 80 90 100 Linear Probe CLIP Performance 20 30 40 50 60 70 80 90 100 Zero-Shot CLIP Performance r = 0.82 VOC2007 Country211 HatefulMemes MNIST CIFAR10 SST2 DTD PCAM",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 462853,
+          "timestamp": "07:42",
+          "page": null,
+          "idx": 17,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000017.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=462",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 14",
+          "page": 14,
+          "idx": 13,
+          "thumbnail": "/api/frame/doc_32b809a098/000013.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000013.jpg?u=default",
+          "score": 0.0161,
+          "transcript": "more robust to task shift when compared to models pre-trained on ImageNet. For both dataset splits, the transfer scores of linear probes trained on the representations of CLIP models are higher than other models with similar ImageNet performance. This suggests that the representations of models trained on ImageNet are somewhat overﬁt to their task. or ﬁne-tuned on the ImageNet dataset. Returning to the discussion in the introduction to this section - is training or adapting to the ImageNet dataset distribution the cause of the observed robustness gap? Intuitively, a zero-shot model should not be able to exploit spurious correlations or patterns that hold only on a speciﬁc distribution, since it is not trained on that distribution. 4 Thus it is reasonable to expect zero-shot models to have much higher effective robustness. In Figure 13, we compare the performance of zero-shot CLIP with existing ImageNet models on natural distribution shifts. All zero-shot CLIP models improve effective robustness by a large amount and reduce the size of the gap between ImageNet accuracy and accuracy under distribution shift by up to 75%. While these results show that zero-shot models can be much more robust, they do not necessarily mean that supervised learning on ImageNet causes a robustness gap. Other details of CLIP, such as its large and diverse pre-training dataset or use of natural language supervision could also result 4We caution that a zero-shot model can still exploit spurious correlations that are shared between the pre-training and evaluation distributions. in much more robust models regardless of whether they are zero-shot or ﬁne-tuned. As an initial experiment to potentially begin narrowing this down, we also measure how the performance of CLIP models change after adapting to the ImageNet distribution via a L2 regularized logistic regression classiﬁer ﬁt to CLIP features on the ImageNet training",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 517307,
+          "timestamp": "08:37",
+          "page": null,
+          "idx": 19,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000019.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=517",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 2272200,
+          "timestamp": "37:52",
+          "page": null,
+          "idx": 27,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000027.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=2272",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_32b809a098/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000007.jpg?u=default",
+          "score": 0.0156,
+          "transcript": "such as ImageNet, CIFAR10/100, STL10, and PascalVOC2007 performance is relatively similar with a slight advantage for zero-shot CLIP in all cases. On STL10, CLIP achieves 99.3% overall which appears to be a new state of the art despite not using any training examples. Zero- shot CLIP signiﬁcantly outperforms a ResNet-50 on two datasets measuring action recognition in videos. On Kinet- ics700, CLIP outperforms a ResNet-50 by 14.5%. Zero- shot CLIP also outperforms a ResNet-50’s features by 7.7% on UCF101. We speculate this is due to natural language providing wider supervision for visual concepts involving verbs, compared to the noun-centric object supervision in ImageNet. Looking at where zero-shot CLIP notably underperforms, Learning Transferable Visual Models From Natural Language Supervision 9 0 1 2 4 8 16 # of labeled training examples per class 30 35 40 45 50 55 60 65 70 75 Average Score (%) Zero-Shot CLIP BiT-M (ImageNet-21K) Linear Probe CLIP SimCLRv2 ResNet50 Figure 6. Zero-shot CLIP outperforms few-shot linear probes. Zero-shot CLIP matches the average performance of a 4-shot linear classiﬁer trained on the same feature space and nearly matches the best results of a 16-shot linear classiﬁer across publicly available models. For both BiT-M and SimCLRv2, the best performing model is highlighted. Light gray lines are other models in the eval suite. The 20 datasets with at least 16 examples per class were used in this analysis. we see that zero-shot CLIP is quite weak on several spe- cialized, complex, or abstract tasks such as satellite image classiﬁcation (EuroSAT and RESISC45), lymph node tumor detection (PatchCamelyon), counting objects in synthetic scenes (CLEVRCounts), self-driving related tasks such as German trafﬁc sign recognition (GTSRB), recognizing dis- tance to the nearest car (KITTI Distance). These results highlight the poor capability of zero-shot CLIP on more complex tasks. By contrast, non-expert",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 732274,
+          "timestamp": "12:12",
+          "page": null,
+          "idx": 28,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000028.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=732",
+          "score": 0.0154,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "Clip_Paper_2103.00020"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_32b809a098 (p. 10)",
+        "doc_32b809a098 (p. 14)",
+        "doc_32b809a098 (p. 15)",
+        "doc_32b809a098 (p. 42)",
+        "doc_32b809a098 (p. 8)",
+        "yt_eMlx5fFNoYc (12:12)",
+        "yt_wjZofJX0v4M (07:42)",
+        "yt_wjZofJX0v4M (08:37)",
+        "yt_wjZofJX0v4M (09:31)",
+        "yt_zjkBMFhNj_g (37:52)"
+      ]
+    },
+    {
+      "id": "d3",
+      "kind": "doc",
+      "question": "What are the three RAG paradigms — Naive RAG, Advanced RAG and Modular RAG — and how do they differ?",
+      "expect": [
+        {
+          "source_id_pattern": "RAG_Survey_2312.10997",
+          "locator_hint": "pp. 2-5, Fig. 3 (three-paradigm comparison)"
+        }
+      ],
+      "latency_ms": 14707.4,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Direct answer:** They are three successive stages in the evolution of RAG research — Naive RAG (a simple \"Retrieve-Read\" chain of indexing → retrieval → generation), Advanced RAG (the same chain-like process but with pre-retrieval and post-retrieval optimizations to fix Naive RAG's weaknesses), and Modular RAG (a flexible, reconfigurable architecture of specialized modules and rearranged pipelines) [4, 6, 9].\n\n**The categorization itself.** The survey states that \"The RAG research paradigm is continuously evolving, and we categorize it into three stages: Naive RAG, Advanced RAG, and Modular RAG, as showed in Figure 3,\" and that \"The development of Advanced RAG and Modular RAG is a response to these specific shortcomings in Naive RAG\" [9]. The paper's contribution list similarly frames it as \"delineating its evolution through paradigms including naive RAG, advanced RAG, and modular RAG\" [2].\n\n**Naive RAG.** It \"represents the earliest methodology, which gained prominence shortly after the widespread adoption of ChatGPT\" and \"follows a traditional process that includes indexing, retrieval, and generation, which is also characterized as a 'Retrieve-Read' framework\" [9]. Indexing begins with cleaning and extracting raw data from formats like PDF, HTML, Word and Markdown into uniform plain text [9]; Figure 2 summarises the three steps as splitting documents into chunks encoded as vectors in a vector database, retrieving the Top k most semantically relevant chunks, and feeding question plus chunks into the LLM [9]. Its drawbacks are retrieval challenges (low precision and recall, misaligned or irrelevant chunks, missing crucial information), generation difficulties (hallucination, irrelevance, toxicity, bias), and augmentation hurdles (disjointed or incoherent outputs, redundancy, over-reliance on retrieved content, and single retrieval on the original query being insufficient for complex issues) [4].\n\n**Advanced RAG.** It \"introduces specific improvements to overcome the limitations of Naive RAG. Focusing on enhancing retrieval quality, it employs pre-retrieval and post-retrieval strategies,\" refining indexing through a sliding window approach, fine-grained segmentation and metadata, plus further optimizations of the retrieval process [4]. Its pre-retrieval stage optimizes the indexing structure and the original query (e.g. query rewriting, trans",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1072258,
+          "timestamp": "17:52",
+          "page": null,
+          "idx": 41,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000041.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1072",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 1",
+          "page": 1,
+          "idx": 0,
+          "thumbnail": "/api/frame/doc_435222fa24/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000000.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "yet it has not been accompanied by a systematic synthesis that could clarify its broader trajectory. This survey endeavors to fill this gap by mapping out the RAG process and charting its evolution and anticipated future paths, with a focus on the integration of RAG within LLMs. This paper considers both technical paradigms and research methods, summarizing three main research paradigms from over 100 RAG studies, and analyzing key technologies in the core stages of “Retrieval,” “Generation,” and “Augmentation.” On the other hand, current research tends to focus more on methods, lacking analysis and summarization of how to evaluate RAG. This paper compre- hensively reviews the downstream tasks, datasets, benchmarks, and evaluation methods applicable to RAG. Overall, this paper sets out to meticulously compile and categorize the foundational technical concepts, historical progression, and the spectrum of RAG methodologies and applications that have emerged post-LLMs. It is designed to equip readers and professionals with a detailed and structured understanding of both large models and RAG. It aims to illuminate the evolution of retrieval augmentation techniques, assess the strengths and weaknesses of various approaches in their respective contexts, and speculate on upcoming trends and innovations. Our contributions are as follows: • In this survey, we present a thorough and systematic review of the state-of-the-art RAG methods, delineating its evolution through paradigms including naive RAG, arXiv:2312.10997v5 [cs.CL] 27 Mar 2024 2 Fig. 1. Technology tree of RAG research. The stages of involving RAG mainly include pre-training, fine-tuning, and inference. With the emergence of LLMs, research on RAG initially focused on leveraging the powerful in context learning abilities of LLMs, primarily concentrating on the inference stage. Subsequent research has delved deeper, gradually integrating more with the fine-tuning of LLMs. Researchers have also been exploring ways to enhance language models in the pre-training stage through",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1359937,
+          "timestamp": "22:39",
+          "page": null,
+          "idx": 52,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000052.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1359",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 3",
+          "page": 3,
+          "idx": 2,
+          "thumbnail": "/api/frame/doc_435222fa24/000002.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000002.jpg?u=default",
+          "score": 0.0164,
+          "transcript": "precision and recall, leading to the selection of misaligned or irrelevant chunks, and the missing of crucial information. Generation Difficulties. In generating responses, the model may face the issue of hallucination, where it produces con- tent not supported by the retrieved context. This phase can also suffer from irrelevance, toxicity, or bias in the outputs, detracting from the quality and reliability of the responses. Augmentation Hurdles. Integrating retrieved information with the different task can be challenging, sometimes resulting in disjointed or incoherent outputs. The process may also encounter redundancy when similar information is retrieved from multiple sources, leading to repetitive responses. Deter- mining the significance and relevance of various passages and ensuring stylistic and tonal consistency add further complexity. Facing complex issues, a single retrieval based on the original query may not suffice to acquire adequate context information. Moreover, there’s a concern that generation models might overly rely on augmented information, leading to outputs that simply echo retrieved content without adding insightful or synthesized information. B. Advanced RAG Advanced RAG introduces specific improvements to over- come the limitations of Naive RAG. Focusing on enhancing re- trieval quality, it employs pre-retrieval and post-retrieval strate- gies. To tackle the indexing issues, Advanced RAG refines its indexing techniques through the use of a sliding window approach, fine-grained segmentation, and the incorporation of metadata. Additionally, it incorporates several optimization methods to streamline the retrieval process [8]. 4 Fig. 3. Comparison between the three paradigms of RAG. (Left) Naive RAG mainly consists of three parts: indexing, retrieval and generation. (Middle) Advanced RAG proposes multiple optimization strategies around pre-retrieval and post-retrieval, with a process similar to the Naive RAG, still following a chain-like structure. (Right) Modular RAG inherits and develops from the previous paradigm, showcasing greater flexibility overall. This is evident in the introduction of multiple",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1333784,
+          "timestamp": "22:13",
+          "page": null,
+          "idx": 51,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000051.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1333",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_435222fa24/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000003.jpg?u=default",
+          "score": 0.0161,
+          "transcript": "sections, and shortening the context to be processed. 2https://www.llamaindex.ai 3https://www.langchain.com/ C. Modular RAG The modular RAG architecture advances beyond the for- mer two RAG paradigms, offering enhanced adaptability and versatility. It incorporates diverse strategies for improving its components, such as adding a search module for similarity searches and refining the retriever through fine-tuning. Inno- vations like restructured RAG modules [13] and rearranged RAG pipelines [14] have been introduced to tackle specific challenges. The shift towards a modular RAG approach is becoming prevalent, supporting both sequential processing and integrated end-to-end training across its components. Despite its distinctiveness, Modular RAG builds upon the foundational principles of Advanced and Naive RAG, illustrating a progres- sion and refinement within the RAG family. 1) New Modules: The Modular RAG framework introduces additional specialized components to enhance retrieval and processing capabilities. The Search module adapts to spe- cific scenarios, enabling direct searches across various data sources like search engines, databases, and knowledge graphs, using LLM-generated code and query languages [15]. RAG- Fusion addresses traditional search limitations by employing a multi-query strategy that expands user queries into diverse perspectives, utilizing parallel vector searches and intelligent re-ranking to uncover both explicit and transformative knowl- edge [16]. The Memory module leverages the LLM’s memory to guide retrieval, creating an unbounded memory pool that 5 aligns the text more closely with data distribution through iter- ative self-enhancement [17], [18]. Routing in the RAG system navigates through diverse data sources, selecting the optimal pathway for a query, whether it involves summarization, specific database searches, or merging different information streams [19]. The Predict module aims to reduce redundancy and noise by generating context directly through the LLM, ensuring relevance and accuracy [13]. Lastly, the Task Adapter module tailors RAG to various downstream tasks, automating prompt retrieval for zero-shot inputs and creating task-specific",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 863037,
+          "timestamp": "14:23",
+          "page": null,
+          "idx": 33,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000033.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=863",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1306880,
+          "timestamp": "21:46",
+          "page": null,
+          "idx": 48,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000048.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1306",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 2",
+          "page": 2,
+          "idx": 1,
+          "thumbnail": "/api/frame/doc_435222fa24/000001.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000001.jpg?u=default",
+          "score": 0.0156,
+          "transcript": "application of RAG is illustrated in Figure 2. Here, a user poses a question to ChatGPT about a recent, widely discussed news. Given ChatGPT’s reliance on pre- training data, it initially lacks the capacity to provide up- dates on recent developments. RAG bridges this information gap by sourcing and incorporating knowledge from external databases. In this case, it gathers relevant news articles related to the user’s query. These articles, combined with the original question, form a comprehensive prompt that empowers LLMs to generate a well-informed answer. The RAG research paradigm is continuously evolving, and we categorize it into three stages: Naive RAG, Advanced RAG, and Modular RAG, as showed in Figure 3. Despite RAG method are cost-effective and surpass the performance of the native LLM, they also exhibit several limitations. The development of Advanced RAG and Modular RAG is a response to these specific shortcomings in Naive RAG. A. Naive RAG The Naive RAG research paradigm represents the earli- est methodology, which gained prominence shortly after the 3 Fig. 2. A representative instance of the RAG process applied to question answering. It mainly consists of 3 steps. 1) Indexing. Documents are split into chunks, encoded into vectors, and stored in a vector database. 2) Retrieval. Retrieve the Top k chunks most relevant to the question based on semantic similarity. 3) Generation. Input the original question and the retrieved chunks together into LLM to generate the final answer. widespread adoption of ChatGPT. The Naive RAG follows a traditional process that includes indexing, retrieval, and generation, which is also characterized as a “Retrieve-Read” framework [7]. Indexing starts with the cleaning and extraction of raw data in diverse formats like PDF, HTML, Word, and Markdown, which is then converted into a uniform plain text format. To accommodate the context limitations of language models,",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1255326,
+          "timestamp": "20:55",
+          "page": null,
+          "idx": 48,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000048.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1255",
+          "score": 0.0154,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "RAG_Survey_2312.10997"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_435222fa24 (p. 1)",
+        "doc_435222fa24 (p. 2)",
+        "doc_435222fa24 (p. 3)",
+        "doc_435222fa24 (p. 4)",
+        "yt_eMlx5fFNoYc (14:23)",
+        "yt_eMlx5fFNoYc (17:52)",
+        "yt_eMlx5fFNoYc (20:55)",
+        "yt_eMlx5fFNoYc (22:13)",
+        "yt_eMlx5fFNoYc (22:39)",
+        "yt_wjZofJX0v4M (21:46)"
+      ]
+    },
+    {
+      "id": "d4",
+      "kind": "doc",
+      "question": "Which CMS care-management billing codes does the ClientCo Health platform support?",
+      "expect": [
+        {
+          "source_id_pattern": "business_deck_09",
+          "locator_hint": "slides 1-3, supported CMS billing-code table"
+        }
+      ],
+      "latency_ms": 12925.5,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "ClientCo Health supports codes across four care-management categories — Transitional Care Management, Principal Care Management, Chronic Care Management, and Remote Physiological Monitoring Treatment Management — as laid out on slide 12 [3], which is introduced by the section title slide \"Currently Supported Care Management Billing Codes… ClientCo Health is currently focused on supporting the following CMS Billing Codes\" [1].\n\n**Transitional Care Management:** 99495 ([figure redacted]) for moderate complexity, contact within 2 business days of discharge and a face-to-face visit within 14 days; and 99496 ([figure redacted]) for high complexity, contact within 2 business days of discharge and a face-to-face visit within 7 days [3].\n\n**Principal Care Management:** G2064 ([figure redacted]) for 30 minutes of interactions with the patient, the patient's other healthcare providers, or management of care transitions by a qualified healthcare professional; and G2065 ([figure redacted]) for the same 30 minutes performed by clinical staff [3].\n\n**Chronic Care Management:** 99490 ([figure redacted]), 20 minutes of clinical staff (nonphysician) time with a comprehensive care plan established, implemented, revised or monitored; 99491 ([figure redacted]), 30 minutes of physician/clinical time; 99487 ([figure redacted]), 60 minutes of establishment or substantial revision of a comprehensive care plan; 99489 ([figure redacted]), additional 30 minutes of 99487; G0506 ([figure redacted]), comprehensive assessment and care planning for patients requiring CCM; and 99439 ([figure redacted]), additional 20 minutes of \"non-complex\" CCM, reportable up to 2x a month [3].\n\n**Remote Physiological Monitoring Treatment Management:** 99453 ([figure redacted]) for initial setup and education; 99454 ([figure redacted]) for equipment costs/monthly monitoring; 99457 ([figure redacted]) for the initial 20 minutes of RPM each month with patient interaction; and 99458 ([figure redacted]) for each additional 20 minutes of RPM monthly with patient interaction [3]. All figures are noted as national payment amounts, non-facility [3].\n\nThese same four programs are echoed on the dashboard slide, which states the platform \"En",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "doc_9b54fbe890",
+          "title": "business_deck_09",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 1",
+          "page": 1,
+          "idx": 0,
+          "thumbnail": "/api/frame/doc_9b54fbe890/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_9b54fbe890/000000.jpg?u=default",
+          "score": 0.0496,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "doc_ae7989ac94",
+          "title": "business_deck_07",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 14",
+          "page": 14,
+          "idx": 13,
+          "thumbnail": "/api/frame/doc_ae7989ac94/000013.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_ae7989ac94/000013.jpg?u=default",
+          "score": 0.0484,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "doc_9b54fbe890",
+          "title": "business_deck_09",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 12",
+          "page": 12,
+          "idx": 11,
+          "thumbnail": "/api/frame/doc_9b54fbe890/000011.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_9b54fbe890/000011.jpg?u=default",
+          "score": 0.0474,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_35bfeec5ab",
+          "title": "business_deck_02",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_35bfeec5ab/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_35bfeec5ab/000003.jpg?u=default",
+          "score": 0.0459,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "doc_ce0c6b419b",
+          "title": "business_deck_05",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 18",
+          "page": 18,
+          "idx": 17,
+          "thumbnail": "/api/frame/doc_ce0c6b419b/000017.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_ce0c6b419b/000017.jpg?u=default",
+          "score": 0.0452,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_546c0e0cb5",
+          "title": "business_deck_08",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 9",
+          "page": 9,
+          "idx": 8,
+          "thumbnail": "/api/frame/doc_546c0e0cb5/000008.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_546c0e0cb5/000008.jpg?u=default",
+          "score": 0.0387,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "doc_f86832ec60",
+          "title": "AJMC_01_2018_Waxman2final",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 7",
+          "page": 7,
+          "idx": 6,
+          "thumbnail": "/api/frame/doc_f86832ec60/000006.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_f86832ec60/000006.jpg?u=default",
+          "score": 0.0164,
+          "transcript": "JOURNAL OF MANAGED CARE® VOL. 24, NO. 1 e23 Hospitalized Patients' Communications Preferences CONCLUSIONS Our study results suggest that patients and family want 21st- century methods to bridge current communication mismatches, improve their knowledge of and engagement in their care, enhance coordination within their healthcare team, and involve their CPP and health support network. Hospital leaders should consider platforms that better meet the communications needs of patients and family members. Further study is needed in the implementa- tion of specific digital communication platforms and evaluation of whether they improve information sharing, communication, satisfaction, patient engagement, and health outcomes. n Author Affiliations: Department of Emergency Medicine (MJW, AA), and Department of Medicine (JD, RJB), [client] College (LV, KN, EMD), [client], NY; ClientCo Health, Inc (KL, JO, DW), [client], NY; [client] Center Hospital (LF), [client], NY. Source of Funding: [client] Center, the authors’ host institution, provided support for this project. Author Disclosures: Dr Waxman is employed by [client] College, which has an interest share in ClientCo Health, Inc. Mr Lozier is a co-founder, board member, and majority stakeholder of ClientCo Health, Inc. Dr Novakofski and Mr O’Kane are minority shareholders in ClientCo Health, Inc. Dr Dufort is adjunct faculty and married to an employed faculty member at [client] Center and College, which has a financial interest in the product being developed to address this issue. Mr Wood is a board member and shareholder of ClientCo Health, Inc; the initial research for this paper was completed as customer discovery for ClientCo Health, Inc. Dr Filhour is employed by [client] Center. Dr Blinkhorn is employed by [client] College. The remaining authors report no relationship or financial interest with any entity that would pose a conflict of interest with the subject matter of this article. Authorship Information: Concept",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "doc_35bfeec5ab",
+          "title": "business_deck_02",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_35bfeec5ab/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_35bfeec5ab/000007.jpg?u=default",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "doc_546c0e0cb5",
+          "title": "business_deck_08",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_546c0e0cb5/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_546c0e0cb5/000003.jpg?u=default",
+          "score": 0.0156,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "doc_669727dcf4",
+          "title": "business_deck_04",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 6",
+          "page": 6,
+          "idx": 5,
+          "thumbnail": "/api/frame/doc_669727dcf4/000005.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_669727dcf4/000005.jpg?u=default",
+          "score": 0.0154,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "business_deck_09"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_35bfeec5ab (slide 4)",
+        "doc_35bfeec5ab (slide 8)",
+        "doc_546c0e0cb5 (slide 4)",
+        "doc_546c0e0cb5 (slide 9)",
+        "doc_669727dcf4 (slide 6)",
+        "doc_9b54fbe890 (slide 1)",
+        "doc_9b54fbe890 (slide 12)",
+        "doc_ae7989ac94 (slide 14)",
+        "doc_ce0c6b419b (slide 18)",
+        "doc_f86832ec60 (p. 7)"
+      ]
+    },
+    {
+      "id": "d5",
+      "kind": "doc",
+      "question": "Which slide promises an answer time under two seconds, zero hold time, and support for 20+ languages?",
+      "expect": [
+        {
+          "source_id_pattern": "business_deck_03",
+          "locator_hint": "slide 1, cover metrics (<2 sec, zero hold, 24/7, 20+ languages)"
+        }
+      ],
+      "latency_ms": 10250.1,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Slide 14 — \"How You'll Measure It\" (The Scorecard)** — is the slide with those three promises [1].\n\nIts eight-KPI grid includes [redacted — business KPI grid] [1]. The remaining tiles round out the scorecard with [redacted — business KPI grid] [1].\n\nFor contrast, slide 16 (\"Multilingual Access for All Members\") also covers language coverage but with different figures — [redacted — business KPI grid] — so it is not the slide described in the question [4].",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "doc_6f0ed7f40f",
+          "title": "business_deck_03",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 14",
+          "page": 14,
+          "idx": 13,
+          "thumbnail": "/api/frame/doc_6f0ed7f40f/000013.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_6f0ed7f40f/000013.jpg?u=default",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000003.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "dev data. We now discuss experimental details for each task. 3.1 Open-domain Question Answering Open-domain question answering (QA) is an important real-world application and common testbed for knowledge-intensive tasks [20]. We treat questions and answers as input-output text pairs (x, y) and train RAG by directly minimizing the negative log-likelihood of answers. We compare RAG to the popular extractive QA paradigm [5, 7, 31, 26], where answers are extracted spans from retrieved documents, relying primarily on non-parametric knowledge. We also compare to “Closed-Book QA” approaches [52], which, like RAG, generate answers, but which do not exploit retrieval, instead relying purely on parametric knowledge. We consider four popular open-domain QA datasets: Natural Questions (NQ) [29], TriviaQA (TQA) [24]. WebQuestions (WQ) [3] and CuratedTrec (CT) [2]. As CT and WQ are small, we follow DPR [26] by initializing CT and WQ models with our NQ RAG model. We use the same train/dev/test splits as prior work [31, 26] and report Exact Match (EM) scores. For TQA, to compare with T5 [52], we also evaluate on the TQA Wiki test set. 3.2 Abstractive Question Answering RAG models can go beyond simple extractive QA and answer questions with free-form, abstractive text generation. To test RAG’s natural language generation (NLG) in a knowledge-intensive setting, we use the MSMARCO NLG task v2.1 [43]. The task consists of questions, ten gold passages retrieved from a search engine for each question, and a full sentence answer annotated from the retrieved passages. We do not use the supplied passages, only the questions and answers, to treat 4 MSMARCO as an open-domain abstractive QA task. MSMARCO has some questions that cannot be answered in a way that matches the reference answer without access to the gold passages, such as “What is the weather in Volcano, CA?” so performance will be",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "doc_ce0c6b419b",
+          "title": "business_deck_05",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 4",
+          "page": 4,
+          "idx": 3,
+          "thumbnail": "/api/frame/doc_ce0c6b419b/000003.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_ce0c6b419b/000003.jpg?u=default",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_ec84970a07",
+          "title": "business_deck_01",
+          "url": null,
+          "source": "deck",
+          "ms": null,
+          "timestamp": "slide 16",
+          "page": 16,
+          "idx": 15,
+          "thumbnail": "/api/frame/doc_ec84970a07/000015.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_ec84970a07/000015.jpg?u=default",
+          "score": 0.0164,
+          "transcript": "[redacted — business deck content]",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 1255689,
+          "timestamp": "20:55",
+          "page": null,
+          "idx": 11,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000011.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=1255",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_435222fa24",
+          "title": "RAG_Survey_2312.10997v5",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 19",
+          "page": 19,
+          "idx": 18,
+          "thumbnail": "/api/frame/doc_435222fa24/000018.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_435222fa24/000018.jpg?u=default",
+          "score": 0.0161,
+          "transcript": "pp. 202–209. [Online]. Available: https://aclanthology.org/2022.amta-upg.14 [101] H. Jiang, Q. Wu, X. Luo, D. Li, C.-Y. Lin, Y. Yang, and L. Qiu, “Longllmlingua: Accelerating and enhancing llms in long context scenarios via prompt compression,” arXiv preprint arXiv:2310.06839, 2023. [102] V. Karpukhin, B. O˘guz, S. Min, P. Lewis, L. Wu, S. Edunov, D. Chen, and W.-t. Yih, “Dense passage retrieval for open-domain question answering,” arXiv preprint arXiv:2004.04906, 2020. [103] Y. Ma, Y. Cao, Y. Hong, and A. Sun, “Large language model is not a good few-shot information extractor, but a good reranker for hard samples!” ArXiv, vol. abs/2303.08559, 2023. [Online]. Available: https://api.semanticscholar.org/CorpusID:257532405 [104] J. Cui, Z. Li, Y. Yan, B. Chen, and L. Yuan, “Chatlaw: Open-source legal large language model with integrated external knowledge bases,” arXiv preprint arXiv:2306.16092, 2023. [105] O. Yoran, T. Wolfson, O. Ram, and J. Berant, “Making retrieval- augmented language models robust to irrelevant context,” arXiv preprint arXiv:2310.01558, 2023. [106] X. Li, R. Zhao, Y. K. Chia, B. Ding, L. Bing, S. Joty, and S. Poria, “Chain of knowledge: A framework for grounding large language mod- els with structured knowledge bases,” arXiv preprint arXiv:2305.13269, 2023. [107] H. Yang, S. Yue, and Y. He, “Auto-gpt for online decision making: Benchmarks and additional opinions,” arXiv preprint arXiv:2306.02224, 2023. [108] T. Schick, J. Dwivedi-Yu, R. Dess`ı, R. Raileanu, M. Lomeli, L. Zettle- moyer, N. Cancedda, and T. Scialom, “Toolformer: Language models can teach themselves to use tools,” arXiv preprint arXiv:2302.04761, 2023. [109] J. Zhang, “Graph-toolformer: To empower llms with graph rea- soning ability via prompt augmented by chatgpt,” arXiv preprint arXiv:2304.11116, 2023. [110] R. Nakano, J. Hilton, S. Balaji, J. Wu, L. Ouyang, C. Kim, C. Hesse, S. Jain, V. Kosaraju, W. Saunders et al., “Webgpt: Browser- assisted question-answering with human feedback,” arXiv preprint arXiv:2112.09332, 2021. [111] T. Kwiatkowski, J. Palomaki, O.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 179384,
+          "timestamp": "02:59",
+          "page": null,
+          "idx": 1,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000001.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=179",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 19",
+          "page": 19,
+          "idx": 18,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000018.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000018.jpg?u=default",
+          "score": 0.0159,
+          "transcript": "substantially below the 44.5 that RAG-Sequence achieves, indicating that hybrid parametric/non- parametric models require far fewer trainable parameters for strong open-domain QA performance. The non-parametric memory index does not consist of trainable parameters, but does consists of 21M 728 dimensional vectors, consisting of 15.3B values. These can be easily be stored at 8-bit ﬂoating point precision to manage memory and disk footprints. H Retrieval Collapse In preliminary experiments, we observed that for some tasks such as story generation [11], the retrieval component would “collapse” and learn to retrieve the same documents regardless of the input. In these cases, once retrieval had collapsed, the generator would learn to ignore the documents, and the RAG model would perform equivalently to BART. The collapse could be due to a less-explicit requirement for factual knowledge in some tasks, or the longer target sequences, which could result in less informative gradients for the retriever. Perez et al. [46] also found spurious retrieval results when optimizing a retrieval component in order to improve performance on downstream tasks. I Number of instances per dataset The number of training, development and test datapoints in each of our datasets is shown in Table 7. 19",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_zjkBMFhNj_g",
+          "title": "[1hr Talk] Intro to Large Language Models",
+          "url": "https://youtu.be/zjkBMFhNj_g",
+          "source": "youtube",
+          "ms": 0,
+          "timestamp": "00:00",
+          "page": null,
+          "idx": 0,
+          "thumbnail": "/api/frame/yt_zjkBMFhNj_g/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/zjkBMFhNj_g?t=0",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000007.jpg?u=default",
+          "score": 0.0156,
+          "transcript": "of Retrieving more documents Models are trained with either 5 or 10 retrieved latent documents, and we do not observe signiﬁcant differences in performance between them. We have the ﬂexibility to adjust the number of retrieved documents at test time, which can affect performance and runtime. Figure 3 (left) shows that retrieving more documents at test time monotonically improves Open-domain QA results for RAG-Sequence, but performance peaks for RAG-Token at 10 retrieved documents. Figure 3 (right) shows that retrieving more documents leads to higher Rouge-L for RAG-Token at the expense of Bleu-1, but the effect is less pronounced for RAG-Sequence. 10 20 30 40 50 K Retrieved Docs 39 40 41 42 43 44 NQ Exact Match RAG-Tok RAG-Seq 10 20 30 40 50 K Retrieved Docs 40 50 60 70 80 NQ Answer Recall @ K RAG-Tok RAG-Seq Fixed DPR BM25 10 20 30 40 50 K Retrieved Docs 48 50 52 54 56 Bleu-1 / Rouge-L score RAG-Tok R-L RAG-Tok B-1 RAG-Seq R-L RAG-Seq B-1 Figure 3: Left: NQ performance as more documents are retrieved. Center: Retrieval recall perfor- mance in NQ. Right: MS-MARCO Bleu-1 and Rouge-L as more documents are retrieved. 5 Related Work Single-Task Retrieval Prior work has shown that retrieval improves performance across a variety of NLP tasks when considered in isolation. Such tasks include open-domain question answering [5, 29], fact checking [56], fact completion [48], long-form question answering [12], Wikipedia article generation [36], dialogue [41, 65, 9, 13], translation [17], and language modeling [19, 27]. Our work uniﬁes previous successes in incorporating retrieval into individual tasks, showing that a single retrieval-based architecture is capable of achieving strong performance across several tasks. 8 General-Purpose Architectures for NLP Prior work on general-purpose architectures for NLP tasks has shown great success without the use of retrieval. A",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs >=1 expected source",
+      "matched_patterns": [
+        "business_deck_03"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_435222fa24 (p. 19)",
+        "doc_5f91a5ea20 (p. 19)",
+        "doc_5f91a5ea20 (p. 4)",
+        "doc_5f91a5ea20 (p. 8)",
+        "doc_6f0ed7f40f (slide 14)",
+        "doc_ce0c6b419b (slide 4)",
+        "doc_ec84970a07 (slide 16)",
+        "yt_zjkBMFhNj_g (00:00)",
+        "yt_zjkBMFhNj_g (02:59)",
+        "yt_zjkBMFhNj_g (20:55)"
+      ]
+    },
+    {
+      "id": "m1",
+      "kind": "mixed",
+      "question": "How do query and key vectors combine to produce attention weights over a sequence?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~05:00-16:00, query/key/value walkthrough"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "pp. 3-4, §3.2.1 scaled dot-product attention, Fig. 2"
+        }
+      ],
+      "latency_ms": 15231.1,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Direct answer:** Each token's embedding is mapped by a query matrix and a key matrix into smaller query and key vectors; you take the dot product of every query with every key, divide by √d_k, and pass the resulting grid through a softmax to get the attention weights, which are then used as coefficients in a weighted sum of the value vectors [5, 2].\n\nThe formal recipe is written out on page 3 of the paper: attention is \"mapping a query and a set of key-value pairs to an output… The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.\" Concretely, \"We compute the dot products of the query with all keys, divide each by √dk, and apply a softmax function to obtain the weights on the values,\" with queries, keys and values packed into matrices Q, K, V so that Attention(Q, K, V) = softmax(QKᵀ/√dk)V [5]. That page also notes this dot-product form is chosen over additive attention because it \"is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code,\" and that scaling by 1/√dk matters because for large dk \"the dot products grow large in magnitude\" [5].\n\nThe video explains the same expression intuitively at 10:27: \"the variables q and k represent the full arrays of query and key vectors respectively, those little vectors you get by multiplying the embeddings by the query and the key matrices,\" and \"This expression up in the numerator is a really compact way to represent the grid of all possible dot products between pairs of keys and queries\" — the frame shows that grid being filled in, with keys down the rows and queries Q₁…Qₙ across the columns [2].\n\nThe query/key vectors themselves come from learned projections of the embeddings: the frame at 06:32 shows embedding E⃗₄ for \"creature\" being multiplied by W_Q to give a 128-dimensional query (\"Any adjectives in front of me?\") [4], and at 16:07 the query and key matrices are both shown as 128 × 12,288 maps, i.e. they compress the large embedding into the small shared space where the dot product is taken [6, 3].\n\nOnce the pattern is computed, the weights are applied to values rather than to keys or queries: \"let's set aside all of the keys and the queries, since after you compute the attention pattern you're done with those, then you're going to take this value matrix and multiply it by every one of those embeddings to produce a sequence of value vectors… kind of associated with the corresponding keys\" [9]. Then \"you apply the same weighted sum",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 941495,
+          "timestamp": "15:41",
+          "page": null,
+          "idx": 36,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000036.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=941",
+          "score": 0.0465,
+          "transcript": "you apply the same weighted sum across all of the columns in this picture, producing a sequence of changes, adding all of those changes to the corresponding embeddings, produces a full sequence of more refined embeddings popping out of the attention block. Zooming out, this whole process is what you would describe as a single head of attention. As I've described things so far, this process is parameterized by three distinct",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 627663,
+          "timestamp": "10:27",
+          "page": null,
+          "idx": 24,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000024.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=627",
+          "score": 0.0429,
+          "transcript": "there's a really compact way that they write this all down. Here the variables q and k represent the full arrays of query and key vectors respectively, those little vectors you get by multiplying the embeddings by the query and the key matrices. This expression up in the numerator is a really compact way to represent the grid of all possible dot products between pairs of keys and queries.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 993800,
+          "timestamp": "16:33",
+          "page": null,
+          "idx": 38,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000038.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=993",
+          "score": 0.0426,
+          "transcript": "since both its inputs and outputs live in this very large embedding space. If true, that would mean about 150 million added parameters. And to be clear, you could do that. You could devote orders of magnitude more parameters to the value map than to the key and query. But in practice, it is much more efficient if instead you make it so that the number of parameters devoted to this value map",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 392290,
+          "timestamp": "06:32",
+          "page": null,
+          "idx": 15,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000015.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=392",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 3",
+          "page": 3,
+          "idx": 2,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000002.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000002.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors. The output is computed as a weighted sum 3 Scaled Dot-Product Attention Multi-Head Attention Figure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel. of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key. 3.2.1 Scaled Dot-Product Attention We call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of queries and keys of dimension dk, and values of dimension dv. We compute the dot products of the query with all keys, divide each by √dk, and apply a softmax function to obtain the weights on the values. In practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix Q. The keys and values are also packed together into matrices K and V . We compute the matrix of outputs as: Attention(Q, K, V ) = softmax(QKT √dk )V (1) The two most commonly used attention functions are additive attention [2], and dot-product (multi- plicative) attention. Dot-product attention is identical to our algorithm, except for the scaling factor of 1 √dk . Additive attention computes the compatibility function using a feed-forward network with a single hidden layer. While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code. While for small values of dk the two mechanisms perform similarly, additive attention outperforms dot product attention without scaling for larger values of dk [3]. We suspect that for large values of dk, the dot products grow large in magnitude, pushing",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 967647,
+          "timestamp": "16:07",
+          "page": null,
+          "idx": 37,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000037.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=967",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1261119,
+          "timestamp": "21:01",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1261",
+          "score": 0.0164,
+          "transcript": "key and query matrices producing 96 distinct attention patterns. Then each head has its own distinct value matrices used to produce 96 sequences of value vectors. These are all added together using the corresponding attention patterns as weights. What this means is that for each position in the context, each token,",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 626213,
+          "timestamp": "10:26",
+          "page": null,
+          "idx": 23,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000023.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=626",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 859790,
+          "timestamp": "14:19",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=859",
+          "score": 0.0161,
+          "transcript": "in order to reflect this? Looking back in our diagram, let's set aside all of the keys and the queries, since after you compute the attention pattern you're done with those, then you're going to take this value matrix and multiply it by every one of those embeddings to produce a sequence of value vectors. You might think of these value vectors as being kind of associated with the corresponding keys.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 517307,
+          "timestamp": "08:37",
+          "page": null,
+          "idx": 19,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000019.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=517",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        }
+      ],
+      "hit": true,
+      "rule": "needs one video AND one document expectation",
+      "matched_patterns": [
+        "yt_eMlx5fFNoYc",
+        "Attention_is_All_You_Need"
+      ],
+      "missed_patterns": [],
+      "found_sources": [
+        "doc_1c8e196fec (p. 3)",
+        "yt_eMlx5fFNoYc (06:32)",
+        "yt_eMlx5fFNoYc (10:27)",
+        "yt_eMlx5fFNoYc (14:19)",
+        "yt_eMlx5fFNoYc (15:41)",
+        "yt_eMlx5fFNoYc (16:07)",
+        "yt_eMlx5fFNoYc (16:33)",
+        "yt_eMlx5fFNoYc (21:01)",
+        "yt_wjZofJX0v4M (08:37)",
+        "yt_wjZofJX0v4M (10:26)"
+      ]
+    },
+    {
+      "id": "m2",
+      "kind": "mixed",
+      "question": "Why does a transformer run several attention heads in parallel instead of just one?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_eMlx5fFNoYc",
+          "locator_hint": "~20:00-26:00, multi-headed attention"
+        },
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~22:00-27:00, attention heads in the full architecture"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 4-5, §3.2.2 multi-head attention"
+        }
+      ],
+      "latency_ms": 13006.2,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Short answer:** Because each head has its own separate key, query, and value maps, so running many in parallel lets the model capture many different ways that context can update a word's meaning at once, rather than just the single pattern one head could learn.\n\nThe mechanism is spelled out at 20:38: this is \"called multi-headed attention, where you run a lot of these operations in parallel, each with its own distinct key query and value maps,\" with GPT-3 using 96 attention heads inside each block [6]. The key point is the *distinctness* of those maps — 96 separate sets of key/query/value matrices means 96 independently learned patterns of which tokens attend to which, all computed simultaneously.\n\nWhat each of those patterns buys you is described at 05:16: attention \"gives all of these lists of numbers a chance to talk to one another and refine the meanings they encode based on the context around, all done in parallel,\" e.g. the numbers encoding \"bank\" being changed by surrounding context to encode \"riverbank\" [10]. A single head can only enact one such kind of contextual refinement; many heads in parallel let many different relationships be picked up in the same pass.\n\nThe trade-off is parameter count. One attention head's four matrices come to \"about 6.3 million parameters\" [1], and \"with 96 heads, each including its own variation of these four matrices, each block of multi-headed attention ends up with around 600 million parameters\" [8] — so the extra expressive capacity of parallel heads is paid for directly in model size.",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1072258,
+          "timestamp": "17:52",
+          "page": null,
+          "idx": 41,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000041.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1072",
+          "score": 0.0438,
+          "transcript": "constraining the overall value map to be a low rank transformation. Turning back to the parameter count, all four of these matrices have the same size, and adding them all up we get about 6.3 million parameters for one attention head. As a quick side note, to be a little more accurate, everything described so far is what people would call a self-attention head,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 294438,
+          "timestamp": "04:54",
+          "page": null,
+          "idx": 34,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000034.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=294",
+          "score": 0.039,
+          "transcript": "is to associate each word with a long list of numbers. The reason for this is that the training process only works with continuous values, so you have to somehow encode language using numbers, and each of these lists of numbers may somehow encode the meaning of the corresponding word. What makes transformers unique is their reliance on a special operation known as attention.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 136133,
+          "timestamp": "02:16",
+          "page": null,
+          "idx": 5,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000005.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=136",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1391260,
+          "timestamp": "23:11",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1391",
+          "score": 0.0167,
+          "transcript": "It's one of those details that runs the risk of distracting from the main conceptual points, but I do want to call it out just so that you know if you read about this in other sources. Setting aside all the technical nuances, in the preview from the last chapter we saw how data flowing through a transformer doesn't just flow through a single attention block. For one thing, it also goes through these other operations called multi-layer perceptrons.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 278522,
+          "timestamp": "04:38",
+          "page": null,
+          "idx": 32,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000032.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=278",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1238713,
+          "timestamp": "20:38",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1238",
+          "score": 0.0164,
+          "transcript": "called multi-headed attention, where you run a lot of these operations in parallel, each with its own distinct key query and value maps. GPT-3 for example uses 96 attention heads inside each block. Considering that each one is already a bit confusing, it's certainly a lot to hold in your head. Just to spell it all out very explicitly, this means you have 96 distinct",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 108907,
+          "timestamp": "01:48",
+          "page": null,
+          "idx": 4,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000004.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=108",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 1323700,
+          "timestamp": "22:03",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=1323",
+          "score": 0.0161,
+          "transcript": "Pulling up our running tally for parameter count with 96 heads, each including its own variation of these four matrices, each block of multi-headed attention ends up with around 600 million parameters. There's one added slightly annoying thing that I should really mention for any of you who go on to read more about transformers. You remember how I said that the value map is factored out into these two",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 222818,
+          "timestamp": "03:42",
+          "page": null,
+          "idx": 25,
+          "thumbnail": "/api/frame/yt_LPZh9BOjkQs/000025.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=222",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 316980,
+          "timestamp": "05:16",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=316",
+          "score": 0.0159,
+          "transcript": "This operation gives all of these lists of numbers a chance to talk to one another and refine the meanings they encode based on the context around, all done in parallel. For example, the numbers encoding the word bank might be changed based on the context surrounding it to somehow encode the more specific notion of a riverbank. Transformers typically also include a second type of operation known",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": false,
+      "rule": "needs one video AND one document expectation",
+      "matched_patterns": [
+        "yt_eMlx5fFNoYc",
+        "yt_wjZofJX0v4M"
+      ],
+      "missed_patterns": [
+        "Attention_is_All_You_Need"
+      ],
+      "found_sources": [
+        "yt_LPZh9BOjkQs (03:42)",
+        "yt_LPZh9BOjkQs (04:38)",
+        "yt_LPZh9BOjkQs (04:54)",
+        "yt_LPZh9BOjkQs (05:16)",
+        "yt_eMlx5fFNoYc (17:52)",
+        "yt_eMlx5fFNoYc (20:38)",
+        "yt_eMlx5fFNoYc (22:03)",
+        "yt_eMlx5fFNoYc (23:11)",
+        "yt_wjZofJX0v4M (01:48)",
+        "yt_wjZofJX0v4M (02:16)"
+      ]
+    },
+    {
+      "id": "m3",
+      "kind": "mixed",
+      "question": "How does grounding an answer in retrieved external documents reduce hallucination compared with relying on the model's parameters alone?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_zjkBMFhNj_g",
+          "locator_hint": "~30:00-45:00, tool use / browsing to fetch information"
+        },
+        {
+          "source_id_pattern": "RAG_Survey_2312.10997",
+          "locator_hint": "pp. 1-2, abstract and introduction (hallucination, outdated knowledge)"
+        },
+        {
+          "source_id_pattern": "Original_RAG_Paper_2005.11401",
+          "locator_hint": "pp. 1-2, abstract and introduction (parametric vs non-parametric memory)"
+        }
+      ],
+      "latency_ms": 16175.9,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Direct answer:** Because the generator conditions on actual retrieved passages instead of only implicit knowledge baked into its weights, its output is \"more strongly grounded in real factual knowledge,\" which the RAG paper reports makes it \"hallucinate\" less and produce more factual generations than a purely parametric model [3].\n\n**The failure mode of parameters alone.** Page 1 frames the problem: pre-trained LMs act \"as a parameterized implicit knowledge base,\" but such models \"cannot easily expand or revise their memory, can't straightforwardly provide insight into their predictions, and may produce 'hallucinations'.\" Hybrid models combining parametric with non-parametric (retrieval-based) memory \"can address some of these issues because knowledge can be directly revised and expanded, and accessed knowledge can be inspected and interpreted\" [1].\n\n**The mechanism.** Page 1's Figure 1 overview shows how the grounding happens concretely: a query encoder plus document index retrieves the top-K documents z_i by Maximum Inner Product Search, and the seq2seq generator's prediction is marginalized over those retrieved documents, so the answer is produced conditioned on retrieved evidence rather than generated from parameters alone [1].\n\n**Evidence that it works.** Page 3 states that people prefer RAG's generation over purely parametric BART, \"finding RAG more factual and specific,\" and that this stronger grounding also \"offers more control and interpretability,\" including the ability to hot-swap the retrieval index to update the model without retraining [3]. Page 8 quantifies this on the Jeopardy question generation human assessment",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 1",
+          "page": 1,
+          "idx": 0,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000000.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000000.jpg?u=default",
+          "score": 0.0441,
+          "transcript": "speciﬁc, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline. 1 Introduction Pre-trained neural language models have been shown to learn a substantial amount of in-depth knowl- edge from data [47]. They can do so without any access to an external memory, as a parameterized implicit knowledge base [51, 52]. While this development is exciting, such models do have down- sides: They cannot easily expand or revise their memory, can’t straightforwardly provide insight into their predictions, and may produce “hallucinations” [38]. Hybrid models that combine parametric memory with non-parametric (i.e., retrieval-based) memories [20, 26, 48] can address some of these issues because knowledge can be directly revised and expanded, and accessed knowledge can be inspected and interpreted. REALM [20] and ORQA [31], two recently introduced models that combine masked language models [8] with a differentiable retriever, have shown promising results, arXiv:2005.11401v4 [cs.CL] 12 Apr 2021 The Divine Comedy (x) q Query Encoder q(x) MIPS pθ Generator pθ (Parametric) Margin- alize This 14th century work is divided into 3 sections: \"Inferno\", \"Purgatorio\" & \"Paradiso\" (y) End-to-End Backprop through q and pθ Barack Obama was born in Hawaii.(x) Fact Veriﬁcation: Fact Query supports (y) Question Generation Fact Veriﬁcation: Label Generation Document Index Define \"middle ear\"(x) Question Answering: Question Query The middle ear includes the tympanic cavity and the three ossicles. (y) Question Answering: Answer Generation Retriever pη (Non-Parametric) z4 z3 z2 z1 d(z) Jeopardy Question Generation: Answer Query Figure 1: Overview of our approach. We combine a pre-trained retriever (Query Encoder + Document Index) with a pre-trained seq2seq model (Generator) and ﬁne-tune end-to-end. For query x, we use Maximum Inner Product Search (MIPS) to ﬁnd the top-K documents zi. For ﬁnal prediction y, we treat z as a latent variable and marginalize over seq2seq predictions given different documents. but have only",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 38",
+          "page": 38,
+          "idx": 37,
+          "thumbnail": "/api/frame/doc_32b809a098/000037.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000037.jpg?u=default",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 9",
+          "page": 9,
+          "idx": 8,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000008.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000008.jpg?u=default",
+          "score": 0.0167,
+          "transcript": "and non-parametric memory. We showed that our RAG models obtain state of the art results on open-domain QA. We found that people prefer RAG’s generation over purely parametric BART, ﬁnding RAG more factual and speciﬁc. We conducted an thorough investigation of the learned retrieval component, validating its effectiveness, and we illustrated how the retrieval index can be hot-swapped to update the model without requiring any retraining. In future work, it may be fruitful to investigate if the two components can be jointly pre-trained from scratch, either with a denoising objective similar to BART or some another objective. Our work opens up new research directions on how parametric and non-parametric memories interact and how to most effectively combine them, showing promise in being applied to a wide variety of NLP tasks. 9 Broader Impact This work offers several positive societal beneﬁts over previous work: the fact that it is more strongly grounded in real factual knowledge (in this case Wikipedia) makes it “hallucinate” less with generations that are more factual, and offers more control and interpretability. RAG could be employed in a wide variety of scenarios with direct beneﬁt to society, for example by endowing it with a medical index and asking it open-domain questions on that topic, or by helping people be more effective at their jobs. With these advantages also come potential downsides: Wikipedia, or any potential external knowledge source, will probably never be entirely factual and completely devoid of bias. Since RAG can be employed as a language model, similar concerns as for GPT-2 [50] are valid here, although arguably to a lesser extent, including that it might be used to generate abuse, faked or misleading content in the news or on social media; to impersonate others; or to automate the production of spam/phishing content [54]. Advanced language",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000007.jpg?u=default",
+          "score": 0.0164,
+          "transcript": "of Retrieving more documents Models are trained with either 5 or 10 retrieved latent documents, and we do not observe signiﬁcant differences in performance between them. We have the ﬂexibility to adjust the number of retrieved documents at test time, which can affect performance and runtime. Figure 3 (left) shows that retrieving more documents at test time monotonically improves Open-domain QA results for RAG-Sequence, but performance peaks for RAG-Token at 10 retrieved documents. Figure 3 (right) shows that retrieving more documents leads to higher Rouge-L for RAG-Token at the expense of Bleu-1, but the effect is less pronounced for RAG-Sequence. 10 20 30 40 50 K Retrieved Docs 39 40 41 42 43 44 NQ Exact Match RAG-Tok RAG-Seq 10 20 30 40 50 K Retrieved Docs 40 50 60 70 80 NQ Answer Recall @ K RAG-Tok RAG-Seq Fixed DPR BM25 10 20 30 40 50 K Retrieved Docs 48 50 52 54 56 Bleu-1 / Rouge-L score RAG-Tok R-L RAG-Tok B-1 RAG-Seq R-L RAG-Seq B-1 Figure 3: Left: NQ performance as more documents are retrieved. Center: Retrieval recall perfor- mance in NQ. Right: MS-MARCO Bleu-1 and Rouge-L as more documents are retrieved. 5 Related Work Single-Task Retrieval Prior work has shown that retrieval improves performance across a variety of NLP tasks when considered in isolation. Such tasks include open-domain question answering [5, 29], fact checking [56], fact completion [48], long-form question answering [12], Wikipedia article generation [36], dialogue [41, 65, 9, 13], translation [17], and language modeling [19, 27]. Our work uniﬁes previous successes in incorporating retrieval into individual tasks, showing that a single retrieval-based architecture is capable of achieving strong performance across several tasks. 8 General-Purpose Architectures for NLP Prior work on general-purpose architectures for NLP tasks has shown great success without the use of retrieval. A",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "doc_f86832ec60",
+          "title": "AJMC_01_2018_Waxman2final",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 6",
+          "page": 6,
+          "idx": 5,
+          "thumbnail": "/api/frame/doc_f86832ec60/000005.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_f86832ec60/000005.jpg?u=default",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 18",
+          "page": 18,
+          "idx": 17,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000017.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000017.jpg?u=default",
+          "score": 0.0161,
+          "transcript": "logit for the null document, before marginalizing over k + 1 predictions. We explored modelling this null document logit by learning (i) a document embedding for the null document, (ii) a static learnt bias term, or (iii) a neural network to predict the logit. We did not ﬁnd that these improved performance, so in the interests of simplicity, we omit them. For Open MS-MARCO, where useful retrieved documents cannot always be retrieved, we observe that the model learns to always retrieve a particular set of documents for questions that are less likely to beneﬁt from retrieval, suggesting that null document mechanisms may not be necessary for RAG. G Parameters Our RAG models contain the trainable parameters for the BERT-base query and document encoder of DPR, with 110M parameters each (although we do not train the document encoder ourselves) and 406M trainable parameters from BART-large, 406M parameters, making a total of 626M trainable 18 Table 7: Number of instances in the datasets used. *A hidden subset of this data is used for evaluation Task Train Development Test Natural Questions 79169 8758 3611 TriviaQA 78786 8838 11314 WebQuestions 3418 362 2033 CuratedTrec 635 134 635 Jeopardy Question Generation 97392 13714 26849 MS-MARCO 153726 12468 101093* FEVER-3-way 145450 10000 10000 FEVER-2-way 96966 6666 6666 parameters. The best performing \"closed-book\" (parametric only) open-domain QA model is T5-11B with 11 Billion trainable parameters. The T5 model with the closest number of parameters to our models is T5-large (770M parameters), which achieves a score of 28.9 EM on Natural Questions [52], substantially below the 44.5 that RAG-Sequence achieves, indicating that hybrid parametric/non- parametric models require far fewer trainable parameters for strong open-domain QA performance. The non-parametric memory index does not consist of trainable parameters, but does consists of 21M 728 dimensional vectors, consisting of 15.3B values.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 5",
+          "page": 5,
+          "idx": 4,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000004.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000004.jpg?u=default",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "doc_1c8e196fec",
+          "title": "Attention_is_All_You_Need_1706.03762v7",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 8",
+          "page": 8,
+          "idx": 7,
+          "thumbnail": "/api/frame/doc_1c8e196fec/000007.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_1c8e196fec/000007.jpg?u=default",
+          "score": 0.0159,
+          "transcript": "and P100, respectively. 8 Table 3: Variations on the Transformer architecture. Unlisted values are identical to those of the base model. All metrics are on the English-to-German translation development set, newstest2013. Listed perplexities are per-wordpiece, according to our byte-pair encoding, and should not be compared to per-word perplexities. N dmodel dff h dk dv Pdrop ϵls train PPL BLEU params steps (dev) (dev) ×106 base 6 512 2048 8 64 64 0.1 0.1 100K 4.92 25.8 65 (A) 1 512 512 5.29 24.9 4 128 128 5.00 25.5 16 32 32 4.91 25.8 32 16 16 5.01 25.4 (B) 16 5.16 25.1 58 32 5.01 25.4 60 (C) 2 6.11 23.7 36 4 5.19 25.3 50 8 4.88 25.5 80 256 32 32 5.75 24.5 28 1024 128 128 4.66 26.0 168 1024 5.12 25.4 53 4096 4.75 26.2 90 (D) 0.0 5.77 24.6 0.2 4.95 25.5 0.0 4.67 25.3 0.2 5.47 25.7 (E) positional embedding instead of sinusoids 4.92 25.7 big 6 1024 4096 16 0.3 300K 4.33 26.4 213 development set, newstest2013. We used beam search as described in the previous section, but no checkpoint averaging. We present these results in Table 3. In Table 3 rows (A), we vary the number of attention heads and the attention key and value dimensions, keeping the amount of computation constant, as described in Section 3.2.2. While single-head attention is 0.9 BLEU worse than the best setting, quality also drops off with too many heads. In Table 3 rows (B), we observe that reducing the attention key size dk hurts model quality. This suggests that determining compatibility is not easy and that a more sophisticated compatibility function than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected, bigger models are better, and dropout is",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "doc_32b809a098",
+          "title": "Clip_Paper_2103.00020v1",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 14",
+          "page": 14,
+          "idx": 13,
+          "thumbnail": "/api/frame/doc_32b809a098/000013.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_32b809a098/000013.jpg?u=default",
+          "score": 0.0156,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "doc_5f91a5ea20",
+          "title": "Original_RAG_Paper_2005.11401v4",
+          "url": null,
+          "source": "paper",
+          "ms": null,
+          "timestamp": "p. 19",
+          "page": 19,
+          "idx": 18,
+          "thumbnail": "/api/frame/doc_5f91a5ea20/000018.jpg?u=default",
+          "media_url": null,
+          "deeplink": "/api/frame/doc_5f91a5ea20/000018.jpg?u=default",
+          "score": 0.0156,
+          "transcript": "substantially below the 44.5 that RAG-Sequence achieves, indicating that hybrid parametric/non- parametric models require far fewer trainable parameters for strong open-domain QA performance. The non-parametric memory index does not consist of trainable parameters, but does consists of 21M 728 dimensional vectors, consisting of 15.3B values. These can be easily be stored at 8-bit ﬂoating point precision to manage memory and disk footprints. H Retrieval Collapse In preliminary experiments, we observed that for some tasks such as story generation [11], the retrieval component would “collapse” and learn to retrieve the same documents regardless of the input. In these cases, once retrieval had collapsed, the generator would learn to ignore the documents, and the RAG model would perform equivalently to BART. The collapse could be due to a less-explicit requirement for factual knowledge in some tasks, or the longer target sequences, which could result in less informative gradients for the retriever. Perez et al. [46] also found spurious retrieval results when optimizing a retrieval component in order to improve performance on downstream tasks. I Number of instances per dataset The number of training, development and test datapoints in each of our datasets is shown in Table 7. 19",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": false,
+      "rule": "needs one video AND one document expectation",
+      "matched_patterns": [
+        "Original_RAG_Paper_2005.11401"
+      ],
+      "missed_patterns": [
+        "yt_zjkBMFhNj_g",
+        "RAG_Survey_2312.10997"
+      ],
+      "found_sources": [
+        "doc_1c8e196fec (p. 5)",
+        "doc_1c8e196fec (p. 8)",
+        "doc_32b809a098 (p. 14)",
+        "doc_32b809a098 (p. 38)",
+        "doc_5f91a5ea20 (p. 1)",
+        "doc_5f91a5ea20 (p. 18)",
+        "doc_5f91a5ea20 (p. 19)",
+        "doc_5f91a5ea20 (p. 8)",
+        "doc_5f91a5ea20 (p. 9)",
+        "doc_f86832ec60 (p. 6)"
+      ]
+    },
+    {
+      "id": "m4",
+      "kind": "mixed",
+      "question": "How is the model's final vector turned into a probability distribution over the next token?",
+      "expect": [
+        {
+          "source_id_pattern": "yt_wjZofJX0v4M",
+          "locator_hint": "~19:00-23:00, unembedding matrix then softmax"
+        },
+        {
+          "source_id_pattern": "yt_LPZh9BOjkQs",
+          "locator_hint": "~00:30-02:30, next-word prediction as a probability distribution"
+        },
+        {
+          "source_id_pattern": "Attention_is_All_You_Need",
+          "locator_hint": "p. 5, §3.4 learned linear transform + softmax to next-token probabilities"
+        }
+      ],
+      "latency_ms": 14771.7,
+      "abstained": false,
+      "llm_used": true,
+      "answer": "**Short answer:** the last vector is multiplied by a learned (unembedding) matrix to give one raw number — a logit — per possible token, and then a softmax (optionally with a temperature parameter) exponentiates and normalizes those numbers so they become a probability distribution over the next token.\n\nThe prediction is read off only from the **final vector** in the sequence. As stated at 03:43, \"the computation you perform to produce a prediction of the next token is entirely a function of the last vector in the sequence\" [8], and at 05:24 that the meaning of the passage \"has somehow been baked into the very last vector,\" after which \"we then perform a certain operation on that last vector that produces a probability distribution over all possible tokens, all possible little chunks of text that might come next\" [4]. The same point is made at 06:04: \"one final function is performed on the last vector in this sequence, which now has had a chance to be influenced by all the other context from the input text, as well as everything the model learned during training... the model's prediction looks like a probability for every possible next word\" [6] — a probability over the tokens the input text was broken into [2].\n\nThe first step of that operation is a **matrix multiplication producing raw scores**. The frame at 22:41 shows the learned matrix multiplied by the final column vector, yielding a list of numbers like −0.8, −5.0, +0.5, +1.5, +3.4, −2.3, +2.5, explicitly annotated \"Not at all a probability distribution!\" — since these entries can be negative and don't sum to 1 [3].\n\nThe second step is **softmax**, shown at 25:24, where each entry is exponentiated and divided by the sum of all the exponentials, $e^{x_i/T}/\\sum_n e^{x_n/T}$, turning the score column (+6.0, −5.0, +4.0, +1.5, +9.9, −2.3, +4.0) into probabilities (0.19, 0.04, 0.14, 0.10, 0.33, 0.06, 0.14) [1]. The frame also shows a **temperature** $T$ (here 7.00) dividing the logits, which flattens or sharpens the resulting distribution; the accompanying narration mentions tweaking GPT-3's 20 most probable next tokens \"based on an exponent of 1/5\" for the animation, and that limits on temper",
+      "citations": [
+        {
+          "n": 1,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1524693,
+          "timestamp": "25:24",
+          "page": null,
+          "idx": 55,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000055.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1524",
+          "score": 0.0458,
+          "transcript": "There's no mathematical reason for this, it's just an arbitrary constraint imposed to keep their tool from being seen generating things that are too nonsensical. So if you're curious, the way this animation is actually working is I'm taking the 20 most probable next tokens that GPT-3 generates, which seems to be the maximum they'll give me, and then I tweak the probabilities based on an exponent of 1/5.",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 2,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 26153,
+          "timestamp": "00:26",
+          "page": null,
+          "idx": 1,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000001.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=26",
+          "score": 0.0432,
+          "transcript": "As a quick recap, here's the important context I want you to have in mind. The goal of the model that you and I are studying is to take in a piece of text and predict what word comes next. The input text is broken up into little pieces that we call tokens, and these are very often words or pieces of words, but just to make the examples in this video easier for you and me to think about,",
+          "modalities": [
+            "frame",
+            "text"
+          ]
+        },
+        {
+          "n": 3,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 1361333,
+          "timestamp": "22:41",
+          "page": null,
+          "idx": 50,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000050.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=1361",
+          "score": 0.0167,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 4,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 324135,
+          "timestamp": "05:24",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=324",
+          "score": 0.0167,
+          "transcript": "of the passage has somehow been baked into the very last vector in the sequence. We then perform a certain operation on that last vector that produces a probability distribution over all possible tokens, all possible little chunks of text that might come next. And like I said, once you have a tool that predicts what comes next given a snippet of text, you can feed it a little bit of seed text and",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 5,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 339984,
+          "timestamp": "05:39",
+          "page": null,
+          "idx": 13,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000013.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=339",
+          "score": 0.0164,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 6,
+          "video_id": "yt_LPZh9BOjkQs",
+          "title": "Large Language Models explained briefly",
+          "url": "https://youtu.be/LPZh9BOjkQs",
+          "source": "youtube",
+          "ms": 364664,
+          "timestamp": "06:04",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/LPZh9BOjkQs?t=364",
+          "score": 0.0164,
+          "transcript": "follows in the passage. At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influenced by all the other context from the input text, as well as everything the model learned during training, to produce a prediction of the next word. Again, the model's prediction looks like a probability for every possible next word.",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 7,
+          "video_id": "yt_wjZofJX0v4M",
+          "title": "Transformers, the tech behind LLMs | Deep Learning Chapter 5",
+          "url": "https://youtu.be/wjZofJX0v4M",
+          "source": "youtube",
+          "ms": 626213,
+          "timestamp": "10:26",
+          "page": null,
+          "idx": 23,
+          "thumbnail": "/api/frame/yt_wjZofJX0v4M/000023.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/wjZofJX0v4M?t=626",
+          "score": 0.0161,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 8,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 223300,
+          "timestamp": "03:43",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=223",
+          "score": 0.0161,
+          "transcript": "What we saw in the last chapter was how after all of the vectors flow through the network, including many different attention blocks, the computation you perform to produce a prediction of the next token is entirely a function of the last vector in the sequence. Imagine, for example, that the text you input is most of an entire mystery novel,",
+          "modalities": [
+            "text"
+          ]
+        },
+        {
+          "n": 9,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 627663,
+          "timestamp": "10:27",
+          "page": null,
+          "idx": 24,
+          "thumbnail": "/api/frame/yt_eMlx5fFNoYc/000024.jpg?u=default",
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=627",
+          "score": 0.0159,
+          "transcript": null,
+          "modalities": [
+            "frame"
+          ]
+        },
+        {
+          "n": 10,
+          "video_id": "yt_eMlx5fFNoYc",
+          "title": "Attention in transformers, step-by-step | Deep Learning Chapter 6",
+          "url": "https://youtu.be/eMlx5fFNoYc",
+          "source": "youtube",
+          "ms": 418012,
+          "timestamp": "06:58",
+          "page": null,
+          "idx": null,
+          "thumbnail": null,
+          "media_url": null,
+          "deeplink": "https://youtu.be/eMlx5fFNoYc?t=418",
+          "score": 0.0159,
+          "transcript": "it's meant to represent that multiplying this matrix by the vector at the arrow's start gives you the vector at the arrow's end. In this case, you multiply this matrix by all of the embeddings in the context, producing one query vector for each token. The entries of this matrix are parameters of the model, which means the true behavior is learned from data, and in practice,",
+          "modalities": [
+            "text"
+          ]
+        }
+      ],
+      "hit": false,
+      "rule": "needs one video AND one document expectation",
+      "matched_patterns": [
+        "yt_wjZofJX0v4M",
+        "yt_LPZh9BOjkQs"
+      ],
+      "missed_patterns": [
+        "Attention_is_All_You_Need"
+      ],
+      "found_sources": [
+        "yt_LPZh9BOjkQs (06:04)",
+        "yt_eMlx5fFNoYc (00:26)",
+        "yt_eMlx5fFNoYc (03:43)",
+        "yt_eMlx5fFNoYc (05:39)",
+        "yt_eMlx5fFNoYc (06:58)",
+        "yt_eMlx5fFNoYc (10:27)",
+        "yt_wjZofJX0v4M (05:24)",
+        "yt_wjZofJX0v4M (10:26)",
+        "yt_wjZofJX0v4M (22:41)",
+        "yt_wjZofJX0v4M (25:24)"
+      ]
+    }
+  ]
+}

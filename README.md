@@ -2,7 +2,28 @@
 
 **Ask questions about your videos and get answers grounded in the exact moments — by what's _seen_ on screen, and (for YouTube) what's _said_ in the transcript.**
 
-🌐 **Live app:** [momentsearch.fly.dev](https://momentsearch.fly.dev/get-started)
+🌐 **Live app (this fork):** [momentsearch-lozierk.fly.dev](https://momentsearch-lozierk.fly.dev/) · upstream demo: [momentsearch.fly.dev](https://momentsearch.fly.dev/get-started)
+
+> ## Assignment 3 submission — multimodal documents (Kurt Lozier)
+>
+> This fork extends MomentSearch so **PDF papers and slide decks** are searchable
+> alongside video: one unified Qdrant index, ingestion through the same Prefect
+> queue and status lifecycle, a reconciler for durability, and a benchmark
+> harness proving search stays fast during a backfill and survives a worker
+> SIGKILL with zero loss.
+>
+> - **Write-up (3.4):** [`docs/REPORT_3_4.md`](docs/REPORT_3_4.md)
+> - **Slides:** [`docs/slides/Moment_Search_Deck.html`](docs/slides/Moment_Search_Deck.html) · [`architecture.svg`](docs/slides/architecture.svg)
+> - **Benchmarks:** [`docs/bench/`](docs/bench/) (accept latency, backfill decoupling, recall, citation audit, kill-worker) · golden set in [`eval/`](eval/)
+> - **Design & briefs:** [`docs/Solution_Design_20260728.md`](docs/Solution_Design_20260728.md), `docs/Brief_*.md`
+> - Key code: `src/ingest/documents.py` (parser), `src/ingest/doc_pipeline.py` (Prefect flow), `src/reconciler.py`, `scripts/` (upload CLI + bench harness), `tests/` (74 tests)
+>
+> *Provenance note:* the eval corpus included private business slide decks. In
+> these public artifacts their filenames are pseudonymized (`business_deck_01…09`)
+> and verbatim deck excerpts/commercial figures are redacted. **All benchmark
+> numbers are unmodified** — the sanitizer verifies every numeric value
+> byte-identical to the originals. The public deployed corpus contains the five
+> public papers only.
 
 MomentSearch is an open-source, production-shaped stack for **visual** video
 search and RAG. Users upload videos (or paste YouTube URLs); background workers
