@@ -3,37 +3,50 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>MomentSearch — search video by what's on screen</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Moment Search — multimodal RAG over video, papers and decks</title>
+<!-- Submission design language: white paper, near-black ink, ONE accent
+     (#3b2fc9 indigo), greyscale for everything else. Type is websafe on
+     purpose — Georgia for display, Helvetica/system for body — so the page
+     needs no font downloads and renders identically offline and in a PDF
+     export of the deck. Only the palette and the type scale changed here; the
+     markup, the class names and every JS behaviour are untouched. -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
   tailwind.config = { theme: { extend: {
-    colors: { paper:"#FBF7F0", paper2:"#F3ECE0", card:"#FFFFFF", ink:"#1E1B16",
-              muted:"#6B6357", line:"#E7DECF", coral:"#FF5A3C", coral2:"#E8472B" },
-    fontFamily: { serif:['Fraunces','Georgia','serif'], sans:['Inter','system-ui','sans-serif'] },
+    /* The semantic names are upstream's; only their values moved, so every
+       existing `bg-coral` / `text-muted` in the markup restyles in place. */
+    colors: { paper:"#FFFFFF", paper2:"#F4F4F6", card:"#FFFFFF", ink:"#17171A",
+              muted:"#6B6B75", line:"#E3E3E8", coral:"#3B2FC9", coral2:"#2A21A0" },
+    fontFamily: { serif:['Georgia','Times New Roman','serif'],
+                  sans:['Helvetica Neue','Helvetica','Arial','system-ui','sans-serif'] },
+    /* Hairline rules and whitespace instead of pill-shaped filled cards.
+       `full` is deliberately left alone — the close button and the status
+       badges are meant to stay circular. */
+    borderRadius: { lg:"2px", xl:"2px", "2xl":"2px" },
   }}}
 </script>
 <style>
-  html,body{background:#FBF7F0;color:#1E1B16;font-family:Inter,system-ui,sans-serif}
-  .display{font-family:Fraunces,Georgia,serif}
-  .prose-body{font-size:16px;line-height:1.75;color:#2a261f}
-  .prose-body b,.prose-body strong{font-weight:700;color:#1E1B16}
+  html,body{background:#FFFFFF;color:#17171A;
+    font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif}
+  .display{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.01em}
+  .prose-body{font-size:16px;line-height:1.75;color:#2b2b31}
+  .prose-body b,.prose-body strong{font-weight:700;color:#17171A}
   .prose-body ul{margin:8px 0}.prose-body li{position:relative;padding-left:18px;margin:5px 0}
-  .prose-body li:before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:#FF5A3C}
+  .prose-body li:before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:#3B2FC9}
   .cite{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;margin:0 2px;
-    background:rgba(255,90,60,.14);color:#E8472B;border:1px solid rgba(255,90,60,.35);border-radius:6px;
+    background:rgba(59,47,201,.10);color:#2A21A0;border:1px solid rgba(59,47,201,.30);border-radius:2px;
     font-size:11px;font-weight:700;cursor:pointer;vertical-align:1px}
-  .cite:hover{background:#FF5A3C;color:#fff}
-  .chip{font-size:12.5px;padding:7px 13px;border:1px solid #E7DECF;border-radius:999px;background:#fff;color:#4f4738;cursor:pointer}
-  .chip:hover{border-color:#FF5A3C;color:#1E1B16}
-  .shimmer{background:linear-gradient(90deg,#F3ECE0 25%,#FBF7F0 37%,#F3ECE0 63%);background-size:400% 100%;animation:sh 1.3s infinite}
+  .cite:hover{background:#3B2FC9;color:#fff}
+  .chip{font-size:12.5px;padding:7px 13px;border:1px solid #E3E3E8;border-radius:2px;background:#fff;color:#4a4a52;cursor:pointer}
+  .chip:hover{border-color:#3B2FC9;color:#17171A}
+  .shimmer{background:linear-gradient(90deg,#F4F4F6 25%,#FFFFFF 37%,#F4F4F6 63%);background-size:400% 100%;animation:sh 1.3s infinite}
   @keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
   .fade-in{animation:fi .45s ease both}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  .tab{padding:6px 14px;border-radius:999px;cursor:pointer;font-size:13px;border:1px solid #E7DECF;background:#fff;color:#6B6357}
-  .tab.active{border-color:#FF5A3C;color:#E8472B;background:rgba(255,90,60,.07)}
-  ::selection{background:rgba(255,90,60,.22)}
+  .tab{padding:6px 14px;border-radius:2px;cursor:pointer;font-size:13px;border:1px solid #E3E3E8;background:#fff;color:#6B6B75}
+  .tab.active{border-color:#3B2FC9;color:#2A21A0;background:rgba(59,47,201,.06)}
+  ::selection{background:rgba(59,47,201,.18)}
+  /* Whitespace over drop shadows — the hairline border carries the structure. */
+  .shadow-sm{box-shadow:none !important}
 </style>
 <!--MS_MODE-->
 </head>
@@ -43,8 +56,8 @@
 <header class="border-b border-line">
   <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
     <div class="w-8 h-8 rounded-lg bg-coral flex items-center justify-center text-white font-bold display">M</div>
-    <span class="font-bold tracking-tight">MomentSearch</span>
-    <span class="text-muted text-sm hidden sm:inline">· visual video search</span>
+    <span class="font-bold tracking-tight display">Moment Search</span>
+    <span class="text-muted text-sm hidden sm:inline">· multimodal RAG</span>
     <span id="llmBadge" class="ml-auto text-xs px-3 py-1 rounded-full border border-line text-muted">checking…</span>
   </div>
 </header>
@@ -58,7 +71,7 @@
     A Deep Dive into <span class="text-coral">LLMs</span>.
   </h1>
   <p id="heroSub" class="mt-4 text-[17px] text-muted leading-relaxed mx-auto max-w-lg">
-    Ask anything shown or said across these talks. MomentSearch searches both the
+    Ask anything shown or said across these talks. Moment Search searches both the
     picture and the transcript, and plays the exact moment beside its answer.
   </p>
 
@@ -161,14 +174,14 @@ function applyMode(){
   if(MODE==="full"){
     $("#heroBadge").innerHTML='● Bring your own videos';
     $("#heroTitle").innerHTML='Ask your videos <span class="text-coral">anything</span> you can see.';
-    $("#heroSub").textContent='Add a YouTube URL, upload a video, or add a PDF paper or slide deck. MomentSearch finds the exact moments — and shows each one right beside the answer.';
+    $("#heroSub").textContent='Add a YouTube URL, upload a video, or add a PDF paper or slide deck. Moment Search finds the exact moments — and shows each one right beside the answer.';
     $("#modeLink").textContent='← Back to the sample';     $("#modeLink").href='/';
     $("#libTitle").textContent='Your library';
     $("#libNote").innerHTML='YouTube videos are searched by <b>both</b> what\'s shown (frames) and what\'s said (transcript). Uploaded videos are searched by picture only for now — no transcript yet. PDFs are searched both ways too: every page is indexed as an image <b>and</b> as text, and cited as <b>p. 4</b> / <b>slide 7</b>. Tip: unselect the samples to search only your own material.';
   } else {
     $("#heroBadge").innerHTML='● Sample project · four LLM talks, pre-indexed';
     $("#heroTitle").innerHTML='A Deep Dive into <span class="text-coral">LLMs</span>.';
-    $("#heroSub").textContent='Ask anything about these four talks — MomentSearch finds the exact moment from what\'s shown on screen and what\'s said, and plays it right here.';
+    $("#heroSub").textContent='Ask anything about these four talks — Moment Search finds the exact moment from what\'s shown on screen and what\'s said, and plays it right here.';
     $("#modeLink").textContent='Want your own videos? Get started →';   $("#modeLink").href='/get-started';
     $("#libTitle").textContent='In this deep dive';
     $("#addTabs").classList.add("hidden");
