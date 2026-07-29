@@ -71,7 +71,11 @@ primary_region = 'iad'
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  # Keep one api machine warm. At 0 the first visitor after an idle period pays
+  # a cold start, and this is a graded demo where that first impression is the
+  # only one — the money this was saving is rounding error on a 512mb VM.
+  # (It also keeps the /metrics counters from resetting on every idle cycle.)
+  min_machines_running = 1
   processes = ['api']
 
 [[vm]]
