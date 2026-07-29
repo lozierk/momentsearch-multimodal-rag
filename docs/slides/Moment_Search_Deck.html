@@ -637,7 +637,7 @@
         <p>N workers autoscaled on queue depth (test first for a model lock that serialises them); GPU CLIP off the query box, which fixes the 2.43× contention and throughput at once; shard and replicate Qdrant, keeping the tenant filter; tune the stuck window to the longest healthy gap.</p>
       </div>
     </div>
-    <div class="callout">The two OPENs, stated plainly. <b>Cost per document is not measured.</b> Ingest API spend is genuinely $0 — no LLM captioning step, both embedders local on CPU — so the real cost is machine-seconds we never recorded. <b>Throughput is one worker's number.</b> Closing both needs per-run token accounting, a worker-seconds counter, and a price table — and then every trade-off above collapses into dollars per document ingested and dollars per question answered. That is the number a client actually signs. Model A/B (Kimi, GLM) is then a config swap plus an eval re-run.</div>
+    <div class="callout">The OPENs, stated plainly. <b>Cost per answer is now measured live</b> — the deployed <span style="font-family:monospace">/metrics</span> page reports <b>~$0.04 per answered question</b> on Opus 5 (first day). <b>Cost per document is still open:</b> ingest API spend is genuinely $0 — no LLM captioning step, both embedders local on CPU — so the real cost is machine-seconds we still do not record. <b>Throughput is one worker's number.</b> Closing the rest needs a worker-seconds counter per document and a price table; then every trade-off above collapses into dollars per document ingested and dollars per question answered — the numbers a client actually signs. Model A/B (Kimi, GLM) is then a config swap plus an eval re-run.</div>
   </div>
   <div class="foot">Source: docs/REPORT_3_4.md §2, §3, §4, §7</div>
   <div class="notes">The framing: we did not just adopt the recommended queue, we read why it was recommended, noticed every reason was economic, and then built the compensating control for the capability gap.</div>
@@ -652,7 +652,7 @@
       <div class="col teal">
         <h3>Deliverables</h3>
         <ul>
-          <li><b>Deployed app on Fly.io</b> — live at https://momentsearch-lozierk.fly.dev (papers-only public corpus); api, worker and clip process groups, one release command</li>
+          <li><b>Deployed app on Fly.io</b> — live at https://momentsearch-lozierk.fly.dev (papers-only public corpus) with a live <span style="font-family:monospace">/metrics</span> page; api, worker and clip process groups, one release command</li>
           <li><b>Repo</b> with the document parser, the second Prefect flow, the reconciler and <b>74 tests</b> (the starter repo had none)</li>
           <li><b>Benchmark harness</b> — <span style="font-family:monospace">bench_accept.py</span>, <span style="font-family:monospace">bench_backfill.py</span>, <span style="font-family:monospace">kill_worker_test.sh</span>, <span style="font-family:monospace">run_eval.py</span></li>
           <li><b>Golden set of 14 queries</b> — 5 video-only, 5 document-only, 4 mixed-corpus scored strictly: a mixed query counts only if a video <i>and</i> a document expectation both appear</li>
@@ -662,7 +662,7 @@
       <div class="col amber">
         <h3>What we'd do next, in order</h3>
         <ul>
-          <li><b>Instrument cost per document</b> — token accounting per run, worker-seconds per document, a price table. Two numbers replace every latency argument.</li>
+          <li><b>Instrument cost per document</b> — worker-seconds per document and a price table, now that <span style="font-family:monospace">/metrics</span> prices an answer. Two numbers replace every latency argument.</li>
           <li><b>Move CLIP to its own box</b> and re-measure the 2.43× retrieval ratio with the query path off the ingest CPU.</li>
           <li><b>Scale to N workers</b> and check for a model lock before believing any throughput multiple.</li>
           <li><b>Per-corpus quota in fusion</b> — the fix the two remaining mixed-query misses point at.</li>

@@ -250,6 +250,11 @@ price table mapping both to dollars. With those, every row above collapses to tw
 dollars per document ingested, dollars per question answered — instead of a latency argument. That
 is what we would build next: it is the number the client actually signs.
 
+A minimal version of that instrumentation now ships: `/metrics` reports per-route latency,
+token counts, and estimated LLM cost live, and its first day measured **$0.036 per answered
+question** on Opus 5. The ingest half of the metric is still open — worker-seconds per
+document are not yet recorded — so cost per document remains designed, not measured.
+
 The same instrumentation buys a second experiment for free. Because the harness isolates the
 model-dependent metrics (citation accuracy, answer latency, the `ask_full` ratio) from the
 model-independent ones, an A/B across answer models — Kimi K2 or GLM via their
