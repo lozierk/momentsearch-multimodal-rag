@@ -40,6 +40,15 @@ primary_region = 'iad'
   # at once, on top of two resident models). 32 keeps the spike well inside the
   # VM; throughput barely moves because the model call dominates either way.
   CLIP_BATCH = '32'
+  # This app is a public demo spending a real Anthropic key, so /api/ask gets a
+  # per-IP budget (src/ratelimit.py): 10 answers per 15-minute window, forgiven
+  # 24h after the window opened, bypassed by the ADMIN_TOKEN bearer. Off by
+  # default so local dev, the eval harness and the 3.3 benchmarks run unthrottled.
+  DEMO_BUDGET_ENABLED = 'true'
+  # We are genuinely behind Fly's edge here, and it overwrites Fly-Client-IP on
+  # every inbound request — so that header is the real caller. Never set this
+  # anywhere the app is reachable without the proxy in front of it.
+  TRUST_PROXY_IP = 'true'
 
 # Infra backstop: if a machine's process ever exits (crash, OOM, a dependency
 # outage that slips past the code's own retry loop), always bring it back —

@@ -10,11 +10,11 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 
-from .. import config, db, llm, storage
+from .. import config, db, llm, ratelimit, storage
 from ..rag import search as rag_search
 from .videos import require_auth, user_id as user_id_dep
 
@@ -139,9 +139,21 @@ class AskRequest(BaseModel):
 
 
 @router.post("/api/ask")
-def ask(req: AskRequest, x_user_id: str | None = Header(default=None)):
+def ask(req: AskRequest, request: Request,
+        x_user_id: str | None = Header(default=None),
+        authorization: str | None = Header(default=None)):
     if not req.question.strip():
         raise HTTPException(400, "Empty question.")
+    # Demo budget — the only public route that spends LLM money (src/ratelimit.py).
+    # Checked AFTER the empty-question 400 so a malformed request can't burn a
+    # visitor's allowance, and skipped entirely for a valid bearer.
+    if config.DEMO_BUDGET_ENABLED and not ratelimit.is_admin(authorization):
+        ip = ratelimit.client_ip(request.headers,
+                                 request.client.host if request.client else None)
+        d = ratelimit.budget.check(ip)
+        if not d.allowed:
+            raise HTTPException(429, ratelimit.budget.message(d),
+                                headers={"Retry-After": str(d.retry_after_s)})
     # Empty list == "nothing selected" -> treat as all (None); avoids a
     # confusing zero-results answer when the user unchecks everything.
     video_ids = req.video_ids or None

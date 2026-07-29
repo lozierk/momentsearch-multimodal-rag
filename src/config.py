@@ -54,6 +54,32 @@ DEFAULT_USER_ID = os.getenv("DEFAULT_USER_ID", "default")
 # Default false — local dev and the tests keep their multi-tenant behaviour.
 LOCK_TENANT = _envbool("LOCK_TENANT", False)
 
+# --- Demo budget (per-IP rate limit on the LLM path) -------------------------
+# /api/ask is the one public route that spends money: every call is a
+# multimodal Anthropic request with up to TOP_K images attached. On a public
+# demo URL that is an open tap on someone's API key, so each client IP gets a
+# small budget: the first ask opens a DEMO_BUDGET_WINDOW_S window in which it
+# may make DEMO_BUDGET_MAX calls. Once the window closes or the cap is hit the
+# IP is refused until DEMO_BUDGET_RESET_S after that window OPENED — a lockout
+# with an expiry, so a grader behind a shared NAT (or one coming back the next
+# day) is never permanently shut out. A valid ADMIN_TOKEN bearer bypasses it.
+#
+# Default OFF: local dev, the eval harness and the 3.3 benchmarks all burst far
+# past this and must not be throttled. The deploy turns it on in fly.toml.
+# State is in-process — one api machine today; a restart forgives every budget,
+# and a second api machine would double the effective allowance. Redis is the
+# fix if this ever needs to be exact (see docs/REPORT_3_4.md).
+DEMO_BUDGET_ENABLED = _envbool("DEMO_BUDGET_ENABLED", False)
+DEMO_BUDGET_MAX = _int("DEMO_BUDGET_MAX", 10)             # asks per window
+DEMO_BUDGET_WINDOW_S = _int("DEMO_BUDGET_WINDOW_S", 900)   # 15 minutes
+DEMO_BUDGET_RESET_S = _int("DEMO_BUDGET_RESET_S", 86400)   # 24 hours
+# Client IP: only a proxy we actually sit behind may name the caller. On Fly
+# that is the edge, which OVERWRITES Fly-Client-IP on every inbound request.
+# Off (the default) the socket peer is the only truth, so nobody can mint a
+# fresh budget by inventing a header. X-Forwarded-For is never consulted: it is
+# client-appendable, and trusting it would make the limiter decorative.
+TRUST_PROXY_IP = _envbool("TRUST_PROXY_IP", False)
+
 # --- Object storage (videos + frame thumbnails) ------------------------------
 # STORAGE_PROVIDER: local | aws | gcp | gcp_native | flyio
 # aws/gcp/flyio share one boto3 S3 client (different endpoints); gcp_native
