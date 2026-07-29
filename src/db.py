@@ -161,6 +161,20 @@ def list_videos(user_id: str, status: str | None = None) -> list[dict]:
         return conn.execute(q, tuple(params)).fetchall()
 
 
+def status_counts(user_id: str) -> list[tuple[str, str, int]]:
+    """(source, status, count) for one tenant — the metrics page's queue view.
+
+    Aggregate by construction: no ids, no titles, nothing that could leak a
+    document name onto a public page. Read-only."""
+    with pool().connection() as conn:
+        rows = conn.execute(
+            """
+            SELECT source, status, COUNT(*) AS n FROM ms_videos
+            WHERE user_id = %s GROUP BY source, status ORDER BY source, status
+            """, (user_id,)).fetchall()
+    return [(r["source"], r["status"], r["n"]) for r in rows]
+
+
 def videos_by_ids(ids: list[str]) -> dict[str, dict]:
     """Metadata join for search citations (title/url/source live here, not in Qdrant)."""
     if not ids:

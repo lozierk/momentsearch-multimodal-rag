@@ -11,10 +11,11 @@ import re
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import (FileResponse, HTMLResponse, PlainTextResponse,
+                               StreamingResponse)
 from pydantic import BaseModel
 
-from .. import config, db, llm, ratelimit, storage
+from .. import config, db, llm, metrics, ratelimit, storage
 from ..rag import search as rag_search
 from .videos import require_auth, user_id as user_id_dep
 
@@ -246,3 +247,26 @@ def index():
 @router.get("/get-started", response_class=HTMLResponse)
 def get_started():
     return _render("full")
+
+
+# ── Metrics ───────────────────────────────────────────────────────────────────
+# Aggregate only, by design: this is linked from the public UI, so it reports
+# counts, latencies, tokens and dollars — never a document, a query or a tenant.
+
+@router.get("/api/metrics")
+def api_metrics():
+    return {**metrics.metrics.snapshot(), "corpus": metrics.corpus_snapshot()}
+
+
+@router.get("/metrics.prom", response_class=PlainTextResponse)
+def prom_metrics():
+    """Prometheus exposition format — scrapeable without writing an exporter."""
+    return metrics.prometheus_text()
+
+
+@router.get("/metrics", response_class=HTMLResponse)
+def metrics_page():
+    page = UI_DIR / "metrics.html"
+    if not page.exists():
+        return "<h1>Metrics</h1><p>ui/metrics.html not found.</p>"
+    return page.read_text(encoding="utf-8")

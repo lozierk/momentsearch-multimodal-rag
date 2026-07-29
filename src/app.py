@@ -16,11 +16,12 @@ Run:
 """
 from __future__ import annotations
 
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from . import config, db
+from . import config, db, metrics
 from .api.search import router as search_router
 from .api.videos import router as videos_router
 from .rag import vector_store
@@ -41,6 +42,29 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="MomentSearch", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Moment Search", version="1.0.0", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def _meter(request, call_next):
+    """Time every request for /metrics (src/metrics.py).
+
+    Labels use the ROUTE TEMPLATE that Starlette resolved (`/api/videos/{video_id}`),
+    never the raw path — a label per document id would both explode cardinality
+    and put ids on a public page. Unmatched paths collapse to one bucket.
+    """
+    start = time.perf_counter()
+    status = 500
+    try:
+        response = await call_next(request)
+        status = response.status_code
+        return response
+    finally:
+        route = request.scope.get("route")
+        label = getattr(route, "path", None) or "unmatched"
+        metrics.metrics.record_request(label, status,
+                                       (time.perf_counter() - start) * 1000)
+
+
 app.include_router(videos_router)
 app.include_router(search_router)

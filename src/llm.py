@@ -150,6 +150,22 @@ def ping(cfg: LLMConfig) -> str:
                   [{"image": buf.getvalue(), "transcript": None, "timestamp": "00:00"}], cfg)
 
 
+def _meter(model: str, usage, in_field: str, out_field: str) -> None:
+    """Record one call's token usage (src/metrics.py). The two providers name
+    the same two numbers differently — Anthropic input/output, OpenAI
+    prompt/completion — so the caller passes the field names.
+
+    Never raises: a metrics bug must not turn a good answer into a 500, and a
+    provider that omits `usage` is a missing datapoint, not a failure."""
+    try:
+        from . import metrics
+        metrics.metrics.record_llm(model,
+                                   int(getattr(usage, in_field, 0) or 0),
+                                   int(getattr(usage, out_field, 0) or 0))
+    except Exception:
+        pass
+
+
 def _base_url(cfg: LLMConfig) -> str | None:
     if cfg.base_url:
         return cfg.base_url
@@ -189,6 +205,7 @@ def _answer_openai(cfg: LLMConfig, question: str, moments: list[dict]) -> str:
         temperature=0.2,
         max_tokens=cfg.max_tokens,
     )
+    _meter(cfg.model, getattr(resp, "usage", None), "prompt_tokens", "completion_tokens")
     return (resp.choices[0].message.content or "").strip()
 
 
@@ -209,4 +226,5 @@ def _answer_anthropic(cfg: LLMConfig, question: str, moments: list[dict]) -> str
         system=SYSTEM,
         messages=[{"role": "user", "content": blocks}],
     )
+    _meter(cfg.model, getattr(resp, "usage", None), "input_tokens", "output_tokens")
     return "".join(b.text for b in resp.content if b.type == "text").strip()
