@@ -16,14 +16,14 @@
 > - **Slides:** [`docs/slides/Moment_Search_Deck.html`](docs/slides/Moment_Search_Deck.html) · [`architecture.svg`](docs/slides/architecture.svg)
 > - **Benchmarks:** [`docs/bench/`](docs/bench/) (accept latency, backfill decoupling, recall, citation audit, kill-worker) · golden set in [`eval/`](eval/)
 > - **Design & briefs:** [`docs/Solution_Design_20260728.md`](docs/Solution_Design_20260728.md), `docs/Brief_*.md`
-> - Key code: `src/ingest/documents.py` (parser), `src/ingest/doc_pipeline.py` (Prefect flow), `src/reconciler.py`, `scripts/` (upload CLI + bench harness), `tests/` (74 tests)
+> - Key code: `src/ingest/documents.py` (parser), `src/ingest/doc_pipeline.py` (Prefect flow), `src/reconciler.py`, `scripts/` (upload CLI + bench harness), `tests/` (122 tests)
 >
 > *Provenance note:* the eval corpus included private business slide decks. In
 > these public artifacts their filenames are pseudonymized (`business_deck_01…09`)
 > and verbatim deck excerpts/commercial figures are redacted. **All benchmark
 > numbers are unmodified** — the sanitizer verifies every numeric value
 > byte-identical to the originals. The public deployed corpus contains the five
-> public papers only.
+> public papers and the four sample talks — none of the private decks.
 
 MomentSearch is an open-source, production-shaped stack for **visual** video
 search and RAG. Users upload videos (or paste YouTube URLs); background workers

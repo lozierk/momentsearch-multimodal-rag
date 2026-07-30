@@ -236,6 +236,18 @@ there too), and a 128-page image batch had no headroom. 4 GB plus a capped `CLIP
 indexed all five papers, the 48-page CLIP paper included. Neither bug was visible until the
 system left the laptop — which is this section's whole argument.
 
+**A third finding arrived post-submission**, when the four sample talks were seeded into the
+public tenant from a residential machine (YouTube's datacenter-IP block turned out to be
+intermittent, not absolute) against the shared Postgres. The deployed worker's dispatcher
+claims any `pending` row it sees, so it raced the local seeder on the longest talk:
+re-ingested it at full sampling, cleared both vector branches, then crashed in the transcript
+task on a lazy *relative* import — the one code path the "flow modules use absolute imports"
+rule had missed, invisible until the first YouTube-with-transcript ingest ever ran on Fly.
+Two fixes: the imports made absolute (commit `f44f0a1`), and an ops rule — stop the deployed
+worker before any local seeding or backfill against the shared queue. Credit where due: the
+reconciler's dead-letter did its job, surfacing the row as `failed` with the real error
+instead of leaving silent corruption.
+
 **The honest gap.** Cost per document sits in our SLO table with no number against it. We designed
 the metric before learning our architecture makes half of it zero: document ingest is
 `fetch -> parse -> embed_index` with **no LLM captioning step**, and both embedders (CLIP
