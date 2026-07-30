@@ -65,15 +65,15 @@
 <!-- HERO / ASK (Perplexity-style centered search) -->
 <section class="max-w-2xl mx-auto px-6 pt-20 pb-6 text-center">
   <div id="heroBadge" class="inline-flex items-center gap-2 text-xs font-semibold text-coral2 bg-coral/10 border border-coral/25 rounded-full px-3 py-1 mb-6">
-    ● Sample corpus · five research papers, pre-indexed
+    ● Sample corpus · five papers + four talks, pre-indexed
   </div>
   <h1 id="heroTitle" class="display text-4xl sm:text-5xl font-bold leading-[1.05] tracking-tight">
-    Search papers by what's <span class="text-coral">on the page</span>.
+    Search papers and talks by what's <span class="text-coral">shown</span>.
   </h1>
   <p id="heroSub" class="mt-4 text-[17px] text-muted leading-relaxed mx-auto max-w-lg">
-    Every page is indexed twice — as an image and as text — so a question about a
-    figure and a question about an argument both land. Answers cite the page they
-    came from.
+    Pages and video frames are indexed twice — as images and as text — so a
+    question about a figure lands on the page, and a question about a talk lands
+    on the exact moment. Answers cite pages and timestamps.
   </p>
 
   <!-- big centered search bar -->
@@ -180,14 +180,14 @@ function applyMode(){
     $("#libTitle").textContent='Your library';
     $("#libNote").innerHTML='YouTube videos are searched by <b>both</b> what\'s shown (frames) and what\'s said (transcript). Uploaded videos are searched by picture only for now — no transcript yet. PDFs are searched both ways too: every page is indexed as an image <b>and</b> as text, and cited as <b>p. 4</b> / <b>slide 7</b>. Tip: unselect the samples to search only your own material.';
   } else {
-    $("#heroBadge").innerHTML='● Sample corpus · five research papers, pre-indexed';
-    $("#heroTitle").innerHTML='Search papers by what\'s <span class="text-coral">on the page</span>.';
-    $("#heroSub").textContent='Every page is indexed twice — as an image and as text — so a question about a figure and a question about an argument both land. Answers cite the page they came from.';
+    $("#heroBadge").innerHTML='● Sample corpus · five papers + four talks, pre-indexed';
+    $("#heroTitle").innerHTML='Search papers and talks by what\'s <span class="text-coral">shown</span>.';
+    $("#heroSub").textContent='Pages and video frames are indexed twice — as images and as text — so a question about a figure lands on the page, and a question about a talk lands on the exact moment. Answers cite pages and timestamps.';
     $("#modeLink").textContent='Want to add your own? Get started →';   $("#modeLink").href='/get-started';
     $("#libTitle").textContent='In this corpus';
     $("#addTabs").classList.add("hidden");
     $("#addControls").classList.add("hidden");
-    $("#libNote").innerHTML='Five machine-learning papers, already indexed. Each page was rendered to an image and CLIP-embedded, and its text chunked and embedded separately; both branches are searched and fused, so citations point at a page (<b>p. 4</b>) rather than a document.';
+    $("#libNote").innerHTML='Five machine-learning papers and four LLM talks, already indexed. Every paper page and video keyframe is CLIP-embedded as an image, and the text — page text and talk transcripts — chunked and embedded separately; both branches are searched and fused, so citations point at a page (<b>p. 4</b>) or a moment (<b>12:40</b>) rather than a document.';
   }
 }
 
@@ -225,10 +225,11 @@ async function loadVideos(){
   const {videos}=await (await fetch("/api/videos")).json();
   const box=$("#videos");
   // Front page (/) shows & queries the curated corpus; /get-started shows all.
-  // Upstream's curated set is the sample videos; a deployment seeded some other
-  // way (this one is papers-only) has none, and filtering on is_sample rendered
-  // an empty shelf under a heading promising content. Fall back to whatever is
-  // actually indexed so the page describes the corpus it really has.
+  // Upstream's curated set is the sample videos; a deployment seeded without
+  // them (this one was papers-only before the talks were added) has none, and
+  // filtering on is_sample rendered an empty shelf under a heading promising
+  // content. Fall back to whatever is actually indexed so the page describes
+  // the corpus it really has.
   const samples = videos.filter(v=>v.is_sample);
   const shown = (MODE==="full") ? videos : (samples.length ? samples : videos);
   SAMPLE_INDEXED = shown.filter(v=>v.status==="indexed").map(v=>v.id);
@@ -512,13 +513,14 @@ $("#article").addEventListener("click",e=>{ const c=e.target.closest(".cite"); i
 
 /* examples */
 /* Each of these was scored against the live corpus before shipping (retrieval
-   only, no LLM) and clears the confidence gate on both branches. Two are
-   figure-seeking (the visual branch), two are conceptual (the text branch);
-   between them they touch all three of the attention, RAG and CLIP papers, and
-   the last one spans papers. */
+   only, no LLM) and clears the confidence gate on both branches. The first is
+   deliberately cross-modal (it returns talk moments AND paper pages fused),
+   two are video-first (animation / concept from the talks), and the last two
+   are paper-first (RAG concept; spans papers). */
 const EXAMPLES=["a diagram of the attention mechanism",
+  "an animation of multi-headed attention",
+  "how does a transformer turn words into predictions?",
   "how does retrieval-augmented generation combine a retriever and a generator?",
-  "a chart comparing zero-shot performance",
   "how do these papers evaluate retrieval quality?"];
 $("#examples").innerHTML=EXAMPLES.map(q=>`<span class="chip">${esc(q)}</span>`).join("");
 $("#examples").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ qEl.value=c.textContent; autogrow(); qEl.focus(); });

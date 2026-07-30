@@ -128,9 +128,11 @@ def t_transcript(video_id: str, user_id: str) -> int:
     branch). Best-effort: uploads have no captions, some videos have none, and
     any failure just leaves the video visual-only — never fails the flow.
     Runs AFTER embed-index (whose delete clears both branches first)."""
-    from ..config import ENABLE_TRANSCRIPT, TEXT_EMBED_VERSION
-    from ..rag.embeddings import embed_docs
-    from .transcript import chunk_cues, fetch_transcript
+    # Absolute like the module header says: Prefect loads this file outside the
+    # package, where relative imports raise ImportError at task runtime.
+    from src.config import ENABLE_TRANSCRIPT, TEXT_EMBED_VERSION
+    from src.ingest.transcript import chunk_cues, fetch_transcript
+    from src.rag.embeddings import embed_docs
 
     if not ENABLE_TRANSCRIPT:
         return 0
