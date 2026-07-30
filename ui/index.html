@@ -119,6 +119,10 @@
       </div>
       <div id="ingestStatus" class="text-sm text-muted mt-3 min-h-[20px]"></div>
     </div>
+    <div id="roNote" class="hidden text-sm text-muted mb-3">
+      This public demo is read-only — its library is curated by the author.
+      Searching is open to everyone.
+    </div>
     <div id="videos" class="flex flex-wrap gap-2 mt-2"></div>
     <div id="scopeLine" class="hidden text-xs text-muted mt-3"></div>
     <p id="libNote" class="text-xs text-muted mt-3">YouTube is searched by picture (frames) and transcript; uploads by picture only for now. First ingest downloads the models.</p>
@@ -207,10 +211,24 @@ function renderMarkdown(md){
 }
 
 /* ---------- config + library ---------- */
+/* On a locked deploy (ADMIN_TOKEN set server-side) ingest needs a bearer this
+   UI doesn't carry — every Ingest click would 401. Render read-only instead. */
+let INGEST_LOCKED=false;
+function applyIngestLock(){
+  $("#addTabs").classList.add("hidden");
+  $("#addControls").classList.add("hidden");
+  $("#heroBadge").innerHTML='● Full library · read-only demo';
+  $("#heroSub").textContent='This public demo is read-only — its library is curated. Ask anything about it; answers cite the exact page or moment.';
+  $("#libTitle").textContent='In this library';
+  $("#libNote").innerHTML='Every paper page and video keyframe is searched by <b>both</b> what\'s shown and what\'s said — citations point at a page (<b>p. 4</b>) or a moment (<b>12:40</b>). Tip: click a chip to include or exclude it from your search.';
+  $("#roNote").classList.remove("hidden");
+  loadVideos();   // re-render chips without the delete/retry buttons
+}
 async function loadConfig(){
   try{ const c=await (await fetch("/api/config")).json(); const b=$("#llmBadge");
     if(c.llm_configured){ b.textContent="LLM: "+(c.llm_model||c.llm_provider); b.className="ml-auto text-xs px-3 py-1 rounded-full border border-[#cfe8d6] text-[#1f7a43]"; }
     else { b.textContent="No LLM — moments only"; b.className="ml-auto text-xs px-3 py-1 rounded-full border border-[#e7c46a] text-[#8a6d1a] bg-[#fbf2d8]"; }
+    if(MODE==="full" && c.ingest_open===false){ INGEST_LOCKED=true; applyIngestLock(); }
   }catch{ $("#llmBadge").textContent="API offline"; }
 }
 /* Query scoping: which indexed videos a question searches. Default = all
@@ -239,7 +257,7 @@ async function loadVideos(){
       : '<span class="text-muted text-sm">This corpus is still indexing — it will appear here shortly.</span>';
     return shown;
   }
-  const del = MODE==="full";
+  const del = MODE==="full" && !INGEST_LOCKED;   // 🗑/↻ would 401 on a locked deploy
   // sync selection: new indexed videos default to selected; drop vanished ones
   const indexedIds=new Set(shown.filter(v=>v.status==="indexed").map(v=>v.id));
   indexedIds.forEach(id=>{ if(!KNOWN.has(id)){ KNOWN.add(id); SELECTED.add(id); }});
@@ -312,7 +330,8 @@ async function loadVideos(){
     const total=indexedIds.size, on=[...SELECTED].filter(id=>indexedIds.has(id)).length;
     scope.classList.remove("hidden");
     scope.innerHTML = total
-      ? `<b>Searching ${on} of ${total} videos.</b> ☑ click a video to include/exclude it · 🗑 delete permanently (samples can’t be deleted).`
+      ? `<b>Searching ${on} of ${total} videos.</b> ☑ click a video to include/exclude it`
+        + (del ? ` · 🗑 delete permanently (samples can’t be deleted).` : `.`)
       : "";
   } else { scope.classList.add("hidden"); }
   return videos;

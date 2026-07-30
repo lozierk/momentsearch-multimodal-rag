@@ -54,6 +54,10 @@ def get_config(x_user_id: str | None = Header(default=None)):
         "top_k": config.TOP_K,
         "upload_mode": "presigned" if storage.presign_capable() else "direct",
         "max_upload_mb": config.MAX_UPLOAD_MB,
+        # When ADMIN_TOKEN is set, ingest routes demand a bearer the browser UI
+        # doesn't have — tell it up front so it can render read-only instead of
+        # letting every Ingest click die on a 401.
+        "ingest_open": not config.ADMIN_TOKEN,
     }
 
 
