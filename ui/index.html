@@ -122,6 +122,16 @@
     <div id="roNote" class="hidden text-sm text-muted mb-3">
       This public demo is read-only — its library is curated by the author.
       Searching is open to everyone.
+      <!-- Deliberately unadvertised: the author still needs a way in from a
+           browser, but it must not read as a login for visitors. -->
+      <a id="adminLink" href="#" class="text-muted/70 hover:text-ink">· admin</a>
+      <span id="adminForm" class="hidden inline-flex items-center gap-2 align-middle ml-1">
+        <input id="adminTok" type="password" placeholder="Admin token" autocomplete="off"
+          class="w-[180px] bg-white border border-line rounded-xl px-3 py-1.5 text-[13px] outline-none focus:border-coral">
+        <button id="adminGo" class="bg-ink hover:bg-black text-white text-[12px] font-semibold rounded-xl px-3 py-1.5">Unlock</button>
+        <a id="adminCancel" href="#" class="text-[12px] hover:text-ink">cancel</a>
+        <span id="adminErr" class="text-[12px] text-coral2"></span>
+      </span>
     </div>
     <div id="videos" class="flex flex-wrap gap-2 mt-2"></div>
     <div id="scopeLine" class="hidden text-xs text-muted mt-3"></div>
@@ -210,6 +220,58 @@ function renderMarkdown(md){
   closeUl(); return html;
 }
 
+/* ---------- admin unlock ---------- */
+/* The read-only lock below is true for visitors, but the author still ingests
+   from this same page. The bearer lives only in this browser's localStorage,
+   travels only on the four write routes, and is dropped the moment the server
+   rejects it — so the UI never claims access it doesn't have. */
+const TOK_KEY="ms_admin_token";
+const adminToken=()=>localStorage.getItem(TOK_KEY)||"";
+const authHeaders=()=>adminToken()?{Authorization:"Bearer "+adminToken()}:{};
+let ADMIN_UNLOCKED=false;
+const RO_HTML=$("#roNote").innerHTML;   // restored verbatim when the token is forgotten
+
+/* Cheapest call that exercises the same bearer check as ingest: a presign for a
+   1-byte key we never PUT, so no object is ever created. 401 = bad token. */
+async function probeToken(){
+  const r=await fetch("/api/videos/presign",{method:"POST",
+    headers:{"Content-Type":"application/json",...authHeaders()},
+    body:JSON.stringify({filename:"__auth_probe__.pdf",content_type:"application/pdf",size:1})});
+  return r.status!==401;
+}
+function applyAdminUnlock(){
+  ADMIN_UNLOCKED=true;
+  $("#addTabs").classList.remove("hidden");
+  $("#addControls").classList.remove("hidden");
+  $("#roNote").innerHTML='Admin mode — ingest unlocked. <a id="adminForget" href="#" class="hover:text-ink underline">forget token</a>';
+  loadVideos();   // re-render the chips WITH their delete/retry buttons
+}
+function forgetAdmin(){
+  localStorage.removeItem(TOK_KEY); ADMIN_UNLOCKED=false;
+  $("#roNote").innerHTML=RO_HTML; applyIngestLock();
+}
+async function tryUnlock(){
+  const v=$("#adminTok").value.trim(); if(!v) return;
+  const err=$("#adminErr"); err.textContent="checking…";
+  localStorage.setItem(TOK_KEY,v);           // probeToken reads it back from here
+  let ok=false, reachable=true;
+  try{ ok=await probeToken(); }catch(_){ reachable=false; }
+  if(ok){ err.textContent=""; applyAdminUnlock(); return; }
+  localStorage.removeItem(TOK_KEY);          // never keep a token the server refused
+  err.textContent = reachable ? "Token rejected." : "Couldn't reach the API.";
+}
+/* Delegated, because applyAdminUnlock/forgetAdmin replace #roNote's innards. */
+$("#roNote").addEventListener("click",e=>{
+  const id=e.target.id; if(e.target.tagName==="A") e.preventDefault();
+  if(id==="adminLink"){ $("#adminLink").classList.add("hidden"); $("#adminForm").classList.remove("hidden"); $("#adminTok").focus(); }
+  else if(id==="adminCancel"){ $("#adminErr").textContent=""; $("#adminForm").classList.add("hidden"); $("#adminLink").classList.remove("hidden"); }
+  else if(id==="adminGo") tryUnlock();
+  else if(id==="adminForget") forgetAdmin();
+});
+$("#roNote").addEventListener("keydown",e=>{ if(e.target.id==="adminTok"&&e.key==="Enter"){ e.preventDefault(); tryUnlock(); }});
+/* A token revoked mid-session must not leave a fake "unlocked" UI behind. */
+function noteAuthFailure(msg){ if(ADMIN_UNLOCKED && /bearer token/i.test(msg||"")) forgetAdmin(); }
+
 /* ---------- config + library ---------- */
 /* On a locked deploy (ADMIN_TOKEN set server-side) ingest needs a bearer this
    UI doesn't carry — every Ingest click would 401. Render read-only instead. */
@@ -228,7 +290,11 @@ async function loadConfig(){
   try{ const c=await (await fetch("/api/config")).json(); const b=$("#llmBadge");
     if(c.llm_configured){ b.textContent="LLM: "+(c.llm_model||c.llm_provider); b.className="ml-auto text-xs px-3 py-1 rounded-full border border-[#cfe8d6] text-[#1f7a43]"; }
     else { b.textContent="No LLM — moments only"; b.className="ml-auto text-xs px-3 py-1 rounded-full border border-[#e7c46a] text-[#8a6d1a] bg-[#fbf2d8]"; }
-    if(MODE==="full" && c.ingest_open===false){ INGEST_LOCKED=true; applyIngestLock(); }
+    if(MODE==="full" && c.ingest_open===false){ INGEST_LOCKED=true; applyIngestLock();
+      // A token saved on a previous visit re-unlocks silently; a stale one is
+      // dropped without a word, so a visitor never sees an auth error.
+      if(adminToken()) try{ (await probeToken()) ? applyAdminUnlock() : localStorage.removeItem(TOK_KEY); }catch(_){}
+    }
   }catch{ $("#llmBadge").textContent="API offline"; }
 }
 /* Query scoping: which indexed videos a question searches. Default = all
@@ -257,7 +323,7 @@ async function loadVideos(){
       : '<span class="text-muted text-sm">This corpus is still indexing — it will appear here shortly.</span>';
     return shown;
   }
-  const del = MODE==="full" && !INGEST_LOCKED;   // 🗑/↻ would 401 on a locked deploy
+  const del = MODE==="full" && (!INGEST_LOCKED || ADMIN_UNLOCKED);   // 🗑/↻ would 401 on a locked deploy
   // sync selection: new indexed videos default to selected; drop vanished ones
   const indexedIds=new Set(shown.filter(v=>v.status==="indexed").map(v=>v.id));
   indexedIds.forEach(id=>{ if(!KNOWN.has(id)){ KNOWN.add(id); SELECTED.add(id); }});
@@ -312,14 +378,14 @@ async function loadVideos(){
   // retry a failed ingest — re-queues it on the worker
   if(del) box.querySelectorAll("[data-retry]").forEach(btn=>btn.onclick=async(e)=>{
     e.stopPropagation();
-    await fetch("/api/videos/"+encodeURIComponent(btn.dataset.retry)+"/retry",{method:"POST"});
+    await fetch("/api/videos/"+encodeURIComponent(btn.dataset.retry)+"/retry",{method:"POST",headers:authHeaders()});
     loadVideos(); startRefresher();
   });
   // trash = permanent delete, with a confirm so it's never an accident
   if(del) box.querySelectorAll("[data-del]").forEach(btn=>btn.onclick=async(e)=>{
     e.stopPropagation();
     if(!confirm(`Delete “${btn.dataset.title}”?\n\nThis permanently removes its frames and search vectors. This can’t be undone.`)) return;
-    const r=await fetch("/api/videos/"+encodeURIComponent(btn.dataset.del),{method:"DELETE"});
+    const r=await fetch("/api/videos/"+encodeURIComponent(btn.dataset.del),{method:"DELETE",headers:authHeaders()});
     if(!r.ok){ const d=await r.json().catch(()=>({})); alert(d.detail||"Delete failed."); return; }
     KNOWN.delete(btn.dataset.del); SELECTED.delete(btn.dataset.del); loadVideos();
   });
@@ -365,12 +431,12 @@ async function registerIngest(body, btns){
   const st=$("#ingestStatus");
   try{
     const resp=await fetch("/api/videos",{method:"POST",
-      headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+      headers:{"Content-Type":"application/json",...authHeaders()}, body:JSON.stringify(body)});
     if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.detail||resp.statusText); }
     await resp.json();
     st.textContent="Queued — processing in the background. Add another anytime.";
     loadVideos(); startRefresher();
-  }catch(e){ st.textContent="Error: "+e.message; }
+  }catch(e){ st.textContent="Error: "+e.message; noteAuthFailure(e.message); }
   finally{ btns.forEach(b=>b.disabled=false); }  // free the button immediately
 }
 $("#ytBtn").onclick=()=>{ const u=$("#ytUrl").value.trim(); if(!u)return;
@@ -385,7 +451,7 @@ async function uploadAndRegister(fileEl, contentType, extra, btn){
   try{
     st.textContent="Uploading…";
     const pre=await fetch("/api/videos/presign",{method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{"Content-Type":"application/json",...authHeaders()},
       body:JSON.stringify({filename:f.name,content_type:contentType,size:f.size})});
     if(!pre.ok){ const e=await pre.json().catch(()=>({})); throw new Error(e.detail||pre.statusText); }
     const p=await pre.json();
@@ -393,7 +459,7 @@ async function uploadAndRegister(fileEl, contentType, extra, btn){
     if(!put.ok) throw new Error("upload failed ("+put.status+")");
     registerIngest({video_id:p.video_id,key:p.key,title:f.name.replace(/\.[^.]+$/,""),...extra},[btn]);
     fileEl.value="";   // clear so you can pick the next file right away
-  }catch(e){ st.textContent="Error: "+e.message; btn.disabled=false; }
+  }catch(e){ st.textContent="Error: "+e.message; noteAuthFailure(e.message); btn.disabled=false; }
 }
 $("#upBtn").onclick=()=>uploadAndRegister($("#upFile"), ($("#upFile").files[0]||{}).type||"video/mp4", {}, $("#upBtn"));
 $("#docBtn").onclick=()=>uploadAndRegister($("#docFile"), "application/pdf", {kind:$("#docKind").value}, $("#docBtn"));
